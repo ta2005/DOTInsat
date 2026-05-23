@@ -1,0 +1,41 @@
+class niveau_scolaire{
+    class    1 2 
+    niveau
+    filiere
+}
+
+class etudiant{
+    id cin
+    nom
+    prenon
+    email
+    //Oauth -> google mail uni
+    mot passe
+    niveau_scolaire
+}
+
+class prof{
+    id cin
+    nom
+    prenon
+    email
+    //Oauth -> google mail uni
+    mot passe
+}
+
+n-n class prof
+
+class enseignement{
+    id prof
+    niveau_scolaire
+    date_debut
+}
+
+//pour gener dashboard
+//prof&etud
+class controle{
+     id_enseignement
+     id_etud
+     note
+    status
+}
