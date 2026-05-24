@@ -7,7 +7,7 @@ CREATE TYPE type_vote AS ENUM ('UPVOTE', 'DOWNVOTE');
 
 -- Abstract Base Class: User
 CREATE TABLE users (
-    id UUID PRIMARY KEY,
+    id INT PRIMARY KEY,
     cin VARCHAR(50),
     nom VARCHAR(100),
     prenom VARCHAR(100),
@@ -23,103 +23,103 @@ CREATE TYPE niveau_scolaire AS (
 );
 
 CREATE TABLE admin (
-    id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    id INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     titre VARCHAR(100)
 );
 
 CREATE TABLE professeur (
-    id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE
+    id INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE etudiant (
-    id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    id INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     niveau_scolaire_info niveau_scolaire 
 );
 
 
 --Academic & Core Entities
 CREATE TABLE enseignement (
-    id UUID PRIMARY KEY,
+    id INT PRIMARY KEY,
     nom VARCHAR(255),
     date_debut TIMESTAMP,
     niveau_scolaire_info niveau_scolaire,
-    professeur_id UUID REFERENCES professeur(id)
+    professeur_id INT REFERENCES professeur(id)
 );
 
 CREATE TABLE controle (
-    id UUID PRIMARY KEY,
+    id INT PRIMARY KEY,
     note NUMERIC(5, 2),
     type type_controle,
     statut statut_note,
-    enseignement_id UUID REFERENCES enseignement(id)
+    enseignement_id INT REFERENCES enseignement(id)
 );
 
 CREATE TABLE reclamation (
-    id UUID PRIMARY KEY,
+    id INT PRIMARY KEY,
     message TEXT,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     type_controle type_controle,
     statut statut_reclamation,
-    enseignement_id UUID REFERENCES enseignement(id),
-    etudiant_id UUID REFERENCES etudiant(id)
+    enseignement_id INT REFERENCES enseignement(id),
+    etudiant_id INT REFERENCES etudiant(id)
 );
 
 CREATE TABLE demande (
-    id UUID PRIMARY KEY,
+    id INT PRIMARY KEY,
     message TEXT,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     type type_demande,
     statut statut_demande,
-    user_id UUID REFERENCES users(id)
+    user_id INT REFERENCES users(id)
 );
 
 --Social & Community Entities
 
 CREATE TABLE groupe (
-    id UUID PRIMARY KEY,
+    id INT PRIMARY KEY,
     nom VARCHAR(255),
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    moderateur_id UUID REFERENCES users(id)
+    moderateur_id INT REFERENCES users(id)
 );
 
 -- Association class representing "MembreGroupe"
 CREATE TABLE membre_groupe (
-    id UUID PRIMARY KEY, 
+    id INT PRIMARY KEY, 
     date_adhesion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    user_id UUID REFERENCES users(id),
-    groupe_id UUID REFERENCES groupe(id),
+    user_id INT REFERENCES users(id),
+    groupe_id INT REFERENCES groupe(id),
     UNIQUE(user_id, groupe_id)
 );
 
 CREATE TABLE post (
-    id UUID PRIMARY KEY,
+    id INT PRIMARY KEY,
     contenu TEXT,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    groupe_id UUID REFERENCES groupe(id),
-    auteur_id UUID REFERENCES users(id)
+    groupe_id INT REFERENCES groupe(id),
+    auteur_id INT REFERENCES users(id)
 );
 
 CREATE TABLE commentaire (
-    id UUID PRIMARY KEY,
+    id INT PRIMARY KEY,
     contenu TEXT,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    post_id UUID REFERENCES post(id) ON DELETE CASCADE,
-    auteur_id UUID REFERENCES users(id)
+    post_id INT REFERENCES post(id) ON DELETE CASCADE,
+    auteur_id INT REFERENCES users(id)
 );
 
 CREATE TABLE vote (
-    id UUID PRIMARY KEY,
+    id INT PRIMARY KEY,
     type type_vote,
-    post_id UUID REFERENCES post(id) ON DELETE CASCADE,
-    user_id UUID REFERENCES users(id),
+    post_id INT REFERENCES post(id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(id),
     UNIQUE(post_id, user_id) 
 );
 
 CREATE TABLE notification (
-    id UUID PRIMARY KEY,
+    id INT PRIMARY KEY,
     message TEXT,
     lue BOOLEAN DEFAULT FALSE,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    user_id UUID REFERENCES users(id), 
-    createur_id UUID REFERENCES users(id) 
+    user_id INT REFERENCES users(id), 
+    createur_id INT REFERENCES users(id) 
 );
