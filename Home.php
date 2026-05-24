@@ -12,19 +12,21 @@
 <body>
     <?php include 'navbar.php'; ?>
 
-    <main class="dashboard">
-
+    <div class="hero-outer-container">
         <section class="hero-section">
             <div class="hero-content">
                 <h1 class="hero-title">INSAT All In One Platform</h1>
-                <p class="hero-subtitle">Jusqu'ici tout va bien</p>
+                <p class="hero-subtitle">Jusqu'ici tout va bien.</p>
                 <a href="#" class="hero-btn">DoSomething</a>
             </div>
 
             <div class="hero-image-frame">
-                <img src="resources/hero-image.png" alt="Platform Visual" class="hero-img">
+                <img src="resources/vayouza.png" alt="Platform Visual" class="hero-img">
             </div>
         </section>
+    </div>
+
+    <main class="dashboard">
 
         <section class="profile-card">
             <div class="profile-header">

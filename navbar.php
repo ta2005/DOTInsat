@@ -14,4 +14,3 @@
         <a href="login.php" class="connect-btn">Connecter</a>
     </div>
 </header>
-<img src="resources/brushLigne.png" alt="" class="header-line">

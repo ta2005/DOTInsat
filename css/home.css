@@ -1,26 +1,28 @@
-/* Dashboard Container */
-.dashboard {
+/* ==========================================================================
+   Hero Section Layout (Full-Width Lines, Uncentered Content)
+   ========================================================================== */
+
+/* The outer container forces the white borders to span 100% of the screen */
+.hero-outer-container {
     width: 100%;
-    max-width: 1100px; /* Slightly widened to gracefully accommodate the hero content side-by-side */
-    margin: 40px 0 40px 60px; /* Kept your desired gap from the left wall */
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 40px; /* Increased gap slightly to separate sections clearly */
+    border-top: 1px solid #EDEDED;
+    border-bottom: 1px solid #EDEDED;
+    margin-top: 20px;
     box-sizing: border-box;
-    color: #EDEDED; 
 }
 
-/* ==========================================================================
-   New Hero Section Styling
-   ========================================================================== */
+/* Keeps the inner hero content left-heavy with a specific starting gap */
 .hero-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    max-width: 1100px; 
+    margin-left: 60px; /* Kept your original left side gap here */
+    padding: 50px 20px; 
     gap: 40px;
-    padding: 20px 0;
+    box-sizing: border-box;
+    color: #EDEDED;
 }
 
 .hero-content {
@@ -60,49 +62,43 @@
     cursor: url('../resources/hovermouse.png'), pointer;
 }
 
-/* Image Wrapper with Extended Intersecting Boarders */
+/* --- Hero Image Wrapper --- */
 .hero-image-frame {
+    display: block;
+    margin-left: auto; 
     position: relative;
-    padding: 15px; /* Creates the overlap spacing for the lines */
-}
-
-/* Horizontal overshooting lines */
-.hero-image-frame::before {
-    content: '';
-    position: absolute;
-    top: 15px;
-    bottom: 15px;
-    left: -15px;
-    right: -15px;
-    border-top: 1px solid rgba(237, 237, 237, 0.4);
-    border-bottom: 1px solid rgba(237, 237, 237, 0.4);
-    pointer-events: none;
-}
-
-/* Vertical overshooting lines */
-.hero-image-frame::after {
-    content: '';
-    position: absolute;
-    top: -15px;
-    bottom: -15px;
-    left: 15px;
-    right: 15px;
-    border-left: 1px solid rgba(237, 237, 237, 0.4);
-    border-right: 1px solid rgba(237, 237, 237, 0.4);
-    pointer-events: none;
+    
+    /* 🛠️ CUSTOMIZE THIS VALUE BELOW:
+       A negative right value pushes the image out of the window frame.
+       -50px means it sticks out by 50px. Change it to -100px, -150px, etc., 
+       to cut off as much of the image as you want! */
+    right: -80px; 
 }
 
 .hero-img {
     display: block;
     width: 100%;
-    max-width: 380px;
+    max-width: 420px; 
     height: auto;
     object-fit: cover;
 }
 
 /* ==========================================================================
-   Existing Profile & Stats Cards
+   Dashboard Boxes Container (🎯 ONLY THIS IS CENTERED)
    ========================================================================== */
+.dashboard {
+    width: 100%;
+    max-width: 1100px; 
+    margin: 40px auto; /* 💡 This perfectly centers ONLY your dashboard cards */
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-sizing: border-box;
+    color: #EDEDED; 
+}
+
+/* --- Profile Card Styling --- */
 .profile-card {
     border: 1px solid #EDEDED; 
     border-radius: 40px;
@@ -138,6 +134,7 @@
     right: 40px;
 }
 
+/* --- Stats Grid Styling --- */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -162,6 +159,7 @@
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* --- Card Typography --- */
 .large-num {
     font-size: 4.5rem;
     font-weight: 700;
@@ -203,13 +201,16 @@
     }
 
     .hero-section {
+        margin: 0 auto;
         flex-direction: column;
         text-align: center;
         gap: 30px;
+        padding: 30px 20px;
     }
 
     .hero-image-frame {
-        margin-top: 15px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .stats-grid {
