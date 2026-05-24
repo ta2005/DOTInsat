@@ -1,0 +1,228 @@
+/* Dashboard Container */
+.dashboard {
+    width: 100%;
+    max-width: 1100px; /* Slightly widened to gracefully accommodate the hero content side-by-side */
+    margin: 40px 0 40px 60px; /* Kept your desired gap from the left wall */
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* Increased gap slightly to separate sections clearly */
+    box-sizing: border-box;
+    color: #EDEDED; 
+}
+
+/* ==========================================================================
+   New Hero Section Styling
+   ========================================================================== */
+.hero-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 40px;
+    padding: 20px 0;
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 600px;
+}
+
+.hero-title {
+    font-size: clamp(2.5rem, 4.5vw, 4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0 0 12px 0;
+    letter-spacing: -1px;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    font-weight: 200;
+    color: #B0B0B0;
+    margin: 0 0 30px 0;
+}
+
+.hero-btn {
+    display: inline-block;
+    text-decoration: none;
+    color: #161616;
+    background-color: #EDEDED;
+    padding: 12px 28px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
+
+.hero-btn:hover {
+    opacity: 0.8;
+    cursor: url('../resources/hovermouse.png'), pointer;
+}
+
+/* Image Wrapper with Extended Intersecting Boarders */
+.hero-image-frame {
+    position: relative;
+    padding: 15px; /* Creates the overlap spacing for the lines */
+}
+
+/* Horizontal overshooting lines */
+.hero-image-frame::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    bottom: 15px;
+    left: -15px;
+    right: -15px;
+    border-top: 1px solid rgba(237, 237, 237, 0.4);
+    border-bottom: 1px solid rgba(237, 237, 237, 0.4);
+    pointer-events: none;
+}
+
+/* Vertical overshooting lines */
+.hero-image-frame::after {
+    content: '';
+    position: absolute;
+    top: -15px;
+    bottom: -15px;
+    left: 15px;
+    right: 15px;
+    border-left: 1px solid rgba(237, 237, 237, 0.4);
+    border-right: 1px solid rgba(237, 237, 237, 0.4);
+    pointer-events: none;
+}
+
+.hero-img {
+    display: block;
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    object-fit: cover;
+}
+
+/* ==========================================================================
+   Existing Profile & Stats Cards
+   ========================================================================== */
+.profile-card {
+    border: 1px solid #EDEDED; 
+    border-radius: 40px;
+    padding: 40px;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.profile-card h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem); 
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.5px;
+}
+
+.class-group {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.year-badge {
+    font-size: 1.5rem;
+    font-weight: 400;
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+.card {
+    border: 1px solid #EDEDED;
+    border-radius: 40px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 220px;
+    box-sizing: border-box;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.large-num {
+    font-size: 4.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.card-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: block;
+}
+
+.subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+}
+
+.status-text {
+    font-size: 3.2rem;
+    font-weight: 700;
+    line-height: 1;
+    display: block;
+}
+
+.subject-title {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+@media (max-width: 850px) {
+    .dashboard {
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+
+    .hero-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .hero-image-frame {
+        margin-top: 15px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr; 
+    }
+    
+    .year-badge {
+        position: static;
+        display: block;
+        margin-top: 20px;
+    }
+    
+    .profile-card, .card {
+        padding: 30px; 
+    }
+}

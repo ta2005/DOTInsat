@@ -1,0 +1,118 @@
+/*Fonts + Cursor : */
+@font-face {
+    font-family: 'Atyp Display';
+    src: url(/Fonts/) format("truetype");
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background-color: #161616;
+    font-family: 'Atyp Display', sans-serif;
+    cursor: url('../resources/mouse.png'), auto;
+}
+a:hover {
+    cursor: url('../resources/hovermouse.png'), pointer;
+}
+
+/*Navbar*/
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+
+}
+.logo {
+    width:100px ;}
+
+.navbar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.navlinks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    
+}
+
+.navlinks a{
+    text-decoration: none;
+    color: #EDEDED;
+    font-size: 25px;
+    font-weight: 200;
+    padding: 20px;
+}
+.navlinks a:hover {
+    color: #EDEDED;
+    font-weight: 450;
+}
+.navlinks a.active {
+    color: #EDEDED;
+    font-weight: 450;
+}
+
+.header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.connect-btn {
+    text-decoration: none;
+    color: #161616;
+    background-color: #EDEDED;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: opacity 0.2s;}
+
+.connect-btn:hover {
+    opacity: 0.8;
+    cursor: url('../resources/hovermouse.png'), pointer;
+}
+
+
+.header-line {
+    width: clamp(280px, 50%, 700px);
+    display: block;
+    margin: 0 auto;
+}
+
+
+/* Responsive Design */
+@media (max-width: 850px) {
+    header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .logo {
+        margin-right: 0;
+    }
+
+    .navbar {
+        position: static;
+        transform: none;
+    }
+
+    .navlinks {
+        flex-direction: column;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+    }
+    .header-right {
+        margin-left: 0;
+    }
+
+}
