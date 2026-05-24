@@ -7,8 +7,8 @@ CREATE TYPE type_vote AS ENUM ('UPVOTE', 'DOWNVOTE');
 
 -- Abstract Base Class: User
 CREATE TABLE users (
-    id INT PRIMARY KEY,
-    cin VARCHAR(50),
+    id SERIAL PRIMARY KEY,
+    cin INT,
     nom VARCHAR(100),
     prenom VARCHAR(100),
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE etudiant (
 
 --Academic & Core Entities
 CREATE TABLE enseignement (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nom VARCHAR(255),
     date_debut TIMESTAMP,
     niveau_scolaire_info niveau_scolaire,
@@ -47,7 +47,7 @@ CREATE TABLE enseignement (
 );
 
 CREATE TABLE controle (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     note NUMERIC(5, 2),
     type type_controle,
     statut statut_note,
@@ -55,7 +55,7 @@ CREATE TABLE controle (
 );
 
 CREATE TABLE reclamation (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     message TEXT,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     type_controle type_controle,
@@ -65,7 +65,7 @@ CREATE TABLE reclamation (
 );
 
 CREATE TABLE demande (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     message TEXT,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     type type_demande,
@@ -76,7 +76,7 @@ CREATE TABLE demande (
 --Social & Community Entities
 
 CREATE TABLE groupe (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nom VARCHAR(255),
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     moderateur_id INT REFERENCES users(id)
@@ -84,7 +84,7 @@ CREATE TABLE groupe (
 
 -- Association class representing "MembreGroupe"
 CREATE TABLE membre_groupe (
-    id INT PRIMARY KEY, 
+    id SERIAL PRIMARY KEY, 
     date_adhesion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id INT REFERENCES users(id),
     groupe_id INT REFERENCES groupe(id),
@@ -92,15 +92,15 @@ CREATE TABLE membre_groupe (
 );
 
 CREATE TABLE post (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     contenu TEXT,
-    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_de_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     groupe_id INT REFERENCES groupe(id),
     auteur_id INT REFERENCES users(id)
 );
 
 CREATE TABLE commentaire (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     contenu TEXT,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     post_id INT REFERENCES post(id) ON DELETE CASCADE,
@@ -108,7 +108,7 @@ CREATE TABLE commentaire (
 );
 
 CREATE TABLE vote (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     type type_vote,
     post_id INT REFERENCES post(id) ON DELETE CASCADE,
     user_id INT REFERENCES users(id),
@@ -116,7 +116,7 @@ CREATE TABLE vote (
 );
 
 CREATE TABLE notification (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     message TEXT,
     lue BOOLEAN DEFAULT FALSE,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
