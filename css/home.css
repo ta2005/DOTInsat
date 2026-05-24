@@ -1,104 +1,105 @@
-/* ==========================================================================
-   Hero Section Layout (Full-Width Lines, Uncentered Content)
-   ========================================================================== */
-
-/* The outer container forces the white borders to span 100% of the screen */
-.hero-outer-container {
+.dashboard {
     width: 100%;
-    border-top: 1px solid #EDEDED;
-    border-bottom: 1px solid #EDEDED;
-    margin-top: 20px;
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
     box-sizing: border-box;
+    color: #EDEDED; 
 }
-
-/* Keeps the inner hero content left-heavy with a specific starting gap */
 .hero-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 1100px; 
-    margin-left: 60px; /* Kept your original left side gap here */
-    padding: 50px 20px; 
     gap: 40px;
-    box-sizing: border-box;
-    color: #EDEDED;
+    padding: 20px 0;
 }
-
 .hero-content {
     flex: 1;
     max-width: 600px;
 }
-
 .hero-title {
-    font-size: clamp(2.5rem, 4.5vw, 4rem);
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
     font-weight: 700;
     line-height: 1.1;
     margin: 0 0 12px 0;
     letter-spacing: -1px;
 }
-
 .hero-subtitle {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 200;
     color: #B0B0B0;
     margin: 0 0 30px 0;
 }
-
-.hero-btn {
-    display: inline-block;
-    text-decoration: none;
-    color: #161616;
-    background-color: #EDEDED;
-    padding: 12px 28px;
-    border-radius: 25px;
-    font-size: 16px;
-    font-weight: 500;
-    transition: opacity 0.2s ease;
+.user-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 24px;
+    border: 1px solid rgba(237, 237, 237, 0.2); 
+    border-radius: 30px; 
+    font-size: 1.1rem;
+    color: #EDEDED;
+    background-color: rgba(237, 237, 237, 0.05); 
+    width: fit-content;
 }
 
-.hero-btn:hover {
-    opacity: 0.8;
-    cursor: url('../resources/hovermouse.png'), pointer;
+.user-status-badge strong {
+    font-weight: 700;
 }
 
-/* --- Hero Image Wrapper --- */
+.status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #4ade80;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.6); 
+}
 .hero-image-frame {
-    display: block;
-    margin-left: auto; 
     position: relative;
-    
-    /* 🛠️ CUSTOMIZE THIS VALUE BELOW:
-       A negative right value pushes the image out of the window frame.
-       -50px means it sticks out by 50px. Change it to -100px, -150px, etc., 
-       to cut off as much of the image as you want! */
-    right: -80px; 
+    padding: 15px;
+}
+.hero-image-frame::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    bottom: 15px;
+    left: -15px;
+    right: -15px;
+    border-top: 1px solid rgba(237, 237, 237, 0.4);
+    border-bottom: 1px solid rgba(237, 237, 237, 0.4);
+    pointer-events: none;
+}
+.hero-image-frame::after {
+    content: '';
+    position: absolute;
+    top: -15px;
+    bottom: -15px;
+    left: 15px;
+    right: 15px;
+    border-left: 1px solid rgba(237, 237, 237, 0.4);
+    border-right: 1px solid rgba(237, 237, 237, 0.4);
+    pointer-events: none;
 }
 
-.hero-img {
+.login-status {
+    font-size: 1rem;
+    color: #B0B0B0;
+    margin-top: 20px;
+    
+}
+
+.hero-image {
     display: block;
     width: 100%;
-    max-width: 420px; 
+    max-width: 400px;
     height: auto;
     object-fit: cover;
+    border-radius: 10px;
 }
-
-/* ==========================================================================
-   Dashboard Boxes Container (🎯 ONLY THIS IS CENTERED)
-   ========================================================================== */
-.dashboard {
-    width: 100%;
-    max-width: 1100px; 
-    margin: 40px auto; /* 💡 This perfectly centers ONLY your dashboard cards */
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    box-sizing: border-box;
-    color: #EDEDED; 
-}
-
-/* --- Profile Card Styling --- */
 .profile-card {
     border: 1px solid #EDEDED; 
     border-radius: 40px;
@@ -106,42 +107,35 @@
     position: relative;
     box-sizing: border-box;
 }
-
 .profile-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
 }
-
 .profile-card h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem); 
+    font-size: clamp(1.8rem, 4vw, 2.8rem); 
     font-weight: 700;
     margin: 0 0 10px 0;
     letter-spacing: -0.5px;
 }
-
 .class-group {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 700;
     margin: 0;
 }
-
 .year-badge {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 400;
     position: absolute;
     bottom: 40px;
     right: 40px;
 }
-
-/* --- Stats Grid Styling --- */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
     width: 100%;
 }
-
 .card {
     border: 1px solid #EDEDED;
     border-radius: 40px;
@@ -153,15 +147,12 @@
     box-sizing: border-box;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
 .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
-
-/* --- Card Typography --- */
 .large-num {
-    font-size: 4.5rem;
+    font-size: 5rem;
     font-weight: 700;
     line-height: 1;
     margin-bottom: 12px;
@@ -169,61 +160,28 @@
 }
 
 .card-label {
-    font-size: 1.1rem;
+    font-size: 1.4rem; 
     font-weight: 600;
     display: block;
 }
 
 .subtitle {
-    font-size: 1.3rem;
+    font-size: 1.4rem; 
     margin-bottom: 16px;
 }
 
 .status-text {
-    font-size: 3.2rem;
+    font-size: 3.5rem; 
     font-weight: 700;
     line-height: 1;
     display: block;
 }
 
 .subject-title {
-    font-size: 1.4rem;
-    margin-bottom: 8px;
+    font-size: 1.4rem; 
+    margin-bottom: 12px;
 }
-
-/* ==========================================================================
-   Responsive Adjustments
-   ========================================================================== */
-@media (max-width: 850px) {
-    .dashboard {
-        margin: 20px auto;
-        padding: 0 20px;
-    }
-
-    .hero-section {
-        margin: 0 auto;
-        flex-direction: column;
-        text-align: center;
-        gap: 30px;
-        padding: 30px 20px;
-    }
-
-    .hero-image-frame {
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .stats-grid {
-        grid-template-columns: 1fr; 
-    }
-    
-    .year-badge {
-        position: static;
-        display: block;
-        margin-top: 20px;
-    }
-    
-    .profile-card, .card {
-        padding: 30px; 
-    }
+.subject-title {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
 }
