@@ -15,8 +15,7 @@ CREATE TABLE users (
     mot_passe VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE niveau_scolaire (
-    id UUID PRIMARY KEY, 
+CREATE TYPE niveau_scolaire AS (
     classe VARCHAR(50),
     annee INT,
     niveau VARCHAR(50),
@@ -34,7 +33,7 @@ CREATE TABLE professeur (
 
 CREATE TABLE etudiant (
     id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-    niveau_scolaire_id UUID REFERENCES niveau_scolaire(id)
+    niveau_scolaire_info niveau_scolaire 
 );
 
 
@@ -43,7 +42,7 @@ CREATE TABLE enseignement (
     id UUID PRIMARY KEY,
     nom VARCHAR(255),
     date_debut TIMESTAMP,
-    niveau_scolaire_id UUID REFERENCES niveau_scolaire(id),
+    niveau_scolaire_info niveau_scolaire,
     professeur_id UUID REFERENCES professeur(id)
 );
 
