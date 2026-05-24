@@ -8,9 +8,20 @@
             <li><a href="Examens.php" class="<?= $current === 'PFE.php' ? 'active' : '' ?>">Examens</a></li>
             <li><a href="Reclamation.php" class="<?= $current === 'PFE.php' ? 'active' : '' ?>">Reclamation</a></li>
         </ul>
-        </ul>
+    </ul>
     </nav>
-    <div class="header-right">
-        <a href="login.php" class="connect-btn">Connecter</a>
-    </div>
+
+<?php
+    if (isset($_SESSION['user_id'])) {
+        echo '<div class="header-right">';
+        echo '<a href="inbox.php" class="inbox-btn">Notif.</a>';
+        echo '</div>';
+    } else {
+        echo '<div class="header-right">';
+        echo '<a href="login.php" class="connect-btn">Connecter</a>';
+        echo '</div>';
+    }
+?>
+
 </header>
+<img src="resources/brushLigne.png" alt="" class="header-line">
