@@ -12,21 +12,22 @@
 <body>
     <?php include 'navbar.php'; ?>
 
-    <div class="hero-outer-container">
+    <main class="dashboard">
+
         <section class="hero-section">
             <div class="hero-content">
                 <h1 class="hero-title">INSAT All In One Platform</h1>
-                <p class="hero-subtitle">Jusqu'ici tout va bien.</p>
-                <a href="#" class="hero-btn">DoSomething</a>
+                <p class="hero-subtitle">Jusqu'ici tout va bien</p>
+                <div class="user-status-badge">
+                    <span class="status-dot"></span>
+                            Connecté en tant que : <strong>Étudiant</strong>
+                </div>
             </div>
 
             <div class="hero-image-frame">
-                <img src="resources/vayouza.png" alt="Platform Visual" class="hero-img">
+                <img src="resources/insat mel fou9.png" alt="Hero Image" class="hero-image">
             </div>
         </section>
-    </div>
-
-    <main class="dashboard">
 
         <section class="profile-card">
             <div class="profile-header">
@@ -38,18 +39,21 @@
 
         <section class="stats-grid">
             <div class="card">
-                <span class="card-value large-num">10</span>
                 <span class="card-label">Notes Acquises</span>
+                <span class="card-value large-num">10</span>
+                
             </div>
 
             <div class="card">
-                <span class="card-label subtitle">Dernière Réclam:</span>
-                <span class="card-value status-text">Traité</span>
+                <span class="card-label subtitle">Dernière Réclam.</span>
+                <span class="card-value status-text">Traitée</span>
             </div>
 
             <div class="card">
-                <span class="card-label subject-title">Java</span>
-                <span class="card-value large-num">14</span>
+                <span class="card-label subject-title">Dernière Note</span>
+                <span class="card-value status-text">Java - 14</span>
+                
+
             </div>
         </section>
 
