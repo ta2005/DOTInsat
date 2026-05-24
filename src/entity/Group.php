@@ -7,6 +7,10 @@
       ){
 	 $this->date_creation=$date_creation ?? new DateTimeImmutable();
       }
+
+      public function getNom(){
+	 return $this->nom;
+      }
       public function __toString(): string {
 	 return sprintf(
 	    "Group: %s | Created: %s | Mod ID: %s",
