@@ -4,6 +4,7 @@ CREATE TYPE type_controle AS ENUM ('DS', 'EXAM', 'TP');
 CREATE TYPE statut_note AS ENUM ('EN_ATTENTE', 'CORRIGE', 'VERIFIE', 'CONTESTE');
 CREATE TYPE statut_requete AS ENUM ('EN_ATTENTE', 'ACCEPTEE', 'REFUSEE');
 CREATE TYPE type_vote AS ENUM ('UPVOTE', 'DOWNVOTE');
+CREATE TYPE format AS ENUM ('QCM', 'MIX' , 'NON_QCM');
 
 -- Abstract Base Class: User
 CREATE TABLE users (
@@ -51,6 +52,7 @@ CREATE TABLE controle (
     note NUMERIC(5, 2),
     type type_controle,
     statut statut_note,
+    format format,
     enseignement_id INT REFERENCES enseignement(id)
 );
 
