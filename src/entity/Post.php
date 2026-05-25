@@ -14,6 +14,11 @@
       public function getIdUser(){
 	 return $this->id_user;
       }
+
+      public function getIdGroup(){
+	 return $this->id_group;
+      }
+
       public function getContenu(){
 	 return $this->contenu;
       }
