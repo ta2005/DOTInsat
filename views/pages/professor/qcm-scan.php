@@ -93,9 +93,21 @@
 <body>
 
     <div class="container" style="padding: 30px; max-width: 1300px; margin: 0 auto;">
-        <h2>Automated Sheet Processing Stream Engine</h2>
-        <p class="text-muted">Upload or drop high-contrast student bubble sheet images here to calculate grades in
-            real-time and automatically sync them with your database.</p>
+        <div
+            style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e9ecef; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); display: flex; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column;">
+                <label style="font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #495057;">Select Exam
+                    Context (ID)</label>
+                <input type="number" id="scanExamId" min="1" value="14" required
+                    style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem;">
+            </div>
+            <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column;">
+                <label style="font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #495057;">Student ID
+                    (CIN/Serial)</label>
+                <input type="number" id="scanStudentId" min="1" value="1002" required
+                    style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem;">
+            </div>
+        </div>
 
         <div class="scanner-layout">
 

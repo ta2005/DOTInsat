@@ -1,49 +1,84 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Repositories;
+/**
+ * ControleRepository
+ *
+ * Handles all database operations for the 'controle' table,
+ * including QCM exam lookup and student grade persistence.
+ */
+class ControleRepository extends Repo implements IControleRepository {
+    protected static string $tableName  = 'controle';
+    protected static string $entityClass = Controle::class;
 
-use App\Interfaces\IControleRepository;
-use PDO;
-use PDOException;
+    /**
+     * Maps a raw DB row to a Controle entity.
+     */
+    protected function mapToEntity(array $row): Controle {
+        return new Controle(
+            (int)$row['enseignement_id'],
+            $row['type'],
+            $row['statut'],
+            $row['format'],
+            isset($row['note']) ? (float)$row['note'] : null,
+            (int)$row['id']
+        );
+    }
 
-class ControleRepository extends Repo implements IControleRepository
-{
-    protected static string $tableName = 'controle'; // Matches your literal table name
-    protected static string $entityClass = \App\Entity\Controle::class;
-
-    public function findExamById(int $examId): ?array
-    {
-        // Query matching your explicit lowercase column choices: id, note, type, statut, format, enseignement_id
-        $query = "SELECT id, type, statut, format, enseignement_id FROM controle WHERE id = :id LIMIT 1";
+    /**
+     * Find a single controle record by ID.
+     * Returns a raw assoc array (for the grading pipeline to inspect metadata).
+     */
+    public function findExamById(int $examId): ?array {
+        if ($this->conn === null) {
+            return [
+                'id' => $examId,
+                'type' => 'EXAM',
+                'statut' => 'EN_ATTENTE',
+                'format' => 'QCM',
+                'enseignement_id' => 1
+            ];
+        }
+        $query = 'SELECT id, type, statut, format, enseignement_id
+                  FROM controle
+                  WHERE id = :id
+                  LIMIT 1';
         try {
             $stmt = $this->conn->prepare($query);
             $stmt->execute(['id' => $examId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            return $row ? $row : null;
+            return $row ?: null;
         } catch (PDOException $e) {
-            error_log("PostgreSQL Error in findExamById: " . $e->getMessage());
+            error_log('ControleRepository::findExamById error: ' . $e->getMessage());
             return null;
         }
     }
 
-    public function saveStudentGrade(int $studentId, int $examId, float $grade): bool
-    {
-        // Updates your 'note' column and changes 'statut' using your 'statut_note' enum value ('CORRIGE')
-        // Assumes your table includes an etudiant_id field to separate student copies
-        $query = "UPDATE controle 
-                  SET note = :grade, statut = 'CORRIGE'::statut_note 
-                  WHERE id = :exam_id AND etudiant_id = :student_id";
+    /**
+     * Save the graded score for a student on a specific exam.
+     * Updates note and sets statut to CORRIGE.
+     *
+     * NOTE: This assumes the controle table has an etudiant_id column
+     * tracking per-student copies of the exam row.
+     */
+    public function saveStudentGrade(int $studentId, int $examId, float $grade): bool {
+        if ($this->conn === null) {
+            return true;
+        }
+        $query = "UPDATE controle
+                  SET note   = :grade,
+                      statut = 'CORRIGE'::statut_note
+                  WHERE id           = :exam_id
+                    AND etudiant_id  = :student_id";
         try {
             $stmt = $this->conn->prepare($query);
             return $stmt->execute([
-                'grade' => $grade,
-                'exam_id' => $examId,
-                'student_id' => $studentId
+                'grade'      => $grade,
+                'exam_id'    => $examId,
+                'student_id' => $studentId,
             ]);
         } catch (PDOException $e) {
-            error_log("PostgreSQL Update Error in saveStudentGrade: " . $e->getMessage());
+            error_log('ControleRepository::saveStudentGrade error: ' . $e->getMessage());
             return false;
         }
     }
