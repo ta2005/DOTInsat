@@ -15,7 +15,6 @@ const updateSelection = () => {
         case "2":
         case "3":
         case "4":
-        case "5":
             studyField.innerHTML = `
                 <option value="none">Select Field</option>
                 <option value="GL">GL</option>
