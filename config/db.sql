@@ -61,9 +61,10 @@ CREATE TABLE reclamation (
     message TEXT,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     type_controle type_controle,
-    statut statut_reclamation,
+    statut statut_requete,
     enseignement_id INT REFERENCES enseignement(id),
-    etudiant_id INT REFERENCES etudiant(id)
+    etudiant_id INT REFERENCES etudiant(id),
+    admin_id INT REFERENCES admin(id);
 );
 
 CREATE TABLE demande (
@@ -71,8 +72,9 @@ CREATE TABLE demande (
     message TEXT,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     type type_demande,
-    statut statut_demande,
-    user_id INT REFERENCES users(id)
+    statut statut_requete,
+    user_id INT REFERENCES users(id),
+    admin_id INT REFERENCES admin(id)
 );
 
 --Social & Community Entities
