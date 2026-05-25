@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+namespace App\Services;
 
 /**
  * QcmGradingService
@@ -21,10 +22,12 @@ declare(strict_types=1);
  *   }
  * }
  */
-class QcmGradingService {
+class QcmGradingService
+{
     private string $storagePath;
 
-    public function __construct() {
+    public function __construct()
+    {
         // Absolute path: from app/Services up two levels to project root
         $this->storagePath = __DIR__ . '/../../storage/qcm_keys';
     }
@@ -32,7 +35,8 @@ class QcmGradingService {
     /**
      * Returns the full file-system path for a given exam's master-key JSON.
      */
-    public function keyFilePath(int $examId): string {
+    public function keyFilePath(int $examId): string
+    {
         return sprintf('%s/exam_%d.json', $this->storagePath, $examId);
     }
 
@@ -42,7 +46,8 @@ class QcmGradingService {
      * @param array $payload  The decoded JSON body from the frontend submit.
      * @return bool           True on success, false on failure.
      */
-    public function saveTemplate(array $payload): bool {
+    public function saveTemplate(array $payload): bool
+    {
         if (
             empty($payload['exam_id'])
             || empty($payload['grading_matrix'])
@@ -52,7 +57,7 @@ class QcmGradingService {
             return false;
         }
 
-        $examId   = (int) $payload['exam_id'];
+        $examId = (int) $payload['exam_id'];
         $filePath = $this->keyFilePath($examId);
 
         // Ensure the storage directory exists
@@ -76,7 +81,8 @@ class QcmGradingService {
      * @param array $studentAnswers Associative array: ['q1' => 'A', 'q2' => 'C', ...]
      * @return float|null           Calculated score, or null if the key file is missing/corrupt.
      */
-    public function calculateScore(int $examId, array $studentAnswers): ?float {
+    public function calculateScore(int $examId, array $studentAnswers): ?float
+    {
         $filePath = $this->keyFilePath($examId);
 
         if (!file_exists($filePath)) {
@@ -101,7 +107,7 @@ class QcmGradingService {
         $totalScore = 0.0;
 
         foreach ($blueprint['grading_matrix'] as $questionKey => $metadata) {
-            $correctChoice  = $metadata['correct_choice'];
+            $correctChoice = $metadata['correct_choice'];
             $questionWeight = (float) $metadata['weight'];
 
             if (

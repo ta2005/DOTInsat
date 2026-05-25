@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Interfaces\IControleRepo;
 use PDO;
 use PDOException;
+use App\Entity\Controle;
 class ControleRepo extends Repo implements IControleRepo
 {
     protected static string $tableName = 'controle';
