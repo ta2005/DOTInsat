@@ -40,7 +40,7 @@ $matieresS2 = $reqS2->fetchAll(PDO::FETCH_ASSOC);
             <option value="2">2nd</option>
             <option value="3">3rd</option>
             <option value="4">4th</option>
-            <option value="5">5th</option>
+            
         </select>
         
         Study Field: 
