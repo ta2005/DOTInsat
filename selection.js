@@ -9,7 +9,6 @@ const updateSelection = () => {
             studyField.innerHTML = `
                 <option value="none">Select Field</option>
                 <option value="MPI">MPI</option>
-                <option value="CBA">CBA</option>
             `; 
             break;
             
@@ -23,8 +22,6 @@ const updateSelection = () => {
                 <option value="RT">RT</option>
                 <option value="IMI">IMI</option>
                 <option value="IIA">IIA</option>
-                <option value="CH">CH</option>
-                <option value="BIO">BIO</option>
             `;
             break;
             
@@ -52,12 +49,8 @@ const load = () => {
             let pageLink = document.createElement("a");
             pageLink.setAttribute("href", "mpiweb.php"); 
             pageLink.click();
-        } else if (field === "CBA") {
-            let pageLink = document.createElement("a");
-            pageLink.setAttribute("href", "cbaweb.php"); 
-            pageLink.click();
         }
-    } else {
+    } else if (year === "2") {
         let pageLink = document.createElement("a");
         switch (field) {
             case "GL":
@@ -76,12 +69,45 @@ const load = () => {
                 pageLink.setAttribute("href", "iia2web.php"); 
                 pageLink.click();
                 break;
-            case "CH":
-                pageLink.setAttribute("href", "ch2web.php"); 
+        }
+    } else if (year === "3") {
+        let pageLink = document.createElement("a");
+        switch (field) {
+            case "GL":
+                pageLink.setAttribute("href", "gl3web.php");
                 pageLink.click();
                 break;
-            case "BIO":
-                pageLink.setAttribute("href", "bio2web.php"); 
+            case "RT":
+                pageLink.setAttribute("href", "rt3web.php"); 
+                pageLink.click();
+                break;
+            case "IMI":
+                pageLink.setAttribute("href", "imi3web.php"); 
+                pageLink.click();
+                break;
+            case "IIA":
+                pageLink.setAttribute("href", "iia3web.php"); 
+                pageLink.click();
+                break;
+            
+        }
+    } else if (year === "4") {
+        let pageLink = document.createElement("a");
+        switch (field) {
+            case "GL":
+                pageLink.setAttribute("href", "gl4web.php");
+                pageLink.click();
+                break;
+            case "RT":
+                pageLink.setAttribute("href", "rt4web.php"); 
+                pageLink.click();
+                break;
+            case "IMI":
+                pageLink.setAttribute("href", "imi4web.php"); 
+                pageLink.click();
+                break;
+            case "IIA":
+                pageLink.setAttribute("href", "iia4web.php"); 
                 pageLink.click();
                 break;
         }
