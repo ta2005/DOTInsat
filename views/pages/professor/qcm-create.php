@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Professor Panel - Create QCM Master Template</title>
+    <title>Panneau Professeur - Créer un Modèle Maître QCM</title>
     <link rel="stylesheet" href="/css/main.css">
     <style>
         /* Scoped styles for the Professor QCM Generator Engine */
@@ -239,62 +239,64 @@
 <body>
 
     <div class="container no-print-layer" style="padding: 30px; max-width: 1200px; margin: 0 auto;">
-        <h2>Create New Automated QCM Pattern Key</h2>
-        <p class="text-muted">Set up structural parameters for your evaluation sheet. The engine compiles an interactive
-            answers matrix and outputs a custom grid blueprint matching your configurations.</p>
+        <h2>Créer un Nouveau Modèle de Clé QCM Automatisé</h2>
+        <p class="text-muted">Configurez les paramètres structurels de votre feuille d'évaluation. Le moteur compile une
+            matrice de réponses interactive et produit un schéma de grille personnalisé correspondant à vos
+            configurations.</p>
 
         <div class="config-card">
             <div class="setup-row">
                 <div class="input-wrapper">
-                    <label for="controleId">Exam Context Association (PostgreSQL ID)</label>
-                    <input type="number" id="controleId" min="1" placeholder="e.g., 14" required>
+                    <label for="controleId">Association du Contexte d'Examen (ID PostgreSQL)</label>
+                    <input type="number" id="controleId" min="1" placeholder="ex: 14" required>
                 </div>
                 <div class="input-wrapper">
-                    <label for="totalQuestions">Number of Questions (10 - 40)</label>
+                    <label for="totalQuestions">Nombre de Questions (10 - 40)</label>
                     <input type="number" id="totalQuestions" min="10" max="40" value="20" required>
                 </div>
                 <div class="input-wrapper">
-                    <label for="choicesPerQuestion">Options Per Question (2 - 5)</label>
+                    <label for="choicesPerQuestion">Options par Question (2 - 5)</label>
                     <input type="number" id="choicesPerQuestion" min="2" max="5" value="4" required>
                 </div>
             </div>
-            <button type="button" id="btnInitializeWorkspace" class="btn btn-primary">Build Configuration
-                Matrix</button>
+            <button type="button" id="btnInitializeWorkspace" class="btn btn-primary">Construire la Matrice de
+                Configuration</button>
         </div>
 
         <form id="qcmMasterKeyForm" style="display:none;">
-            <h3>Assign Target Answers & Point Weights</h3>
-            <p class="text-muted" style="margin-bottom: 20px;">Provide the right choice values and the custom
-                coefficient score points allocated for each question row.</p>
+            <h3>Attribuer les Réponses Cibles et les Pondérations de Points</h3>
+            <p class="text-muted" style="margin-bottom: 20px;">Fournissez les valeurs de choix corrects et le
+                coefficient de score personnalisé alloué pour chaque ligne de question.</p>
 
             <div id="interactiveMatrixWorkspace"></div>
 
             <div class="control-actions">
-                <button type="submit" class="btn btn-success">Commit Master Key Blueprint</button>
-                <button type="button" id="TriggerPrintJob" class="btn btn-secondary">Print Empty Sheet Template</button>
+                <button type="submit" class="btn btn-success">Valider le Schéma de Clé Maître</button>
+                <button type="button" id="TriggerPrintJob" class="btn btn-secondary">Imprimer le Modèle de Feuille
+                    Vierge</button>
             </div>
         </form>
     </div>
 
     <div id="printableBubbleDocument">
         <div class="doc-title-block">
-            <h1>EXAM ANSWER SHEET - BUBBLE MATRIX READABLE TEMPLATE</h1>
-            <p>Instructions: Darken the circles completely using a dark pen. Ensure your identity fields are explicitly
-                distinct.</p>
+            <h1>FEUILLE DE RÉPONSES D'EXAMEN - MODÈLE LISIBLE DE MATRICE BULLES</h1>
+            <p>Instructions : Noircissez complètement les cercles avec un stylo foncé. Assurez-vous que vos champs
+                d'identité sont explicitement distincts.</p>
         </div>
 
         <div class="student-info-grid">
             <div>
-                <p><strong>STUDENT ID (CIN/SERIAL):</strong> _______________________</p>
-                <p><strong>LAST NAME / NOM:</strong> ____________________________</p>
-                <p><strong>FIRST NAME / PRENOM:</strong> _________________________</p>
+                <p><strong>NUMÉRO D'ÉTER/SÉRIE :</strong> _______________________</p>
+                <p><strong>NOM DE FAMILLE :</strong> ____________________________</p>
+                <p><strong>PRÉNOM :</strong> _________________________</p>
             </div>
             <div>
-                <p><strong>EVALUATION IDENTIFIER:</strong> <span id="lblDocumentExamRef"
+                <p><strong>IDENTIFIANT D'ÉVALUATION :</strong> <span id="lblDocumentExamRef"
                         style="font-family: monospace; font-weight: bold; background: #e9ecef; padding: 2px 6px; border-radius:3px;">#--</span>
                 </p>
-                <p><strong>CLASS / FILIÈRE:</strong> __________________________</p>
-                <p><strong>DATE:</strong> ______________________</p>
+                <p><strong>CLASSE / FILÈRE :</strong> __________________________</p>
+                <p><strong>DATE :</strong> ______________________</p>
             </div>
         </div>
 

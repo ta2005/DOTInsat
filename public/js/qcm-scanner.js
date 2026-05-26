@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function processIncomingImageFile(file) {
-        writeLog(`Loading selected image file: ${file.name}`);
+        writeLog(`Chargement du fichier image sélectionné : ${file.name}`);
         const reader = new FileReader();
         
         reader.onload = (event) => {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
                 canvas.style.display = 'block';
-                writeLog(`Image dimensions matched: ${img.width}x${img.height}px.`);
+                writeLog(`Dimensions de l'image correspond : ${img.width}x${img.height}px.`);
                 
                 // Execute OMR Scan Engine
                 executeOpticalBubbleAnalysis(img);
@@ -65,9 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
      * Analyzes relative layout matrices to isolate selected bubbles.
      */
     async function executeOpticalBubbleAnalysis(imgSource) {
-        pillStatus.innerText = "Analyzing Pixels...";
+        pillStatus.innerText = "Analyse des Pixels...";
         pillStatus.className = "status-pill";
-        writeLog("Extracting operational tracking data variables...");
+        writeLog("Extraction des variables de données de suivi opérationnel...");
 
         const mockDetectedExamId = parseInt(document.getElementById('scanExamId').value) || 14; 
         const mockDetectedStudentId = parseInt(document.getElementById('scanStudentId').value) || 1002; 
@@ -77,23 +77,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // First, fetch template context to get exact question count and choices per question
         try {
-            writeLog("Fetching template configurations to calibrate grid dimensions...");
+            writeLog("Récupération des configurations de modèles pour étalonner les dimensions de la grille...");
             const response = await fetch(`/api/qcm/get-template?exam_id=${mockDetectedExamId}`);
             const resParsed = await response.json();
             if (resParsed.success && resParsed.data) {
                 mockTotalQuestions = resParsed.data.total_questions || 10;
                 mockChoicesCount = resParsed.data.choices_per_question || 2;
-                writeLog(`Grid calibration active: ${mockTotalQuestions} questions, ${mockChoicesCount} choices per question.`);
+                writeLog(`Étalonnage de grille actif : ${mockTotalQuestions} questions, ${mockChoicesCount} choix par question.`);
             }
         } catch (e) {
-            writeLog("Warning: Could not fetch template config. Calibrating with standard defaults.");
+            writeLog("Avertissement : Impossible de récupérer la configuration du modèle. Étalonnage avec les valeurs par défaut standard.");
         }
 
         lblStudent.innerText = `Etudiant ID: ${mockDetectedStudentId} (Exam Context #${mockDetectedExamId})`;
-        writeLog(`Targeting Configuration File Blueprint: exam_${mockDetectedExamId}.json`);
+        writeLog(`Fichier de configuration cible Blueprint : exam_${mockDetectedExamId}.json`);
 
         const compiledStudentAnswers = {};
-        writeLog("Executing real Optical Mark Recognition (OMR) pixel scanner...");
+        writeLog("Exécution du véritable scanner de reconnaissance optique des marques (OMR) de pixels...");
 
         const W = canvas.width;
         const H = canvas.height;
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (fallbackMode) {
-            writeLog(`Warning: Grid calibration could not resolve all bands. Falling back to uniform grid calculation.`);
+            writeLog(`Avertissement : L'étalonnage de grille n'a pas pu résoudre tous les bandes. Basculement au calcul de grille uniforme.`);
             let minX = W, minY = H, maxX = 0, maxY = 0;
             let foundAny = false;
             for (let y = padY; y < H - padY; y++) {
@@ -238,8 +238,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             if (!foundAny) {
-                writeLog("Error: Could not locate active sheet border lines. Ensure image is high-contrast.");
-                pillStatus.innerText = "Scan Failed";
+                writeLog("Erreur : Impossible de localiser les lignes de bordure active de la feuille. Assurez-vous que l'image est à contraste élevé.");
+                pillStatus.innerText = "Échec de l'analyse";
                 return;
             }
             minX = Math.max(0, minX - 10);
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         } else {
-            writeLog(`Active OMR grid boundaries resolved: ${rowIntervals.length} row bands, ${colIntervals.length} column bands.`);
+            writeLog(`Limites de grille OMR actives résolues : ${rowIntervals.length} bandes de lignes, ${colIntervals.length} bandes de colonnes.`);
             // Highlight detected grid boundaries in green
             ctx.strokeStyle = '#28a745';
             ctx.lineWidth = 2;
@@ -379,9 +379,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText(selectedChoice, bestChoice.scanX1 + bestChoice.scanW / 2 - 4, bestChoice.scanY1 - 2);
         }
 
-        writeLog("OMR Scanner successfully calculated answers from circle density profiles!");
+        writeLog("Le scanner OMR a calculé avec succès les réponses à partir des profils de densité de cercles!");
 
-        writeLog(`Successfully isolated student answers matrix. Dispatching to controller network pipe...`);
+        writeLog(`Matrice de réponses étudiantes isolée avec succès. Envoi vers le canal de conduit réseau du contrôleur...`);
         await dispatchGradesToControllerPipeline(mockDetectedExamId, mockDetectedStudentId, compiledStudentAnswers);
     }
 
@@ -409,23 +409,23 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 result = JSON.parse(responseText);
             } catch (e) {
-                writeLog(`Fatal Backend Parse Error: Encountered invalid structural response output markup.`);
+                writeLog(`Erreur d'Analyse Backend Fatale : Balisage de sortie de réponse structurelle invalide rencontré.`);
                 console.error("Raw markup dump error context:", responseText);
                 return;
             }
 
             if (result.success) {
-                pillStatus.innerText = "Synced successfully";
+                pillStatus.innerText = "Synchronisé avec succès";
                 pillStatus.className = "status-pill success";
                 lblScore.innerText = parseFloat(result.data.final_grade).toFixed(2);
-                writeLog(`[Success] Grade calculation verified! Score written: ${result.data.final_grade} pts.`);
+                writeLog(`[Succès] Calcul de note vérifié ! Note écrite : ${result.data.final_grade} pts.`);
             } else {
-                pillStatus.innerText = "Sync Failed";
-                writeLog(`[Error] Request rejected by endpoint matrix: ${result.message}`);
+                pillStatus.innerText = "Échec de la synchronisation";
+                writeLog(`[Erreur] Demande rejetée par la matrice de point d'accès : ${result.message}`);
             }
 
         } catch (err) {
-            writeLog(`[Critical Error] Failed to complete async network transport channel.`);
+            writeLog(`[Erreur Critique] Impossible de terminer le canal de transport réseau asynchrone.`);
             console.error(err);
         }
     }

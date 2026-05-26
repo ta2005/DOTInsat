@@ -15,9 +15,9 @@
     <div class="hero-outer-container">
         <section class="hero-section">
             <div class="hero-content">
-                <h1 class="hero-title">INSAT All In One Platform</h1>
+                <h1 class="hero-title">Plateforme Tout-en-Un INSAT</h1>
                 <p class="hero-subtitle">Jusqu'ici tout va bien.</p>
-                <a href="#" class="hero-btn">DoSomething</a>
+                <a href="#" class="hero-btn">Faire Quelque Chose</a>
             </div>
 
             <div class="hero-image-frame">

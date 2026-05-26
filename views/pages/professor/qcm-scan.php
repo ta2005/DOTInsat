@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Professor Panel - Automated QCM Scanner Engine</title>
+    <title>Panneau Professeur - Moteur de Scanner QCM Automatisé</title>
     <link rel="stylesheet" href="/css/main.css">
     <style>
         .scanner-layout {
@@ -96,14 +96,14 @@
         <div
             style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e9ecef; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); display: flex; gap: 20px; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column;">
-                <label style="font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #495057;">Select Exam
-                    Context (ID)</label>
+                <label style="font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #495057;">Sélectionnez le
+                    Contexte d'Examen (ID)</label>
                 <input type="number" id="scanExamId" min="1" value="14" required
                     style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem;">
             </div>
             <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column;">
-                <label style="font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #495057;">Student ID
-                    (CIN/Serial)</label>
+                <label style="font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #495057;">ID Étudiant
+                    (CIN/Série)</label>
                 <input type="number" id="scanStudentId" min="1" value="1002" required
                     style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem;">
             </div>
@@ -120,38 +120,39 @@
                         <path
                             d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
                     </svg>
-                    <h4>Drag & Drop Student Sheet Image Here</h4>
-                    <p class="text-muted">Supports PNG, JPG, or JPEG source files</p>
+                    <h4>Glissez et Déposez l'Image de la Feuille Étudiant Ici</h4>
+                    <p class="text-muted">Supporte les fichiers PNG, JPG ou JPEG</p>
                     <input type="file" id="fileFallbackInput" accept="image/*" style="display: none;">
                     <button type="button" class="btn btn-primary"
-                        onclick="document.getElementById('fileFallbackInput').click()">Browse Files</button>
+                        onclick="document.getElementById('fileFallbackInput').click()">Parcourir les Fichiers</button>
                 </div>
 
                 <canvas id="processingCanvas"></canvas>
             </div>
 
             <div class="results-sidebar">
-                <h3>Processing Console</h3>
+                <h3>Console de Traitement</h3>
                 <hr>
                 <div style="margin-bottom: 15px;">
-                    <label><strong>Current Student Session ID:</strong></label>
-                    <div id="lblSessionStudent" style="font-size: 1.2rem; font-weight: bold; color: #495057;">Pending
-                        Scan...</div>
+                    <label><strong>ID de Session Étudiant Actuel :</strong></label>
+                    <div id="lblSessionStudent" style="font-size: 1.2rem; font-weight: bold; color: #495057;">Scan en
+                        Attente...</div>
                 </div>
 
                 <div style="margin-bottom: 15px;">
-                    <label><strong>Execution Status:</strong></label>
-                    <div><span id="pillStatus" class="status-pill">Awaiting Target Payload</span></div>
+                    <label><strong>Statut d'Exécution :</strong></label>
+                    <div><span id="pillStatus" class="status-pill">En Attente de Charge Utile Cible</span></div>
                 </div>
 
                 <div>
-                    <label><strong>Calculated Return Grade Score:</strong></label>
+                    <label><strong>Score de Note de Retour Calculé :</strong></label>
                     <div><span id="lblCalculatedScore" class="score-badge">0.00</span></div>
                 </div>
 
-                <strong>System Engine Activity Log:</strong>
+                <strong>Journal d'Activité du Moteur Système :</strong>
                 <div id="logStream" class="log-stream">
-                    <div class="log-entry">[System] Core engine active. Awaiting image upload...</div>
+                    <div class="log-entry">[Système] Moteur principal actif. En attente du téléchargement d'image...
+                    </div>
                 </div>
             </div>
 

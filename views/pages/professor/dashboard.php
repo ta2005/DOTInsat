@@ -127,12 +127,12 @@
     </div>
 
     <div class="container" style="padding: 30px; max-width: 1400px; margin: 0 auto;">
-        <h2>Professor Management Hub</h2>
+        <h2>Centre de Gestion des Professeurs</h2>
         <hr>
 
         <div class="dashboard-grid">
             <div class="course-list">
-                <h3>My Courses</h3>
+                <h3>Mes Cours</h3>
                 <?php foreach ($courses as $c): ?>
                     <a href="?course_id=<?= $c['id'] ?>"
                         class="course-card <?= $c['id'] === $selectedCourseId ? 'active' : '' ?>">
@@ -143,23 +143,23 @@
 
             <div class="main-panel">
                 <div class="panel-header">
-                    <h3>Exams & Evaluations Log</h3>
+                    <h3>Journal des Examens et Évaluations</h3>
                     <?php if ($selectedCourseId > 0): ?>
-                        <button class="btn btn-primary" onclick="toggleModal(true)">+ Create New Exam</button>
+                        <button class="btn btn-primary" onclick="toggleModal(true)">+ Créer un Nouvel Examen</button>
                     <?php endif; ?>
                 </div>
 
                 <?php if (empty($exams)): ?>
-                    <p class="text-muted">No evaluation slots registered inside this educational path profile.</p>
+                    <p class="text-muted">Aucun créneau d'évaluation enregistré dans ce profil de parcours pédagogique.</p>
                 <?php else: ?>
                     <table class="exam-table">
                         <thead>
                             <tr>
-                                <th>Exam ID</th>
+                                <th>ID Examen</th>
                                 <th>Type</th>
-                                <th>Formatting Model</th>
-                                <th>Grading Status</th>
-                                <th>Global Mark</th>
+                                <th>Modèle de Formatage</th>
+                                <th>Statut de Notation</th>
+                                <th>Note Globale</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -170,14 +170,14 @@
                                     <td><span class="badge"><?= $exam['type'] ?></span></td>
                                     <td><code><?= $exam['format'] ?></code></td>
                                     <td><?= $exam['statut'] ?></td>
-                                    <td><?= $exam['note'] !== null ? $exam['note'] . ' / 20' : '<i>Not Evaluated</i>' ?></td>
+                                    <td><?= $exam['note'] !== null ? $exam['note'] . ' / 20' : '<i>Non Évalué</i>' ?></td>
                                     <td>
                                         <?php if ($exam['format'] !== 'NON_QCM'): ?>
                                             <a href="/professor/qcm/create?exam_id=<?= $exam['id'] ?>"
-                                                style="font-size: 0.85rem; color:#0d6efd; margin-right:10px;">Config Key</a>
+                                                style="font-size: 0.85rem; color:#0d6efd; margin-right:10px;">Configurer la Clé</a>
                                         <?php endif; ?>
                                         <a href="/professor/qcm/scan?exam_id=<?= $exam['id'] ?>"
-                                            style="font-size: 0.85rem; color:#198754;">Scan Sheets</a>
+                                            style="font-size: 0.85rem; color:#198754;">Scanner les Feuilles</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -190,13 +190,13 @@
 
     <div id="createExamModal" class="modal">
         <div class="modal-content">
-            <h4>Setup New Evaluation Parameters</h4>
+            <h4>Paramétrer une Nouvelle Évaluation</h4>
             <hr style="margin-bottom: 15px;">
             <form action="/professor/exam/create" method="POST">
                 <input type="hidden" name="enseignement_id" value="<?= $selectedCourseId ?>">
 
                 <div class="form-group">
-                    <label>Evaluation Target Profile (Type)</label>
+                    <label>Profil Cible d'Évaluation (Type)</label>
                     <select name="type" required>
                         <option value="DS">DS (Devoir de Contrôle)</option>
                         <option value="EXAM">EXAM (Examen Principal)</option>
@@ -205,7 +205,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Structural Formatting Model</label>
+                    <label>Modèle de Formatage Structurel</label>
                     <select name="format" required>
                         <option value="QCM">QCM (Fully Automated Bubble Mapping)</option>
                         <option value="MIX">MIX (Hybrid - Structural Questions + Manual Writing)</option>
@@ -214,8 +214,8 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                    <button type="button" class="btn btn-secondary" onclick="toggleModal(false)">Cancel</button>
-                    <button type="submit" class="btn btn-success">Initialize Profile</button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleModal(false)">Annuler</button>
+                    <button type="submit" class="btn btn-success">Initialiser le Profil</button>
                 </div>
             </form>
         </div>
@@ -231,7 +231,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('prompt_mix_qcm')) {
                 const mixExamId = urlParams.get('prompt_mix_qcm');
-                const userChoice = confirm(`Hybrid MIX evaluation profile #${mixExamId} initialized!\n\nWould you like to configure its optical QCM bubble answer matrix right now?`);
+                const userChoice = confirm(`Le profil d'évaluation MIX hybride #${mixExamId} a été initialisé!\n\nVoulez-vous configurer sa matrice de réponses à bulles QCM optiques maintenant?`);
                 if (userChoice) {
                     window.location.href = `/professor/qcm/create?exam_id=${mixExamId}`;
                 }

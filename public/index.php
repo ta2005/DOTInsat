@@ -81,10 +81,10 @@ if ($path === '' || $path === '/index.php') {
     // Dynamic entry point: executes tracking data lookup queries before serving layout view
     (new \App\Controllers\ProfessorDashboardController($pdo, $controleRepository))->index();
 
-} elseif ($path === '/qcm-create' || $path === '/professor/qcm-create') {
+} elseif ($path === '/qcm-create' || $path === '/professor/qcm-create' || $path === '/professor/qcm/create') {
     include __DIR__ . '/../views/pages/professor/qcm-create.php';
 
-} elseif ($path === '/qcm-scan' || $path === '/professor/qcm-scan') {
+} elseif ($path === '/qcm-scan' || $path === '/professor/qcm-scan' || $path === '/professor/qcm/scan') {
     include __DIR__ . '/../views/pages/professor/qcm-scan.php';
 
 } elseif ($path === '/student/home') {

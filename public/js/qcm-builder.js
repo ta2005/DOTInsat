@@ -20,15 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Explicit boundary input assertions
         if (!examIdStr || isNaN(totalQ) || isNaN(totalC)) {
-            alert('Please specify valid initialization variables before proceeding.');
+            alert('Veuillez spécifier des variables d\'initialisation valides avant de procéder.');
             return;
         }
         if (totalQ < 10 || totalQ > 40) {
-            alert('Question boundary verification constraint failed. Please pick a number between 10 and 40.');
+            alert('Échec de la vérification de la limite des questions. Veuillez choisir un nombre entre 10 et 40.');
             return;
         }
         if (totalC < 2 || totalC > 5) {
-            alert('Choices dimension constraint failed. Must be between 2 and 5 items.');
+            alert('Échec de la contrainte de dimension des choix. Doit être entre 2 et 5 éléments.');
             return;
         }
 
@@ -128,13 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const responseParsed = await response.json();
             if (responseParsed.success) {
-                alert('Master answer configuration blueprint registered successfully into flat storage files!');
+                alert('Le schéma de configuration de réponses maîtres a été enregistré avec succès dans les fichiers de stockage plat!');
             } else {
-                alert('Storage validation compilation failure exception: ' + responseParsed.message);
+                alert('Échec de la compilation de la validation du stockage : ' + responseParsed.message);
             }
         } catch (fault) {
             console.error('Network exception captured: ', fault);
-            alert('Communication stream aborted. Verify infrastructure logs.');
+            alert('Flux de communication interrompu. Vérifiez les journaux d\'infrastructure.');
         }
     });
 });
