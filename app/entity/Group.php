@@ -20,11 +20,5 @@
 	 );
       }
    }
-// 1. Using defaults (Date becomes today, Mod is null)
-/* $group1 = new Group("PHP Enthusiasts"); */
-/* echo $group1 . "<br>";  */
-/**/
-/* // 2. Providing everything */
-/* $group2 = new Group("Admin Group", new DateTimeImmutable("2023-01-01"), 42); */
-/* echo $group2; */
+
    ?>

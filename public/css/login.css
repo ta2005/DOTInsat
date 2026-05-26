@@ -1,0 +1,52 @@
+/* ============================================================
+   login.css — Page de connexion INSAT
+   ============================================================ */
+
+/* Bouton navbar actif sur la page login */
+.connect-btn--active {
+    border-color: #fff;
+    color: #fff;
+}
+
+/* Formulaire centré et limité en largeur */
+.login-form {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* Wrapper du champ mot de passe */
+.password-wrapper {
+    position: relative;
+}
+
+/* Input avec espace pour le bouton œil */
+.password-input {
+    padding-right: 44px;
+}
+
+/* Bouton afficher/masquer mot de passe */
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle:hover {
+    color: var(--text-secondary);
+}
+
+/* Bouton submit pleine largeur */
+.login-submit {
+    width: 100%;
+    justify-content: center;
+}

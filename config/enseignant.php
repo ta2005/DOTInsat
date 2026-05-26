@@ -1,29 +1,45 @@
 <?php
-// config/enseignant.php — Configuration du rôle Enseignant
+
+$pdo = get_pdo();
+$prof_id     = $_SESSION['user_id'] ?? null;
+$profile_row = null;
+$stats_db    = [];
+
+if ($pdo && $prof_id) {
+    $profile_row = $pdo->query("
+        SELECT u.nom, u.prenom
+        FROM users u JOIN professeur p ON p.id = u.id
+        WHERE u.id = $prof_id
+    ")->fetch(PDO::FETCH_ASSOC);
+
+    $row = $pdo->query("
+        SELECT COUNT(c.id) AS nb_controles,
+               MAX(c.note) AS meilleure_note,
+               ROUND(AVG(c.note)::NUMERIC, 2) AS moyenne
+        FROM controle c
+        JOIN enseignement e ON e.id = c.enseignement_id
+        WHERE e.professeur_id = $prof_id
+    ")->fetch(PDO::FETCH_ASSOC);
+    $stats_db = $row ?: [];
+}
 
 return [
     'role' => 'Enseignant',
-
     'profile' => [
-        'name'    => 'Aymen Sellaouti',
-        'year'    => '2025-2026',
-        'classes' => ['GL2-1', 'GL2-2', 'RT2-1', 'MPI-1'],
+        'name' => $profile_row ? $profile_row['prenom'] . ' ' . $profile_row['nom'] : 'Aymen Sellaouti',
+        'year' => '2025-2026',
     ],
-
     'nav' => [
-        ['label' => 'Home',        'href' => 'index.php',        'active' => true],
-        ['label' => 'Blog',        'href' => 'blog.php'],
-        ['label' => 'Examens',     'href' => 'exams.php'],
-        ['label' => 'Reclamation', 'href' => 'prof_reclamations.php'],
+        ['label' => 'Home',         'href' => '/?page=home'],
+        ['label' => 'Blog',         'href' => '/?page=forum'],
+        ['label' => 'Examens',      'href' => '/?page=qcm-create'],
+        ['label' => 'Réclamations', 'href' => '/?page=prof-reclamations'],
     ],
-
-    // Type 'big' : valeur grande en haut, label en bas (style enseignant)
     'stats' => [
-        ['big' => true, 'value' => '86',    'total' => '116', 'label' => 'Avancement des Notes'],
-        ['big' => true, 'value' => '19,5',                    'label' => 'Meilleure Note'],
-        ['big' => true, 'value' => '12,31',                   'label' => 'Moyenne de la Classe'],
+        ['big' => true, 'value' => (string)($stats_db['nb_controles']    ?? '0'), 'label' => 'Contrôles saisis'],
+        ['big' => true, 'value' => (string)($stats_db['meilleure_note']  ?? '—'), 'label' => 'Meilleure Note'],
+        ['big' => true, 'value' => (string)($stats_db['moyenne']         ?? '—'), 'label' => 'Moyenne de la Classe'],
     ],
-
     'chart' => [
         'title'  => 'Distribution Évolutive des Notes',
         'legend' => [
@@ -32,10 +48,9 @@ return [
             ['label' => 'Moyenne', 'color' => 'gray'],
         ],
     ],
-
     'actions' => [
-        ['icon' => 'ti-clipboard-list', 'label' => 'Saisir Notes',  'href' => 'notes.php'],
-        ['icon' => 'ti-file-text',      'label' => 'Mes Examens',   'href' => 'exams.php'],
-        ['icon' => 'ti-message-report', 'label' => 'Réclamations',  'href' => 'prof_reclamations.php'],
+        ['icon' => 'ti-clipboard-list', 'label' => 'Saisir Notes',  'href' => '/?page=qcm-scan'],
+        ['icon' => 'ti-file-text',      'label' => 'Mes Examens',   'href' => '/?page=qcm-create'],
+        ['icon' => 'ti-message-report', 'label' => 'Réclamations',  'href' => '/?page=prof-reclamations'],
     ],
 ];

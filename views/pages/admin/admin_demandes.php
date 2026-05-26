@@ -1,11 +1,14 @@
+<?php require_once __DIR__ . '/../../layouts/header.php'; ?>
+
+<div class="wrap">
+
+
+
+<main>
+
 <?php
 // admin_demandes.php — Interface administrateur : gestion des demandes administratives
-session_start();
-require_once __DIR__ . '/config/storage.php';
-storage_init();
 
-$config        = require __DIR__ . '/config/administrateur.php';
-$demandes      = demandes_all();
 $notifications = notifications_pour('admin');
 $flash         = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
@@ -27,49 +30,6 @@ $type_icons = [
     'autre'       => 'ti-file-description',
 ];
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demandes — Admin INSAT</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/forms.css">
-    <link rel="stylesheet" href="css/notifications.css">
-</head>
-<body>
-<div class="wrap">
-
-    <!-- NAVBAR ADMIN -->
-    <header>
-        <nav class="topbar">
-            <a href="index.php" class="brand">
-                <img src="resources/logo.svg" alt=".INSAT" class="brand-logo">
-            </a>
-            <ul class="nav">
-                <?php foreach ($config['nav'] as $item): ?>
-                <li>
-                    <?php
-                        $isDem    = $item['href'] === 'admin_demandes.php';
-                        $isActive = !empty($item['active']) || $isDem;
-                    ?>
-                    <a href="<?= htmlspecialchars($item['href']) ?>"
-                       <?= $isActive ? 'class="active"' : '' ?>>
-                        <?= htmlspecialchars($item['label']) ?>
-                        <?php if ($isDem && !empty($en_attente)): ?>
-                        <span class="nav-badge"><?= count($en_attente) ?></span>
-                        <?php endif; ?>
-                    </a>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-            <span class="connect-btn" style="cursor:default;">Admin</span>
-        </nav>
-        <div class="brush-divider"></div>
-    </header>
-
-    <main>
 
         <!-- FLASH -->
         <?php if ($flash): ?>
@@ -151,7 +111,7 @@ $type_icons = [
 
             <!-- PANEL — APPROUVER -->
             <div id="panel-approuver-<?= $d['id'] ?>" class="recl-panel recl-panel--green" style="display:none;">
-                <form method="POST" action="traitement_demande_admin.php">
+                <form method="POST" action="index.php?action=admin-demande">
                     <input type="hidden" name="action" value="approuver">
                     <input type="hidden" name="id"     value="<?= $d['id'] ?>">
                     <div class="panel-inner">
@@ -177,7 +137,7 @@ $type_icons = [
 
             <!-- PANEL — REFUSER -->
             <div id="panel-refuser-<?= $d['id'] ?>" class="recl-panel recl-panel--red" style="display:none;">
-                <form method="POST" action="traitement_demande_admin.php">
+                <form method="POST" action="index.php?action=admin-demande">
                     <input type="hidden" name="action" value="refuser">
                     <input type="hidden" name="id"     value="<?= $d['id'] ?>">
                     <div class="panel-inner">
@@ -254,7 +214,7 @@ $type_icons = [
         <?php endforeach; ?>
         <?php endif; ?>
 
-    </main>
+</main>
 </div>
 
 <script>
@@ -279,5 +239,3 @@ function fermerPanels(id) {
     if (r) r.style.display = 'none';
 }
 </script>
-</body>
-</html>

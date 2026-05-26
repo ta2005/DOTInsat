@@ -1,13 +1,30 @@
 <?php
-$host = 'localhost';
-$db   = 'blog_aymen';
-$user = 'postgres';
-$pass = ''; 
+function get_pdo(): ?PDO {
+    static $instance = 'unset';
 
-try {
-    $pdo = new PDO("pgsql:host=$host;dbname=$db", $user, $pass);
-} catch (PDOException $e) {
-    // Database connection failed, set $pdo to null to enable mock/testing fallback mode
-    $pdo = null;
+    if ($instance !== 'unset') return $instance;
+
+    $host = 'localhost';
+    $port = '5432';
+    $db   = 'dotinsat';
+    $user = 'postgres';
+    $pass = '123456';
+
+    try {
+        $instance = new PDO(
+            "pgsql:host=$host;port=$port;dbname=$db",
+            $user,
+            $pass,
+            [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]
+        );
+    } catch (PDOException $e) {
+    die('Erreur BD : ' . $e->getMessage());
 }
-?>
+
+    return $instance;
+}
+
+$pdo = get_pdo();

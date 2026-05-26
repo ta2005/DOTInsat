@@ -8,10 +8,7 @@
 	 private ?int $id=null
       ){}
 
-      /*    public function __construct(private string $designation, */
-      /*    private string $description, */
-      /*    private ?int $id */
-      /* ) {} */
+    
       public function setId($id){
 	 $this->id=$id;
       }

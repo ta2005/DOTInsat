@@ -1,11 +1,13 @@
+<?php require_once __DIR__ . '/../../layouts/header.php'; ?>
+
+<div class="wrap">
+
+
+<main>
+
 <?php
 // admin_reclamations.php — Interface administrateur : gestion des réclamations
-session_start();
-require_once __DIR__ . '/config/storage.php';
-storage_init();
 
-$config        = require __DIR__ . '/config/administrateur.php';
-$reclamations  = reclamations_all();
 $notifications = notifications_pour('admin');
 $flash         = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
@@ -22,49 +24,6 @@ $statut_labels = [
     'refuse_prof'    => ['label' => 'Refusée (prof)',     'class' => 'badge--red'],
 ];
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Réclamations — Admin INSAT</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/forms.css">
-    <link rel="stylesheet" href="css/notifications.css">
-</head>
-<body>
-<div class="wrap">
-
-    <!-- NAVBAR ADMIN -->
-    <header>
-        <nav class="topbar">
-            <a href="index.php" class="brand">
-                <img src="resources/logo.svg" alt=".INSAT" class="brand-logo">
-            </a>
-            <ul class="nav">
-                <?php foreach ($config['nav'] as $item): ?>
-                <li>
-                    <?php
-                        $isRecl  = $item['href'] === 'admin_reclamations.php';
-                        $isActive = !empty($item['active']) || $isRecl;
-                    ?>
-                    <a href="<?= htmlspecialchars($item['href']) ?>"
-                       <?= $isActive ? 'class="active"' : '' ?>>
-                        <?= htmlspecialchars($item['label']) ?>
-                        <?php if ($isRecl && !empty($en_attente)): ?>
-                        <span class="nav-badge"><?= count($en_attente) ?></span>
-                        <?php endif; ?>
-                    </a>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-            <span class="connect-btn" style="cursor:default;">Admin</span>
-        </nav>
-        <div class="brush-divider"></div>
-    </header>
-
-    <main>
 
         <!-- FLASH -->
         <?php if ($flash): ?>
@@ -152,7 +111,7 @@ $statut_labels = [
 
             <!-- PANEL — APPROUVER -->
             <div id="panel-approuver-<?= $r['id'] ?>" class="recl-panel recl-panel--green" style="display:none;">
-                <form method="POST" action="traitement_reclamation.php">
+                <form method="POST" action="index.php?action=admin-reclamation">
                     <input type="hidden" name="action" value="admin_approuver">
                     <input type="hidden" name="id" value="<?= $r['id'] ?>">
                     <div class="panel-inner">
@@ -175,7 +134,7 @@ $statut_labels = [
 
             <!-- PANEL — REFUSER -->
             <div id="panel-refuser-<?= $r['id'] ?>" class="recl-panel recl-panel--red" style="display:none;">
-                <form method="POST" action="traitement_reclamation.php">
+                <form method="POST" action="index.php?action=admin-reclamation">
                     <input type="hidden" name="action" value="admin_refuser">
                     <input type="hidden" name="id" value="<?= $r['id'] ?>">
                     <div class="panel-inner">
@@ -250,30 +209,5 @@ $statut_labels = [
         <?php endforeach; ?>
         <?php endif; ?>
 
-    </main>
+</main>
 </div>
-
-<script>
-function ouvrirApprouver(id) {
-    fermerPanels(id);
-    const panel = document.getElementById('panel-approuver-' + id);
-    panel.style.display = 'block';
-    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-function ouvrirRefuser(id) {
-    fermerPanels(id);
-    const panel = document.getElementById('panel-refuser-' + id);
-    panel.style.display = 'block';
-    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-function fermerPanels(id) {
-    const a = document.getElementById('panel-approuver-' + id);
-    const r = document.getElementById('panel-refuser-'  + id);
-    if (a) a.style.display = 'none';
-    if (r) r.style.display = 'none';
-}
-</script>
-</body>
-</html>
