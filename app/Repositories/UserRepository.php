@@ -1,37 +1,129 @@
 <?php
 
-require_once 'Repository.php';
-
-class UserRepository extends Repository
+class UserRepository
 {
-    // récupérer utilisateur par email
-    public function findByEmail($email)
+    private PDO $db;
+
+    public function __construct(PDO $db)
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * Trouve un utilisateur par email.
+     * Retourne aussi son rôle (etudiant / professeur / admin).
+     */
+    public function findByEmail(string $email): ?array
     {
         $sql = "
-            SELECT *
-            FROM users
-            WHERE email = :email
+            SELECT
+                u.id,
+                u.cin,
+                u.nom,
+                u.prenom,
+                u.email,
+                u.mot_passe,
+                CASE
+                    WHEN a.id IS NOT NULL THEN 'admin'
+                    WHEN p.id IS NOT NULL THEN 'professeur'
+                    WHEN e.id IS NOT NULL THEN 'etudiant'
+                    ELSE 'inconnu'
+                END AS role
+            FROM users u
+            LEFT JOIN admin      a ON a.id = u.id
+            LEFT JOIN professeur p ON p.id = u.id
+            LEFT JOIN etudiant   e ON e.id = u.id
+            WHERE u.email = :email
+            LIMIT 1
         ";
 
         $stmt = $this->db->prepare($sql);
+        $stmt->execute([':email' => $email]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $stmt->execute([
-            ':email' => $email
-        ]);
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
     }
 
-    // récupérer tous les utilisateurs
-    public function getAll()
+    /**
+     * Trouve un utilisateur par son ID.
+     */
+    public function findById(int $id): ?array
     {
         $sql = "
-            SELECT *
-            FROM users
+            SELECT
+                u.id,
+                u.cin,
+                u.nom,
+                u.prenom,
+                u.email,
+                CASE
+                    WHEN a.id IS NOT NULL THEN 'admin'
+                    WHEN p.id IS NOT NULL THEN 'professeur'
+                    WHEN e.id IS NOT NULL THEN 'etudiant'
+                    ELSE 'inconnu'
+                END AS role
+            FROM users u
+            LEFT JOIN admin      a ON a.id = u.id
+            LEFT JOIN professeur p ON p.id = u.id
+            LEFT JOIN etudiant   e ON e.id = u.id
+            WHERE u.id = :id
+            LIMIT 1
         ";
 
-        $stmt = $this->db->query($sql);
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    /**
+     * Sauvegarde un token "remember me" en session côté serveur
+     * (approche simple : on stocke le token hashé dans la table users via une colonne dédiée).
+     * Si la colonne n'existe pas encore, la méthode échoue silencieusement.
+     */
+    public function saveRememberToken(int $userId, string $hashedToken): void
+    {
+        try {
+            $stmt = $this->db->prepare(
+                "UPDATE users SET remember_token = :token WHERE id = :id"
+            );
+            $stmt->execute([':token' => $hashedToken, ':id' => $userId]);
+        } catch (\PDOException) {
+            // La colonne remember_token n'existe pas encore → on ignore
+        }
+    }
+
+    /**
+     * Trouve un utilisateur via son remember token hashé.
+     */
+    public function findByRememberToken(string $hashedToken): ?array
+    {
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT id FROM users WHERE remember_token = :token LIMIT 1"
+            );
+            $stmt->execute([':token' => $hashedToken]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) return null;
+            return $this->findById((int)$row['id']);
+        } catch (\PDOException) {
+            return null;
+        }
+    }
+
+    /**
+     * Efface le remember token (à la déconnexion).
+     */
+    public function clearRememberToken(int $userId): void
+    {
+        try {
+            $stmt = $this->db->prepare(
+                "UPDATE users SET remember_token = NULL WHERE id = :id"
+            );
+            $stmt->execute([':id' => $userId]);
+        } catch (\PDOException) {
+            // Ignoré si la colonne n'existe pas
+        }
     }
 }

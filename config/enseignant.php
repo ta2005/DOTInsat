@@ -1,33 +1,34 @@
 <?php
 
-$pdo = get_pdo();
-$prof_id     = $_SESSION['user_id'] ?? null;
-$profile_row = null;
-$stats_db    = [];
+$pdo     = get_pdo();
+$prof_id = $_SESSION['user_id'] ?? null;
+
+$profile_row  = null;
+$stats_db     = [];
+$classes_rows = [];
 
 if ($pdo && $prof_id) {
-    $profile_row = $pdo->query("
+    require_once BASE_PATH . '/app/Repositories/EnseignementRepository.php';
+    $ensRepo = new EnseignementRepository($pdo);
+
+    $profile_row  = $pdo->prepare("
         SELECT u.nom, u.prenom
         FROM users u JOIN professeur p ON p.id = u.id
-        WHERE u.id = $prof_id
-    ")->fetch(PDO::FETCH_ASSOC);
+        WHERE u.id = :id
+    ");
+    $profile_row->execute([':id' => $prof_id]);
+    $profile_row = $profile_row->fetch(PDO::FETCH_ASSOC);
 
-    $row = $pdo->query("
-        SELECT COUNT(c.id) AS nb_controles,
-               MAX(c.note) AS meilleure_note,
-               ROUND(AVG(c.note)::NUMERIC, 2) AS moyenne
-        FROM controle c
-        JOIN enseignement e ON e.id = c.enseignement_id
-        WHERE e.professeur_id = $prof_id
-    ")->fetch(PDO::FETCH_ASSOC);
-    $stats_db = $row ?: [];
+    $classes_rows = $ensRepo->getNomsByProfesseur((int)$prof_id);
+    $stats_db     = $ensRepo->getStatsByProfesseur((int)$prof_id);
 }
 
 return [
     'role' => 'Enseignant',
     'profile' => [
-        'name' => $profile_row ? $profile_row['prenom'] . ' ' . $profile_row['nom'] : 'Aymen Sellaouti',
-        'year' => '2025-2026',
+        'name'    => $profile_row ? $profile_row['prenom'] . ' ' . $profile_row['nom'] : '—',
+        'year'    => '2025-2026',
+        'classes' => $classes_rows,
     ],
     'nav' => [
         ['label' => 'Home',         'href' => '/?page=home'],
@@ -36,9 +37,9 @@ return [
         ['label' => 'Réclamations', 'href' => '/?page=prof-reclamations'],
     ],
     'stats' => [
-        ['big' => true, 'value' => (string)($stats_db['nb_controles']    ?? '0'), 'label' => 'Contrôles saisis'],
-        ['big' => true, 'value' => (string)($stats_db['meilleure_note']  ?? '—'), 'label' => 'Meilleure Note'],
-        ['big' => true, 'value' => (string)($stats_db['moyenne']         ?? '—'), 'label' => 'Moyenne de la Classe'],
+        ['big' => true, 'value' => (string)($stats_db['nb_controles']   ?? '0'), 'label' => 'Contrôles saisis'],
+        ['big' => true, 'value' => (string)($stats_db['meilleure_note'] ?? '—'), 'label' => 'Meilleure Note'],
+        ['big' => true, 'value' => (string)($stats_db['moyenne']        ?? '—'), 'label' => 'Moyenne de la Classe'],
     ],
     'chart' => [
         'title'  => 'Distribution Évolutive des Notes',

@@ -1,4 +1,4 @@
-<?php
+*<?php
 
 require_once BASE_PATH . '/app/Repositories/ReclamationRepository.php';
 
@@ -14,9 +14,17 @@ class ProfessorController
     // GET ?page=prof-reclamations
     public function reclamations(): void
     {
-        // Le prof ne voit que les réclamations qui lui sont transmises (ACCEPTEE par admin)
         $reclamations = $this->repo->getAll();
 
-        require BASE_PATH . '/views/pages/professor/reclamations.php';
+        $config = [
+            'nav' => [
+                ['label' => 'Home',         'href' => '/?page=home'],
+                ['label' => 'Blog',         'href' => '/?page=forum'],
+                ['label' => 'Examens',      'href' => '/?page=qcm-create'],
+                ['label' => 'Réclamations', 'href' => '/?page=prof-reclamations', 'active' => true],
+            ],
+        ];
+
+        require BASE_PATH . '/views/pages/professor/prof_reclamations.php';
     }
 }

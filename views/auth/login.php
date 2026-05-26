@@ -15,16 +15,13 @@
 
     <header>
         <nav class="topbar">
-            <a href="/?page=home" class="brand">
+            <a href="/?page=login" class="brand">
                 <img src="/resources/logo.svg" alt=".INSAT" class="brand-logo">
             </a>
-            <ul class="nav"></ul>
-            <a href="/?page=login" class="connect-btn connect-btn--active">Connexion</a>
         </nav>
-        <div class="brush-divider"></div>
     </header>
 
-    <main>
+    <main style="margin-top: 15vh;">
 
         <?php if (!empty($error)): ?>
         <div class="flash flash--error">
@@ -70,6 +67,8 @@
                     </div>
                 </div>
             </div>
+
+
 
             <div class="form-actions">
                 <button type="submit" class="form-btn-primary login-submit">

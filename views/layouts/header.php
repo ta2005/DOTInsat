@@ -1,34 +1,48 @@
 <?php
-// components/header.php — Navbar dynamique
-// IMPORTANT : $config doit être chargé dans index.php AVANT d'inclure ce fichier
-
+// views/layouts/header.php
+// $config doit être défini par le controller avant d'inclure ce fichier
+$currentPage = $_GET['page'] ?? 'home';
 ?>
 <header>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/forms.css">
     <link rel="stylesheet" href="/css/notifications.css">
     <nav class="topbar">
-        <a href="index.php" class="brand">
-            <img src="resources/logo.svg" alt=".INSAT" class="brand-logo">
+        <a href="/?page=home" class="brand">
+            <img src="/resources/logo.svg" alt=".INSAT" class="brand-logo">
         </a>
         <ul class="nav">
             <?php
-            // Sécurité : vérifier que nav existe dans $config
             if (!empty($config['nav']) && is_array($config['nav'])):
                 foreach ($config['nav'] as $item):
+                    // Extraire la valeur de ?page= depuis le href pour la comparaison active
+                    $href = $item['href'] ?? '#';
+                    parse_str(parse_url($href, PHP_URL_QUERY) ?? '', $qs);
+                    $isActive = isset($qs['page']) && $qs['page'] === $currentPage;
             ?>
-            <li>
-                <a href="<?= htmlspecialchars($item['href'] ?? '#') ?>"
-                   <?= !empty($item['active']) ? 'class="active"' : '' ?>>
-                    <?= htmlspecialchars($item['label'] ?? '') ?>
-                </a>
-            </li>
+                    <li>
+                        <a href="<?= htmlspecialchars($href) ?>"
+                            <?= $isActive ? 'class="active"' : '' ?>>
+                            <?= htmlspecialchars($item['label'] ?? '') ?>
+                        </a>
+                    </li>
             <?php
                 endforeach;
             endif;
             ?>
         </ul>
-        <a href="login.php" class="connect-btn">Connecter</a>
+
+        <?php if (!empty($_SESSION['user_id'])): ?>
+            <!-- Utilisateur connecté : afficher nom + bouton déconnexion -->
+            <div class="header-user">
+                <a href="/?page=logout" class="connect-btn connect-btn--logout"
+                    title="Se déconnecter">
+                    <i class="ti ti-logout" aria-hidden="true"></i> Déconnexion
+                </a>
+            </div>
+        <?php else: ?>
+            <a href="/?page=login" class="connect-btn">Connexion</a>
+        <?php endif; ?>
     </nav>
     <div class="brush-divider"></div>
 </header>

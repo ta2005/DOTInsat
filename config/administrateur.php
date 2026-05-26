@@ -33,8 +33,8 @@ return [
         ['label' => 'Blog',               'href' => '/?page=forum'],
         ['label' => 'Gestion Enseignants','href' => '/?page=ens_manage'],
         ['label' => 'Gestion Étudiants',  'href' => '/?page=etu_manage'],
-        ['label' => 'Demandes',           'href' => '/?page=admin-demandes'],
-        ['label' => 'Réclamations',       'href' => '/?page=admin-reclamations'],
+        ['label' => 'Demandes',           'href' => '/?page=demandes'],
+        ['label' => 'Réclamations',       'href' => '/?page=reclamations'],
     ],
     'stats' => [
         ['big' => true, 'value' => (string)($stats['nb_profs'] ?? 0),        'label' => 'Enseignants'],
