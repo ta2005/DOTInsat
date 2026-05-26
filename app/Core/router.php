@@ -1,67 +1,241 @@
 <?php
 declare(strict_types=1);
 
+/*
+|--------------------------------------------------------------------------
+| ROUTES
+|--------------------------------------------------------------------------
+*/
 
 $routes = [
 
-    // ── PAGES GÉNÉRALES ──────────────────────────────────────────────────────
-    ['page' => 'home', 'controller' => 'HomeController', 'method' => 'index', 'http' => 'GET',
-     'roles' => [ROLE_ETUDIANT, ROLE_PROFESSEUR, ROLE_ADMIN]],
+    // ───────────────── HOME ─────────────────
+    [
+        'page'       => 'home',
+        'controller' => 'HomeController',
+        'method'     => 'index',
+        'http'       => 'GET',
+        'roles'      => [
+            ROLE_ETUDIANT,
+            ROLE_PROFESSEUR,
+            ROLE_ADMIN
+        ]
+    ],
 
-    // ── AUTH (publiques) ─────────────────────────────────────────────────────
-    ['page' => 'login',    'controller' => 'AuthController', 'method' => 'showLogin', 'http' => 'GET',  'roles' => []],
-    ['page' => 'do-login', 'controller' => 'AuthController', 'method' => 'login',     'http' => 'POST', 'roles' => []],
-    ['page' => 'logout',   'controller' => 'AuthController', 'method' => 'logout',    'http' => 'ANY',  'roles' => []],
+    // ───────────────── AUTH ─────────────────
+    [
+        'page'       => 'login',
+        'controller' => 'AuthController',
+        'method'     => 'showLogin',
+        'http'       => 'GET',
+        'roles'      => []
+    ],
 
-    // ── DEMANDES (étudiant) ──────────────────────────────────────────────────
-    ['page' => 'demande',        'controller' => 'DemandeController', 'method' => 'index',  'http' => 'GET',
-     'roles' => [ROLE_ETUDIANT]],
-    ['page' => 'save-demande',   'controller' => 'DemandeController', 'method' => 'store',  'http' => 'POST',
-     'roles' => [ROLE_ETUDIANT]],
-    ['page' => 'delete-demande', 'controller' => 'DemandeController', 'method' => 'delete', 'http' => 'POST',
-     'roles' => [ROLE_ETUDIANT]],
+    [
+        'page'       => 'do-login',
+        'controller' => 'AuthController',
+        'method'     => 'login',
+        'http'       => 'POST',
+        'roles'      => []
+    ],
 
-    // ── RÉCLAMATIONS (étudiant) ──────────────────────────────────────────────
-    ['page' => 'reclamation',        'controller' => 'ReclamationController', 'method' => 'index',  'http' => 'GET',
-     'roles' => [ROLE_ETUDIANT]],
-    ['page' => 'save-reclamation',   'controller' => 'ReclamationController', 'method' => 'store',  'http' => 'POST',
-     'roles' => [ROLE_ETUDIANT]],
-    ['page' => 'delete-reclamation', 'controller' => 'ReclamationController', 'method' => 'delete', 'http' => 'POST',
-     'roles' => [ROLE_ETUDIANT]],
+    [
+        'page'       => 'logout',
+        'controller' => 'AuthController',
+        'method'     => 'logout',
+        'http'       => 'ANY',
+        'roles'      => []
+    ],
 
-    // ── ADMIN ────────────────────────────────────────────────────────────────
-    ['page' => 'demandes',                  'controller' => 'AdminController', 'method' => 'demandes',               'http' => 'GET',
-     'roles' => [ROLE_ADMIN]],
-    ['page' => 'reclamations',              'controller' => 'AdminController', 'method' => 'reclamations',           'http' => 'GET',
-     'roles' => [ROLE_ADMIN]],
-    ['page' => 'update-demande-status',     'controller' => 'AdminController', 'method' => 'updateDemandeStatus',    'http' => 'POST',
-     'roles' => [ROLE_ADMIN]],
-    ['page' => 'update-reclamation-status', 'controller' => 'AdminController', 'method' => 'updateReclamationStatus','http' => 'POST',
-     'roles' => [ROLE_ADMIN]],
+    // ───────────────── DEMANDES ─────────────────
+    [
+        'page'       => 'demande',
+        'controller' => 'DemandeController',
+        'method'     => 'index',
+        'http'       => 'GET',
+        'roles'      => [ROLE_ETUDIANT]
+    ],
 
-    // ── PROFESSEUR ───────────────────────────────────────────────────────────
-    ['page' => 'prof-reclamations', 'controller' => 'ProfessorController', 'method' => 'reclamations', 'http' => 'GET',
-     'roles' => [ROLE_PROFESSEUR]],
-    ['page' => 'qcm-create',        'controller' => 'QcmController',       'method' => 'create',       'http' => 'GET',
-     'roles' => [ROLE_PROFESSEUR]],
-    ['page' => 'qcm-scan',          'controller' => 'QcmController',       'method' => 'scan',         'http' => 'GET',
-     'roles' => [ROLE_PROFESSEUR]],
+    [
+        'page'       => 'save-demande',
+        'controller' => 'DemandeController',
+        'method'     => 'store',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ETUDIANT]
+    ],
 
-    // ── QCM API JSON ─────────────────────────────────────────────────────────
-    ['page' => 'api-save-template', 'controller' => 'QcmController', 'method' => 'saveTemplate', 'http' => 'POST',
-     'roles' => [ROLE_PROFESSEUR]],
-    ['page' => 'api-process-scan',  'controller' => 'QcmController', 'method' => 'processScan',  'http' => 'POST',
-     'roles' => [ROLE_PROFESSEUR]],
-    ['page' => 'api-get-template',  'controller' => 'QcmController', 'method' => 'getTemplate',  'http' => 'GET',
-     'roles' => [ROLE_PROFESSEUR]],
+    [
+        'page'       => 'delete-demande',
+        'controller' => 'DemandeController',
+        'method'     => 'delete',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ETUDIANT]
+    ],
 
-    // ── FORUM ────────────────────────────────────────────────────────────────
-    ['page' => 'forum',     'controller' => 'ForumController', 'method' => 'index', 'http' => 'GET',
-     'roles' => [ROLE_ETUDIANT, ROLE_PROFESSEUR, ROLE_ADMIN]],
-    ['page' => 'save-post', 'controller' => 'ForumController', 'method' => 'store', 'http' => 'POST',
-     'roles' => [ROLE_ETUDIANT, ROLE_PROFESSEUR, ROLE_ADMIN]],
+    // ───────────────── RECLAMATIONS ─────────────────
+    [
+        'page'       => 'reclamation',
+        'controller' => 'ReclamationController',
+        'method'     => 'index',
+        'http'       => 'GET',
+        'roles'      => [ROLE_ETUDIANT]
+    ],
+
+    [
+        'page'       => 'save-reclamation',
+        'controller' => 'ReclamationController',
+        'method'     => 'store',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ETUDIANT]
+    ],
+
+    [
+        'page'       => 'delete-reclamation',
+        'controller' => 'ReclamationController',
+        'method'     => 'delete',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ETUDIANT]
+    ],
+
+    // ───────────────── EXAMENS ─────────────────
+    [
+        'page'       => 'examens',
+        'controller' => 'HomeController',
+        'method'     => 'examens',
+        'http'       => 'GET',
+        'roles'      => [ROLE_ETUDIANT]
+    ],
+
+    [
+        'page'       => 'calcul-moyenne',
+        'controller' => 'HomeController',
+        'method'     => 'calculMoyenne',
+        'http'       => 'GET',
+        'roles'      => [ROLE_ETUDIANT]
+    ],
+
+    [
+        'page'       => 'mes-notes',
+        'controller' => 'HomeController',
+        'method'     => 'mesNotes',
+        'http'       => 'GET',
+        'roles'      => [ROLE_ETUDIANT]
+    ],
+
+    // ───────────────── ADMIN ─────────────────
+    [
+        'page'       => 'demandes',
+        'controller' => 'AdminController',
+        'method'     => 'demandes',
+        'http'       => 'GET',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    [
+        'page'       => 'reclamations',
+        'controller' => 'AdminController',
+        'method'     => 'reclamations',
+        'http'       => 'GET',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    [
+        'page'       => 'update-demande-status',
+        'controller' => 'AdminController',
+        'method'     => 'updateDemandeStatus',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    [
+        'page'       => 'update-reclamation-status',
+        'controller' => 'AdminController',
+        'method'     => 'updateReclamationStatus',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    // ───────────────── PROFESSEUR ─────────────────
+    [
+        'page'       => 'prof-reclamations',
+        'controller' => 'ProfessorController',
+        'method'     => 'reclamations',
+        'http'       => 'GET',
+        'roles'      => [ROLE_PROFESSEUR]
+    ],
+
+    [
+        'page'       => 'qcm-create',
+        'controller' => 'QcmController',
+        'method'     => 'create',
+        'http'       => 'GET',
+        'roles'      => [ROLE_PROFESSEUR]
+    ],
+
+    [
+        'page'       => 'qcm-scan',
+        'controller' => 'QcmController',
+        'method'     => 'scan',
+        'http'       => 'GET',
+        'roles'      => [ROLE_PROFESSEUR]
+    ],
+
+    // ───────────────── API QCM ─────────────────
+    [
+        'page'       => 'api-save-template',
+        'controller' => 'QcmController',
+        'method'     => 'saveTemplate',
+        'http'       => 'POST',
+        'roles'      => [ROLE_PROFESSEUR]
+    ],
+
+    [
+        'page'       => 'api-process-scan',
+        'controller' => 'QcmController',
+        'method'     => 'processScan',
+        'http'       => 'POST',
+        'roles'      => [ROLE_PROFESSEUR]
+    ],
+
+    [
+        'page'       => 'api-get-template',
+        'controller' => 'QcmController',
+        'method'     => 'getTemplate',
+        'http'       => 'GET',
+        'roles'      => [ROLE_PROFESSEUR]
+    ],
+
+    // ───────────────── FORUM ─────────────────
+    [
+        'page'       => 'forum',
+        'controller' => 'ForumController',
+        'method'     => 'index',
+        'http'       => 'GET',
+        'roles'      => [
+            ROLE_ETUDIANT,
+            ROLE_PROFESSEUR,
+            ROLE_ADMIN
+        ]
+    ],
+
+    [
+        'page'       => 'save-post',
+        'controller' => 'ForumController',
+        'method'     => 'store',
+        'http'       => 'POST',
+        'roles'      => [
+            ROLE_ETUDIANT,
+            ROLE_PROFESSEUR,
+            ROLE_ADMIN
+        ]
+    ],
 ];
 
+/*
+|--------------------------------------------------------------------------
+| AUTH GUARD
+|--------------------------------------------------------------------------
+*/
 
 function auth_guard(?PDO $pdo): void
 {
@@ -76,36 +250,52 @@ function auth_guard(?PDO $pdo): void
     }
 
     $rawToken = $_COOKIE[COOKIE_REMEMBER_TOKEN] ?? null;
-    $cookieId = $_COOKIE[COOKIE_REMEMBER_USER]  ?? null;
+    $cookieId = $_COOKIE[COOKIE_REMEMBER_USER] ?? null;
 
-    if ($rawToken && $cookieId) {
-        require_once BASE_PATH . '/app/Repositories/AuthRepository.php';
-        $authRepo = new AuthRepository($pdo);
-        $user     = $authRepo->getUserByRememberToken($rawToken);
+    if (!$rawToken || !$cookieId) {
 
-        if ($user && (int)$user['id'] === (int)$cookieId) {
-            session_regenerate_id(true);
-            $_SESSION['user_id']     = $user['id'];
-            $_SESSION['user_email']  = $user['email'];
-            $_SESSION['user_nom']    = $user['nom']    ?? '';
-            $_SESSION['user_prenom'] = $user['prenom'] ?? '';
-            $_SESSION['user_role']   = $user['role']   ?? 'inconnu';
-
-            $newToken = $authRepo->createRememberToken((int)$user['id']);
-            setcookie(COOKIE_REMEMBER_TOKEN, $newToken, [
-                'expires'  => time() + REMEMBER_ME_DURATION,
-                'path'     => '/',
-                'httponly' => true,
-                'samesite' => 'Lax',
-            ]);
-            return;
-        }
+        header('Location: /?page=login');
+        exit;
     }
 
-    header('Location: /?page=login');
-    exit;
+    require_once BASE_PATH . '/repositories/AuthRepository.php';
+
+    $authRepo = new AuthRepository($pdo);
+
+    $user = $authRepo->getUserByRememberToken($rawToken);
+
+    if (!$user || (int)$user['id'] !== (int)$cookieId) {
+
+        header('Location: /?page=login');
+        exit;
+    }
+
+    session_regenerate_id(true);
+
+    $_SESSION['user_id']     = $user['id'];
+    $_SESSION['user_email']  = $user['email'];
+    $_SESSION['user_nom']    = $user['nom'] ?? '';
+    $_SESSION['user_prenom'] = $user['prenom'] ?? '';
+    $_SESSION['user_role']   = $user['role'] ?? '';
+
+    $_SESSION['filiere'] = $user['filiere'] ?? '';
+    $_SESSION['annee']   = $user['annee'] ?? '';
+
+    $newToken = $authRepo->createRememberToken((int)$user['id']);
+
+    setcookie(COOKIE_REMEMBER_TOKEN, $newToken, [
+        'expires'  => time() + REMEMBER_ME_DURATION,
+        'path'     => '/',
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
 }
 
+/*
+|--------------------------------------------------------------------------
+| ROLE GUARD
+|--------------------------------------------------------------------------
+*/
 
 function role_guard(array $route): void
 {
@@ -116,11 +306,16 @@ function role_guard(array $route): void
     $userRole = $_SESSION['user_role'] ?? '';
 
     if (!in_array($userRole, $route['roles'], true)) {
-        renderError(null, 403);
-        exit;
+
+        renderError(403);
     }
 }
 
+/*
+|--------------------------------------------------------------------------
+| DISPATCH
+|--------------------------------------------------------------------------
+*/
 
 function dispatch(array $routes, ?PDO $pdo): void
 {
@@ -135,40 +330,65 @@ function dispatch(array $routes, ?PDO $pdo): void
             continue;
         }
 
-        if ($route['http'] !== 'ANY' && $route['http'] !== $httpMethod) {
-            renderError($pdo, 405);
-            return;
+        if (
+            $route['http'] !== 'ANY'
+            && $route['http'] !== $httpMethod
+        ) {
+            renderError(405);
         }
 
         role_guard($route);
 
-        $controllerFile = BASE_PATH . '/app/Controllers/' . $route['controller'] . '.php';
+        $controllerFile =
+            BASE_PATH
+            . '/app/controllers/'
+            . $route['controller']
+            . '.php';
 
         if (!file_exists($controllerFile)) {
-            renderError($pdo, 500);
-            return;
+            renderError(500);
         }
 
         require_once $controllerFile;
 
-        $class  = $route['controller'];
-        $action = $route['method'];
+        $controller = $route['controller'];
+        $method     = $route['method'];
 
-        if (!class_exists($class) || !method_exists($class, $action)) {
-            renderError($pdo, 500);
-            return;
+        if (
+            !class_exists($controller)
+            || !method_exists($controller, $method)
+        ) {
+            renderError(500);
         }
 
-        (new $class($pdo))->$action();
+        $instance = new $controller($pdo);
+
+        $instance->$method();
+
         return;
     }
 
-    renderError($pdo, 404);
+    renderError(404);
 }
 
+/*
+|--------------------------------------------------------------------------
+| ERROR HANDLER
+|--------------------------------------------------------------------------
+*/
 
-function renderError(?PDO $pdo, int $code): void
+function renderError(int $code): void
 {
     http_response_code($code);
+
+    echo match ($code) {
+
+        403 => '403 - Accès interdit',
+        404 => '404 - Page introuvable',
+        405 => '405 - Méthode non autorisée',
+
+        default => '500 - Erreur serveur'
+    };
+
     exit;
 }

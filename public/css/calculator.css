@@ -1,0 +1,424 @@
+/* =========================================================
+   CALCULATOR PAGE
+========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+body {
+
+    margin: 0;
+    padding: 0;
+
+    background: #050505;
+
+    color: #ffffff;
+
+    font-family: 'Inter', sans-serif;
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.calculator-page {
+
+    width: 100%;
+
+    padding-top: 40px;
+
+    padding-bottom: 80px;
+}
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.container {
+
+    width: 100%;
+
+    max-width: 1120px;
+
+    margin: 0 auto;
+
+    padding: 0 20px;
+
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   WRAPPER
+========================================================= */
+
+.calculator-wrapper {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 34px;
+
+    border-radius: 28px;
+
+    border: 1px solid rgba(255,255,255,0.06);
+
+    background: linear-gradient(
+        180deg,
+        rgba(25,25,28,0.96),
+        rgba(14,14,16,0.96)
+    );
+
+    box-shadow:
+        0 0 40px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.calculator-header {
+
+    margin-bottom: 38px;
+}
+
+.calculator-title {
+
+    margin: 0;
+
+    font-size: 38px;
+
+    font-weight: 800;
+
+    line-height: 1.05;
+
+    letter-spacing: -2px;
+
+    color: #ffffff;
+}
+
+.calculator-subtitle {
+
+    margin-top: 12px;
+
+    color: #9a9aa0;
+
+    font-size: 16px;
+
+    font-weight: 400;
+}
+
+/* =========================================================
+   STUDENT LEVEL
+========================================================= */
+
+.student-level {
+
+    margin-top: 30px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    padding: 14px 22px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.03);
+
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.student-level-label {
+
+    color: #a0a0a8;
+
+    font-size: 15px;
+
+    font-weight: 500;
+}
+
+.student-level-value {
+
+    color: #ffffff;
+
+    font-size: 28px;
+
+    font-weight: 800;
+
+    letter-spacing: -1px;
+}
+
+/* =========================================================
+   SEMESTERS GRID
+========================================================= */
+
+.semesters-grid {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 28px;
+
+    align-items: start;
+}
+
+/* =========================================================
+   SEMESTER CARD
+========================================================= */
+
+.semester-card {
+
+    min-height: 650px;
+
+    padding: 28px;
+
+    border-radius: 26px;
+
+    background: rgba(255,255,255,0.03);
+
+    border: 1px solid rgba(255,255,255,0.06);
+
+    box-sizing: border-box;
+}
+
+.semester-card h2 {
+
+    margin-top: 0;
+
+    margin-bottom: 32px;
+
+    font-size: 24px;
+
+    font-weight: 800;
+
+    letter-spacing: -1px;
+
+    color: #ffffff;
+}
+
+/* =========================================================
+   SUBJECTS
+========================================================= */
+
+.subject-row {
+
+    margin-bottom: 34px;
+}
+
+.subject-name {
+
+    margin-bottom: 14px;
+
+    color: #ffffff;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    line-height: 1.4;
+}
+
+.coeff {
+
+    color: #9a9aa0;
+
+    font-weight: 500;
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.input-group {
+
+    display: flex;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+}
+
+.input-group input {
+
+    width: 78px;
+
+    padding: 12px 14px;
+
+    border-radius: 16px;
+
+    border: 1px solid rgba(255,255,255,0.07);
+
+    background: rgba(255,255,255,0.03);
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition: all 0.2s ease;
+}
+
+.input-group input:focus {
+
+    border-color: rgba(255,255,255,0.18);
+
+    background: rgba(255,255,255,0.06);
+
+    transform: translateY(-1px);
+}
+
+.input-group input::placeholder {
+
+    color: #7d7d85;
+}
+
+/* =========================================================
+   RESULTS
+========================================================= */
+
+.results-card {
+
+    margin-top: 30px;
+
+    background: rgba(255,255,255,0.03);
+
+    border: 1px solid rgba(255,255,255,0.06);
+
+    border-radius: 24px;
+
+    padding: 28px;
+}
+
+.results-card h2 {
+
+    margin: 0 0 22px 0;
+
+    font-size: 28px;
+
+    font-weight: 800;
+
+    color: #ffffff;
+}
+
+/* GRID */
+
+.results-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 18px;
+}
+
+/* BOX */
+
+.result-box {
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.04),
+            rgba(255,255,255,0.02)
+        );
+
+    border: 1px solid rgba(255,255,255,0.06);
+
+    border-radius: 20px;
+
+    padding: 22px;
+
+    min-height: 120px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    transition: 0.25s ease;
+}
+
+.result-box:hover {
+
+    transform: translateY(-3px);
+
+    border-color: rgba(255,255,255,0.12);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.03)
+        );
+}
+
+/* TITRE */
+
+.result-box h3 {
+
+    margin: 0;
+
+    font-size: 16px;
+
+    font-weight: 500;
+
+    color: #9c9ca5;
+}
+
+/* VALEUR */
+
+.result-box span {
+
+    font-size: 42px;
+
+    font-weight: 800;
+
+    color: #ffffff;
+
+    letter-spacing: -2px;
+
+    line-height: 1;
+}
+
+/* CARD MOYENNE GENERALE */
+
+.result-box.total {
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.03)
+        );
+
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .results-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+    .result-box span {
+
+        font-size: 34px;
+    }
+}
