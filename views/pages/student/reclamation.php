@@ -152,9 +152,18 @@ let currentMatiere = null;
 
 function onMatiereChange(sel) {
     currentMatiere = sel.value;
+
+    // Reset le type d'évaluation
     document.getElementById('rec-eval').value = '';
-    document.getElementById('note-info-block').style.display = 'none';
+
+    // Afficher le bloc type d'évaluation
     document.getElementById('eval-block').style.display = 'block';
+
+    // Afficher immédiatement le prof dès la sélection de la matière
+    const prof = profsData[currentMatiere];
+    document.getElementById('prof-val').textContent = prof ?? '—';
+    document.getElementById('note-val').textContent = '—';
+    document.getElementById('note-info-block').style.display = 'block';
 }
 
 function onEvalChange() {
@@ -164,10 +173,14 @@ function onEvalChange() {
     const note = notesData[currentMatiere]?.[evalVal];
     const prof = profsData[currentMatiere];
 
-    if (note !== undefined) {
+    document.getElementById('prof-val').textContent = prof ?? '—';
+
+    if (note !== undefined && note !== null) {
         document.getElementById('note-val').textContent = note + ' / 20';
-        document.getElementById('prof-val').textContent = prof ?? '—';
-        document.getElementById('note-info-block').style.display = 'block';
+    } else {
+        document.getElementById('note-val').textContent = '—';
     }
+
+    document.getElementById('note-info-block').style.display = 'block';
 }
 </script>

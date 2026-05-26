@@ -63,11 +63,14 @@ class ReclamationRepository extends Repository
         return $row ?: null;
     }
 
-    // Liste des matières avec note et prof — pour le formulaire étudiant
+    // Liste des matières avec notes DS/EXAM — pour le formulaire étudiant
+    // CORRECTION: controle n'a pas de colonne etudiant_id dans le schéma.
+    // On récupère les notes via la table controle liée à enseignement,
+    // et on filtre l'étudiant via ses réclamations existantes (ou on affiche
+    // toutes les matières sans filtrage par étudiant sur controle).
     public function getMatieres(): array
     {
         if (!$this->isConnected()) {
-            // Fallback statique si pas de BDD
             return [
                 ['id' => '1', 'nom' => 'Algorithmique',    'prof' => 'Dr. Sonia Trabelsi', 'ds' => 12, 'examen' => 11],
                 ['id' => '2', 'nom' => 'Java',             'prof' => 'Dr. Ahmed Ben Ali',  'ds' => 14, 'examen' => 16],
@@ -79,18 +82,25 @@ class ReclamationRepository extends Repository
 
         $etudiantId = $_SESSION['user_id'] ?? 0;
 
+        // controle.note est la note finale du contrôle (pas par étudiant individuellement).
+        // On affiche les matières de l'étudiant via son niveau scolaire,
+        // et on récupère les notes du contrôle associé à chaque enseignement.
         $stmt = $this->db->prepare("
             SELECT
-                e.id::TEXT            AS id,
-                e.nom                 AS nom,
-                pu.nom || ' ' || pu.prenom AS prof,
+                e.id::TEXT                  AS id,
+                e.nom                       AS nom,
+                pu.nom || ' ' || pu.prenom  AS prof,
                 MAX(CASE WHEN c.type::TEXT = 'DS'   THEN c.note END) AS ds,
                 MAX(CASE WHEN c.type::TEXT = 'EXAM' THEN c.note END) AS examen
             FROM enseignement e
             JOIN professeur  p  ON p.id  = e.professeur_id
             JOIN users       pu ON pu.id = p.id
             LEFT JOIN controle c ON c.enseignement_id = e.id
-                                AND c.etudiant_id = ?
+            WHERE e.niveau_scolaire_info = (
+                SELECT et.niveau_scolaire_info
+                FROM etudiant et
+                WHERE et.id = ?
+            )
             GROUP BY e.id, e.nom, pu.nom, pu.prenom
             ORDER BY e.nom
         ");
