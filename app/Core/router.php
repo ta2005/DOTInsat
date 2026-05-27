@@ -97,7 +97,7 @@ $routes = [
         'roles'      => [ROLE_ETUDIANT]
     ],
 
-    // ───────────────── EXAMENS ─────────────────
+    // ───────────────── EXAMENS ETUDIANT ─────────────────
     [
         'page'       => 'examens',
         'controller' => 'HomeController',
@@ -160,6 +160,22 @@ $routes = [
         'page'       => 'prof-reclamations',
         'controller' => 'ProfessorController',
         'method'     => 'reclamations',
+        'http'       => 'GET',
+        'roles'      => [ROLE_PROFESSEUR]
+    ],
+
+    [
+        'page'       => 'examens-prof',
+        'controller' => 'ProfessorController',
+        'method'     => 'examens',
+        'http'       => 'GET',
+        'roles'      => [ROLE_PROFESSEUR]
+    ],
+
+    [
+        'page'       => 'qcm-dashboard',
+        'controller' => 'QcmController',
+        'method'     => 'dashboard',
         'http'       => 'GET',
         'roles'      => [ROLE_PROFESSEUR]
     ],
@@ -250,10 +266,9 @@ function auth_guard(?PDO $pdo): void
     }
 
     $rawToken = $_COOKIE[COOKIE_REMEMBER_TOKEN] ?? null;
-    $cookieId = $_COOKIE[COOKIE_REMEMBER_USER] ?? null;
+    $cookieId = $_COOKIE[COOKIE_REMEMBER_USER]  ?? null;
 
     if (!$rawToken || !$cookieId) {
-
         header('Location: /?page=login');
         exit;
     }
@@ -261,11 +276,9 @@ function auth_guard(?PDO $pdo): void
     require_once BASE_PATH . '/repositories/AuthRepository.php';
 
     $authRepo = new AuthRepository($pdo);
-
-    $user = $authRepo->getUserByRememberToken($rawToken);
+    $user     = $authRepo->getUserByRememberToken($rawToken);
 
     if (!$user || (int)$user['id'] !== (int)$cookieId) {
-
         header('Location: /?page=login');
         exit;
     }
@@ -274,12 +287,11 @@ function auth_guard(?PDO $pdo): void
 
     $_SESSION['user_id']     = $user['id'];
     $_SESSION['user_email']  = $user['email'];
-    $_SESSION['user_nom']    = $user['nom'] ?? '';
+    $_SESSION['user_nom']    = $user['nom']    ?? '';
     $_SESSION['user_prenom'] = $user['prenom'] ?? '';
-    $_SESSION['user_role']   = $user['role'] ?? '';
-
-    $_SESSION['filiere'] = $user['filiere'] ?? '';
-    $_SESSION['annee']   = $user['annee'] ?? '';
+    $_SESSION['user_role']   = $user['role']   ?? '';
+    $_SESSION['filiere']     = $user['filiere'] ?? '';
+    $_SESSION['annee']       = $user['annee']   ?? '';
 
     $newToken = $authRepo->createRememberToken((int)$user['id']);
 
@@ -287,7 +299,7 @@ function auth_guard(?PDO $pdo): void
         'expires'  => time() + REMEMBER_ME_DURATION,
         'path'     => '/',
         'httponly' => true,
-        'samesite' => 'Lax'
+        'samesite' => 'Lax',
     ]);
 }
 
@@ -306,7 +318,6 @@ function role_guard(array $route): void
     $userRole = $_SESSION['user_role'] ?? '';
 
     if (!in_array($userRole, $route['roles'], true)) {
-
         renderError(403);
     }
 }
@@ -362,7 +373,6 @@ function dispatch(array $routes, ?PDO $pdo): void
         }
 
         $instance = new $controller($pdo);
-
         $instance->$method();
 
         return;
@@ -382,12 +392,10 @@ function renderError(int $code): void
     http_response_code($code);
 
     echo match ($code) {
-
-        403 => '403 - Accès interdit',
-        404 => '404 - Page introuvable',
-        405 => '405 - Méthode non autorisée',
-
-        default => '500 - Erreur serveur'
+        403     => '403 - Accès interdit',
+        404     => '404 - Page introuvable',
+        405     => '405 - Méthode non autorisée',
+        default => '500 - Erreur serveur',
     };
 
     exit;

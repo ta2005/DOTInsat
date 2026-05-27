@@ -1,4 +1,5 @@
 <?php
+// config/enseignant.php
 
 $pdo     = get_pdo();
 $prof_id = $_SESSION['user_id'] ?? null;
@@ -11,29 +12,32 @@ if ($pdo && $prof_id) {
     require_once BASE_PATH . '/app/Repositories/EnseignementRepository.php';
     $ensRepo = new EnseignementRepository($pdo);
 
-    $profile_row  = $pdo->prepare("
+    $profile_stmt = $pdo->prepare("
         SELECT u.nom, u.prenom
-        FROM users u JOIN professeur p ON p.id = u.id
+        FROM users u
+        JOIN professeur p ON p.id = u.id
         WHERE u.id = :id
     ");
-    $profile_row->execute([':id' => $prof_id]);
-    $profile_row = $profile_row->fetch(PDO::FETCH_ASSOC);
+    $profile_stmt->execute([':id' => $prof_id]);
+    $profile_row = $profile_stmt->fetch(PDO::FETCH_ASSOC);
 
     $classes_rows = $ensRepo->getNomsByProfesseur((int)$prof_id);
     $stats_db     = $ensRepo->getStatsByProfesseur((int)$prof_id);
 }
 
 return [
-    'role' => 'Enseignant',
+    'role'    => 'Enseignant',
     'profile' => [
-        'name'    => $profile_row ? $profile_row['prenom'] . ' ' . $profile_row['nom'] : '—',
+        'name'    => $profile_row
+            ? $profile_row['prenom'] . ' ' . $profile_row['nom']
+            : '—',
         'year'    => '2025-2026',
         'classes' => $classes_rows,
     ],
     'nav' => [
         ['label' => 'Home',         'href' => '/?page=home'],
         ['label' => 'Blog',         'href' => '/?page=forum'],
-        ['label' => 'Examens',      'href' => '/?page=qcm-create'],
+        ['label' => 'Examens',      'href' => '/?page=examens-prof'],
         ['label' => 'Réclamations', 'href' => '/?page=prof-reclamations'],
     ],
     'stats' => [
@@ -50,8 +54,7 @@ return [
         ],
     ],
     'actions' => [
-        ['icon' => 'ti-clipboard-list', 'label' => 'Saisir Notes',  'href' => '/?page=qcm-scan'],
-        ['icon' => 'ti-file-text',      'label' => 'Mes Examens',   'href' => '/?page=qcm-create'],
-        ['icon' => 'ti-message-report', 'label' => 'Réclamations',  'href' => '/?page=prof-reclamations'],
+        ['icon' => 'ti-layout-dashboard', 'label' => 'Dashboard Examens', 'href' => '/?page=examens-prof'],
+        ['icon' => 'ti-message-report',   'label' => 'Réclamations',      'href' => '/?page=prof-reclamations'],
     ],
 ];
