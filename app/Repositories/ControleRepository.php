@@ -93,8 +93,12 @@ class ControleRepository extends Repository implements IControleRepo
                 c.type,
                 c.statut,
                 c.format,
-                c.note
+                c.note,
+                u.nom        AS etudiant_nom,
+                u.prenom     AS etudiant_prenom
             FROM controle c
+            LEFT JOIN etudiant e ON e.id = c.etudiant_id
+            LEFT JOIN users    u ON u.id = e.id
             WHERE c.enseignement_id = :ens_id
             ORDER BY c.type ASC, c.id ASC
         ");

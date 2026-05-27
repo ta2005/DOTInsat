@@ -93,10 +93,14 @@ $examMeta = [
 
                 <?php else: ?>
 
+                    <?php $showStudent = ($groupType !== 'EXAM'); ?>
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Titre</th>
+                                <?php if ($showStudent): ?>
+                                    <th>Étudiant</th>
+                                <?php endif; ?>
                                 <th>Type</th>
                                 <th>Statut</th>
                                 <th>Note</th>
@@ -111,9 +115,13 @@ $examMeta = [
                                 $badgeClass  = match($type) { 'QCM' => 'badge-qcm', 'MIX' => 'badge-mix', default => 'badge-nonqcm' };
                                 $statusClass = match($statut) { 'attente' => 'status-attente', 'corrige' => 'status-corrige', default => 'status-default' };
                                 $statusLabel = match($statut) { 'attente' => 'En attente', 'corrige' => 'Corrigé', default => ucfirst($statut ?: '—') };
+                                $etudiantNom = trim(($exam['etudiant_prenom'] ?? '') . ' ' . ($exam['etudiant_nom'] ?? '')) ?: '—';
                             ?>
                             <tr>
                                 <td><?= htmlspecialchars($exam['titre'] ?? '—') ?></td>
+                                <?php if ($showStudent): ?>
+                                    <td><?= htmlspecialchars($etudiantNom) ?></td>
+                                <?php endif; ?>
                                 <td><span class="badge <?= $badgeClass ?>"><?= $type ?></span></td>
                                 <td><span class="status <?= $statusClass ?>"><?= $statusLabel ?></span></td>
                                 <td>
