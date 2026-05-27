@@ -1,35 +1,4 @@
--- =====================================================
--- RESET
--- =====================================================
-
-DROP TABLE IF EXISTS notification CASCADE;
-DROP TABLE IF EXISTS vote CASCADE;
-DROP TABLE IF EXISTS commentaire CASCADE;
-DROP TABLE IF EXISTS post CASCADE;
-DROP TABLE IF EXISTS membre_groupe CASCADE;
-DROP TABLE IF EXISTS groupe CASCADE;
-DROP TABLE IF EXISTS demande CASCADE;
-DROP TABLE IF EXISTS reclamation CASCADE;
-DROP TABLE IF EXISTS controle CASCADE;
-DROP TABLE IF EXISTS enseignement CASCADE;
-DROP TABLE IF EXISTS matieres CASCADE;
-
-DROP TABLE IF EXISTS etudiant CASCADE;
-DROP TABLE IF EXISTS professeur CASCADE;
-DROP TABLE IF EXISTS admin CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
-
-DROP TYPE IF EXISTS type_demande CASCADE;
-DROP TYPE IF EXISTS type_controle CASCADE;
-DROP TYPE IF EXISTS statut_note CASCADE;
-DROP TYPE IF EXISTS statut_requete CASCADE;
-DROP TYPE IF EXISTS type_vote CASCADE;
-DROP TYPE IF EXISTS format CASCADE;
-DROP TYPE IF EXISTS niveau_scolaire CASCADE;
-
--- =====================================================
 -- ENUMS
--- =====================================================
 
 CREATE TYPE type_demande AS ENUM (
     'ATTESTATION_DE_INSCRIPTION',
@@ -58,6 +27,14 @@ CREATE TYPE statut_requete AS ENUM (
     'REFUSEE'
 );
 
+CREATE TYPE statut_reclamation AS ENUM (
+    'EN_ATTENTE',
+    'ACCEPTEE_PAR_LE_PROFESSEUR',
+    'ACCEPTEE_PAR_ADMINISTRATEUR',
+    'REFUSEE_PAR_LE_PROFESSEUR',
+    'REFUSEE_PAR_ADMINISTRATEUR'    
+);
+
 CREATE TYPE type_vote AS ENUM (
     'UPVOTE',
     'DOWNVOTE'
@@ -76,9 +53,8 @@ CREATE TYPE niveau_scolaire AS (
     filiere VARCHAR(100)
 );
 
--- =====================================================
+
 -- USERS
--- =====================================================
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -103,9 +79,7 @@ CREATE TABLE etudiant (
     niveau_scolaire_info niveau_scolaire
 );
 
--- =====================================================
 -- MATIERES
--- =====================================================
 
 CREATE TABLE matieres (
 
@@ -131,9 +105,8 @@ CREATE TABLE matieres (
     )
 );
 
--- =====================================================
+
 -- ENSEIGNEMENT
--- =====================================================
 
 CREATE TABLE enseignement (
 
@@ -150,9 +123,9 @@ CREATE TABLE enseignement (
     matiere_id INT REFERENCES matieres(id)
 );
 
--- =====================================================
+
 -- CONTROLE
--- =====================================================
+
 
 CREATE TABLE controle (
 
@@ -171,9 +144,9 @@ CREATE TABLE controle (
     etudiant_id INT REFERENCES etudiant(id)
 );
 
--- =====================================================
+
 -- RECLAMATION
--- =====================================================
+
 
 CREATE TABLE reclamation (
 
@@ -183,20 +156,16 @@ CREATE TABLE reclamation (
 
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    type_controle type_controle,
+    controle_id INT REFERENCES controle(id),
 
-    statut statut_requete,
-
-    enseignement_id INT REFERENCES enseignement(id),
-
-    etudiant_id INT REFERENCES etudiant(id),
+    statut statut_reclamation,
 
     admin_id INT REFERENCES admin(id)
 );
 
--- =====================================================
+
 -- DEMANDE
--- =====================================================
+
 
 CREATE TABLE demande (
 
@@ -210,14 +179,12 @@ CREATE TABLE demande (
 
     statut statut_requete,
 
-    user_id INT REFERENCES users(id),
+    etudiant_id INT REFERENCES etudiant(id),
 
     admin_id INT REFERENCES admin(id)
 );
 
--- =====================================================
 -- GROUPE
--- =====================================================
 
 CREATE TABLE groupe (
 
@@ -243,9 +210,9 @@ CREATE TABLE membre_groupe (
     UNIQUE(user_id, groupe_id)
 );
 
--- =====================================================
+
 -- POST
--- =====================================================
+
 
 CREATE TABLE post (
 
@@ -286,9 +253,8 @@ CREATE TABLE vote (
     UNIQUE(post_id, user_id)
 );
 
--- =====================================================
+
 -- NOTIFICATION
--- =====================================================
 
 CREATE TABLE notification (
 
@@ -305,382 +271,399 @@ CREATE TABLE notification (
     createur_id INT REFERENCES users(id)
 );
 
--- =====================================================
--- INSERT USERS
--- =====================================================
 
-INSERT INTO users (
-    cin,
-    nom,
-    prenom,
-    email,
-    mot_passe
-)
-VALUES
 
-(
-10000001,
-'Mansouri',
-'Khalil',
-'admin@dotinsat.tn',
-'$2y$10$adminhashed'
-),
+-- =========================
+-- USERS
+-- =========================
 
-(
-20000001,
-'Ben Ali',
-'Ahmed',
-'prof1@dotinsat.tn',
-'$2y$10$profhashed'
-),
+INSERT INTO users (cin, nom, prenom, email, mot_passe) VALUES
+(11111111, 'Ben Salah', 'Ahmed', 'ahmed.admin@esprit.tn', 'admin123'),
+(22222222, 'Trabelsi', 'Mouna', 'mouna.admin@esprit.tn', 'admin123'),
 
-(
-20000002,
-'Trabelsi',
-'Sonia',
-'prof2@dotinsat.tn',
-'$2y$10$profhashed'
-),
+(33333333, 'Jlassi', 'Karim', 'karim.prof@esprit.tn', 'prof123'),
+(44444444, 'Gharbi', 'Sonia', 'sonia.prof@esprit.tn', 'prof123'),
+(55555555, 'Masmoudi', 'Ali', 'ali.prof@esprit.tn', 'prof123'),
 
-(
-30000001,
-'Graja',
-'Houssem',
-'etud1@dotinsat.tn',
-'$2y$10$etudhashed'
-);
+(66666666, 'Ben Ali', 'Youssef', 'youssef.etu@esprit.tn', 'etud123'),
+(77777777, 'Ayari', 'Lina', 'lina.etu@esprit.tn', 'etud123'),
+(88888888, 'Chahed', 'Amine', 'amine.etu@esprit.tn', 'etud123'),
+(99999999, 'Haddad', 'Mariem', 'mariem.etu@esprit.tn', 'etud123'),
+(10101010, 'Kefi', 'Omar', 'omar.etu@esprit.tn', 'etud123');
 
--- =====================================================
--- INSERT ROLES
--- =====================================================
+-- =========================
+-- ADMIN
+-- ids auto générés :
+-- 1,2 = admins
+-- =========================
 
-INSERT INTO admin (id, titre)
-VALUES
-(1, 'Responsable pédagogique');
+INSERT INTO admin (id, titre) VALUES
+(1, 'Directeur des études'),
+(2, 'Responsable scolarité');
 
-INSERT INTO professeur (id)
-VALUES
-(2),
-(3);
+-- =========================
+-- PROFESSEUR
+-- ids :
+-- 3,4,5
+-- =========================
 
-INSERT INTO etudiant (
-    id,
-    niveau_scolaire_info
-)
-VALUES
-(
-4,
-ROW(
-    'GL',
-    2,
-    'Licence',
-    'Génie Logiciel'
-)::niveau_scolaire
-);
+INSERT INTO professeur (id) VALUES
+(3),
+(4),
+(5);
 
--- =====================================================
--- INSERT MATIERES GL2 S1
--- =====================================================
+-- =========================
+-- ETUDIANT
+-- ids :
+-- 6,7,8,9,10
+-- =========================
+
+INSERT INTO etudiant (id, niveau_scolaire_info) VALUES
+(6, ROW('INFO2A', 2025, '2EME', 'Informatique')),
+(7, ROW('INFO2A', 2025, '2EME', 'Informatique')),
+(8, ROW('INFO3B', 2025, '3EME', 'GL')),
+(9, ROW('INFO1A', 2025, '1ERE', 'RT')),
+(10, ROW('INFO3B', 2025, '3EME', 'GL'));
+
+-- =========================
+-- MATIERES
+-- =========================
 
 INSERT INTO matieres (
-
     filiere,
     niveau,
     semestre,
     nom_matiere,
     coefficient,
     types_controle
-
-)
-VALUES
+) VALUES
 
 (
-'GL',
-2,
-1,
-'Probabilités et Statistiques',
-3.00,
-ARRAY['DS','EXAM']::type_controle[]
+    'INFO',
+    2,
+    1,
+    'Base de Donnees',
+    3.0,
+    ARRAY['DS', 'EXAM', 'TP']::type_controle[]
 ),
 
 (
-'GL',
-2,
-1,
-'Bases de données relationnelles',
-4.00,
-ARRAY['DS','EXAM','TP']::type_controle[]
+    'INFO',
+    2,
+    1,
+    'Programmation Web',
+    2.5,
+    ARRAY['DS', 'TP']::type_controle[]
 ),
 
 (
-'GL',
-2,
-1,
-'Atelier Python Avancé',
-2.00,
-ARRAY['TP']::type_controle[]
+    'GL',
+    3,
+    2,
+    'Architecture Logicielle',
+    4.0,
+    ARRAY['DS', 'EXAM']::type_controle[]
 ),
 
 (
-'GL',
-2,
-1,
-'Atelier C++',
-2.00,
-ARRAY['TP']::type_controle[]
-),
-
-(
-'GL',
-2,
-1,
-'Systèmes d''exploitation',
-3.00,
-ARRAY['DS','EXAM']::type_controle[]
-),
-
-(
-'GL',
-2,
-1,
-'Programmation orientée objet',
-4.00,
-ARRAY['DS','EXAM','TP']::type_controle[]
-),
-
-(
-'GL',
-2,
-1,
-'Anglais',
-1.50,
-ARRAY['EXAM']::type_controle[]
+    'RT',
+    1,
+    1,
+    'Algorithmique',
+    2.0,
+    ARRAY['DS', 'EXAM', 'TP']::type_controle[]
 );
 
--- =====================================================
--- INSERT ENSEIGNEMENTS
--- =====================================================
+-- =========================
+-- ENSEIGNEMENT
+-- matiere ids :
+-- 1,2,3,4
+-- =========================
 
 INSERT INTO enseignement (
-
     nom,
     date_debut,
     niveau_scolaire_info,
     professeur_id,
     matiere_id
-
-)
-VALUES
+) VALUES
 
 (
-'Bases de données relationnelles',
-'2026-09-01 08:00',
-
-ROW(
-    'GL',
-    2,
-    'Licence',
-    'Génie Logiciel'
-)::niveau_scolaire,
-
-2,
-
-2
+    'BD INFO2',
+    '2025-09-01',
+    ROW('INFO2A', 2025, '2EME', 'Informatique'),
+    3,
+    1
 ),
 
 (
-'Programmation orientée objet',
-'2026-09-01 08:00',
+    'WEB INFO2',
+    '2025-09-02',
+    ROW('INFO2A', 2025, '2EME', 'Informatique'),
+    4,
+    2
+),
 
-ROW(
-    'GL',
-    2,
-    'Licence',
-    'Génie Logiciel'
-)::niveau_scolaire,
+(
+    'ARCHI GL3',
+    '2025-09-05',
+    ROW('INFO3B', 2025, '3EME', 'GL'),
+    5,
+    3
+),
 
-3,
-
-6
+(
+    'ALGO RT1',
+    '2025-09-03',
+    ROW('INFO1A', 2025, '1ERE', 'RT'),
+    3,
+    4
 );
 
--- =====================================================
--- INSERT CONTROLES
--- =====================================================
+-- =========================
+-- CONTROLE
+-- enseignement ids :
+-- 1,2,3,4
+-- =========================
 
 INSERT INTO controle (
-
     note,
     type,
     statut,
     format,
     enseignement_id,
     etudiant_id
+) VALUES
 
-)
-VALUES
+(15.5, 'DS', 'CORRIGE', 'QCM', 1, 6),
+(12.0, 'EXAM', 'VERIFIE', 'NON_QCM', 1, 6),
+(18.0, 'TP', 'CORRIGE', 'MIX', 2, 6),
+
+(9.5, 'DS', 'CONTESTE', 'QCM', 1, 7),
+(11.0, 'TP', 'EN_ATTENTE', 'MIX', 2, 7),
+
+(14.0, 'EXAM', 'VERIFIE', 'NON_QCM', 3, 8),
+(16.0, 'DS', 'CORRIGE', 'QCM', 3, 10),
+
+(7.5, 'DS', 'CONTESTE', 'NON_QCM', 4, 9);
+
+-- =========================
+-- RECLAMATION
+-- controle ids :
+-- 1..8
+-- =========================
+
+INSERT INTO reclamation (
+    message,
+    controle_id,
+    statut,
+    admin_id
+) VALUES
 
 (
-15.00,
-'DS',
-'CORRIGE',
-'QCM',
-1,
-4
+    'Je pense que ma note de DS est incorrecte.',
+    4,
+    'EN_ATTENTE',
+    1
 ),
 
 (
-14.00,
-'EXAM',
-'VERIFIE',
-'MIX',
-1,
-4
+    'La correction de lexamen contient une erreur.',
+    8,
+    'ACCEPTEE_PAR_LE_PROFESSEUR',
+    2
 ),
 
 (
-17.00,
-'TP',
-'CORRIGE',
-'NON_QCM',
-1,
-4
+    'Ma copie na pas ete bien corrigee.',
+    1,
+    'REFUSEE_PAR_ADMINISTRATEUR',
+    1
 );
 
--- =====================================================
--- INSERT DEMANDES
--- =====================================================
+-- =========================
+-- DEMANDE
+-- =========================
 
 INSERT INTO demande (
-
     message,
     type,
     statut,
-    user_id,
-    admin_id
-
-)
-VALUES
-
-(
-'Besoin attestation inscription',
-'ATTESTATION_DE_INSCRIPTION',
-'ACCEPTEE',
-4,
-1
-);
-
--- =====================================================
--- INSERT RECLAMATION
--- =====================================================
-
-INSERT INTO reclamation (
-
-    message,
-    type_controle,
-    statut,
-    enseignement_id,
     etudiant_id,
     admin_id
-
-)
-VALUES
+) VALUES
 
 (
-'Erreur de note',
-'EXAM',
-'EN_ATTENTE',
-1,
-4,
-1
+    'Je veux une attestation dinscription.',
+    'ATTESTATION_DE_INSCRIPTION',
+    'ACCEPTEE',
+    6,
+    1
+),
+
+(
+    'Besoin des feuilles de notes.',
+    'FEUILLES_DE_NOTES',
+    'EN_ATTENTE',
+    7,
+    2
+),
+
+(
+    'Demande de feuilles de stage.',
+    'FEUILLES_DE_STAGE',
+    'REFUSEE',
+    8,
+    1
+),
+
+(
+    'Autre demande administrative.',
+    'AUTRES',
+    'EN_ATTENTE',
+    9,
+    2
 );
 
--- =====================================================
--- INSERT GROUPES
--- =====================================================
+-- =========================
+-- GROUPE
+-- =========================
 
 INSERT INTO groupe (
     nom,
     moderateur_id
-)
-VALUES
+) VALUES
 
-(
-'GL2 Java',
-4
-);
+('GL2 Community', 6),
+('Club Robotique', 7);
+
+-- =========================
+-- MEMBRE_GROUPE
+-- groupe ids :
+-- 1,2
+-- =========================
 
 INSERT INTO membre_groupe (
     user_id,
     groupe_id
-)
-VALUES
+) VALUES
 
-(
-4,
-1
-);
+(6, 1),
+(7, 1),
+(8, 1),
 
--- =====================================================
--- INSERT POSTS
--- =====================================================
+(7, 2),
+(9, 2),
+(10, 2);
+
+-- =========================
+-- POST
+-- =========================
 
 INSERT INTO post (
     contenu,
     groupe_id,
     auteur_id
-)
-VALUES
+) VALUES
 
 (
-'Bonjour tout le monde',
-1,
-4
+    'Quelquun a compris le TP de base de donnees ?',
+    1,
+    6
+),
+
+(
+    'La reunion du club robotique est demain.',
+    2,
+    7
+),
+
+(
+    'Partage des ressources pour le DS.',
+    1,
+    8
 );
+
+-- =========================
+-- COMMENTAIRE
+-- post ids :
+-- 1,2,3
+-- =========================
 
 INSERT INTO commentaire (
     contenu,
     post_id,
     auteur_id
-)
-VALUES
+) VALUES
 
 (
-'Daccord',
-1,
-1
+    'Oui je peux texpliquer.',
+    1,
+    7
+),
+
+(
+    'Merci pour linfo.',
+    2,
+    9
+),
+
+(
+    'Je vais envoyer des resumes.',
+    3,
+    10
 );
+
+-- =========================
+-- VOTE
+-- =========================
 
 INSERT INTO vote (
     type,
     post_id,
     user_id
-)
-VALUES
+) VALUES
 
-(
-'UPVOTE',
-1,
-1
-);
+('UPVOTE', 1, 7),
+('UPVOTE', 1, 8),
+('DOWNVOTE', 2, 10),
+('UPVOTE', 3, 6);
 
--- =====================================================
--- INSERT NOTIFICATION
--- =====================================================
+-- =========================
+-- NOTIFICATION
+-- =========================
 
 INSERT INTO notification (
-
     message,
     lue,
     user_id,
     createur_id
-
-)
-VALUES
+) VALUES
 
 (
-'Votre demande acceptée',
-FALSE,
-4,
-1
+    'Votre reclamation est en attente.',
+    FALSE,
+    7,
+    1
+),
+
+(
+    'Votre demande a ete acceptee.',
+    TRUE,
+    6,
+    2
+),
+
+(
+    'Nouveau commentaire sur votre post.',
+    FALSE,
+    8,
+    7
+),
+
+(
+    'Nouvelle note disponible.',
+    FALSE,
+    9,
+    3
 );
