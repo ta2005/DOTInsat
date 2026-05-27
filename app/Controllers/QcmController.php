@@ -16,21 +16,13 @@ class QcmController
         $this->controleRepo   = new ControleRepository($this->pdo);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=examens-prof  →  page de choix (dashboard / create / scan)
-    |--------------------------------------------------------------------------
-    */
+
     public function examens(): void
     {
         require BASE_PATH . '/views/pages/professor/examens-prof.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=qcm-dashboard
-    |--------------------------------------------------------------------------
-    */
+
     public function dashboard(): void
     {
         $profId  = (int)($_SESSION['user_id'] ?? 0);
@@ -47,45 +39,19 @@ class QcmController
         require BASE_PATH . '/views/pages/professor/qcm-dashboard.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=qcm-create
-    |--------------------------------------------------------------------------
-    */
+
     public function create(): void
     {
         require BASE_PATH . '/views/pages/professor/qcm-create.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=qcm-scan
-    |--------------------------------------------------------------------------
-    */
+
     public function scan(): void
     {
         require BASE_PATH . '/views/pages/professor/qcm-scan.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | POST ?page=api-save-template
-    |--------------------------------------------------------------------------
-    |
-    | Reçoit la matrice de correction depuis qcm-builder.js et la persiste
-    | dans storage/qcm_keys/exam_{id}.json.
-    |
-    | Body JSON attendu :
-    | {
-    |   "exam_id": 14,
-    |   "total_questions": 20,
-    |   "choices_per_question": 4,
-    |   "grading_matrix": {
-    |     "q1": { "correct_choice": "B", "weight": 1 },
-    |     ...
-    |   }
-    | }
-    */
+
     public function saveTemplate(): void
     {
         $this->requirePost();
@@ -127,21 +93,7 @@ class QcmController
         ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | POST ?page=api-process-scan
-    |--------------------------------------------------------------------------
-    |
-    | Reçoit les réponses extraites par qcm-scanner.js, calcule la note
-    | via QcmGradingService et la persiste en base.
-    |
-    | Body JSON attendu :
-    | {
-    |   "exam_id":         14,
-    |   "student_id":      1002,
-    |   "student_answers": { "q1": "B", "q2": "A", ... }
-    | }
-    */
+
     public function processScan(): void
     {
         $this->requirePost();
@@ -189,11 +141,7 @@ class QcmController
         ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=api-get-template
-    |--------------------------------------------------------------------------
-    */
+
     public function getTemplate(): void
     {
         $examId = isset($_GET['exam_id']) ? (int)$_GET['exam_id'] : 0;
@@ -219,11 +167,7 @@ class QcmController
         $this->jsonSuccess($data);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Helpers privés
-    |--------------------------------------------------------------------------
-    */
+   
 
     private function requirePost(): void
     {
