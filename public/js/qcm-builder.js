@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalC    = parseInt(document.getElementById('choicesPerQuestion').value);
 
         if (!examIdStr || isNaN(totalQ) || isNaN(totalC)) {
+<<<<<<< HEAD
             alert('Veuillez remplir tous les champs avant de générer la matrice.');
             return;
         }
@@ -27,6 +28,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (totalC < 2 || totalC > 5) {
             alert('Le nombre de choix doit être entre 2 et 5.');
+=======
+            alert('Veuillez spécifier des variables d\'initialisation valides avant de procéder.');
+            return;
+        }
+        if (totalQ < 10 || totalQ > 40) {
+            alert('Échec de la vérification de la limite des questions. Veuillez choisir un nombre entre 10 et 40.');
+            return;
+        }
+        if (totalC < 2 || totalC > 5) {
+            alert('Échec de la contrainte de dimension des choix. Doit être entre 2 et 5 éléments.');
+>>>>>>> 56bcd12fcd57ae6195b0122a6ed19a38b8727d3c
             return;
         }
 
@@ -115,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body:    JSON.stringify(payload)
             });
 
+<<<<<<< HEAD
             const data = await res.json();
 
             if (data.success) {
@@ -125,6 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.error('Erreur réseau :', err);
             alert('Impossible de joindre le serveur. Vérifiez votre connexion.');
+=======
+            const responseParsed = await response.json();
+            if (responseParsed.success) {
+                alert('Le schéma de configuration de réponses maîtres a été enregistré avec succès dans les fichiers de stockage plat!');
+            } else {
+                alert('Échec de la compilation de la validation du stockage : ' + responseParsed.message);
+            }
+        } catch (fault) {
+            console.error('Network exception captured: ', fault);
+            alert('Flux de communication interrompu. Vérifiez les journaux d\'infrastructure.');
+>>>>>>> 56bcd12fcd57ae6195b0122a6ed19a38b8727d3c
         }
     });
 });

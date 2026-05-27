@@ -1,6 +1,13 @@
 <?php
+<<<<<<< HEAD
 function get_pdo(): ?PDO {
     static $instance = 'unset';
+=======
+$host = 'localhost';
+$db = 'dotinsat';
+$user = 'postgres';
+$pass = 'root';
+>>>>>>> 56bcd12fcd57ae6195b0122a6ed19a38b8727d3c
 
     if ($instance !== 'unset') return $instance;
 
@@ -23,8 +30,12 @@ function get_pdo(): ?PDO {
     } catch (PDOException $e) {
     die('Erreur BD : ' . $e->getMessage());
 }
+<<<<<<< HEAD
 
     return $instance;
 }
 
 $pdo = get_pdo();
+=======
+?>
+>>>>>>> 56bcd12fcd57ae6195b0122a6ed19a38b8727d3c
