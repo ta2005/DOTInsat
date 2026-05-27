@@ -160,7 +160,7 @@ CREATE TABLE reclamation (
 
     statut statut_reclamation,
 
-    admin_id INT REFERENCES admin(id)
+    admin_id INT REFERENCES admin(id),
     
     etudiant_id INT REFERENCES etudiant(id)
 );
@@ -389,11 +389,11 @@ INSERT INTO controle (note, type, statut, format, enseignement_id, etudiant_id) 
 
 -- RECLAMATION  (référence controle_id directement)
 
-INSERT INTO reclamation (message, controle_id, statut, admin_id) VALUES
-('Ma note de DS BDD ne correspond pas à ma copie corrigée.',       9,  'EN_ATTENTE',                    1),
-('Je conteste ma note de DS Réseaux, le corrigé est illisible.',   13, 'REFUSEE_PAR_LE_PROFESSEUR',     2),
-('Erreur de calcul sur mon TP Java, deux questions non notées.',   7,  'ACCEPTEE_PAR_LE_PROFESSEUR',    1),
-('Ma note d''EXAM BDD GL3 n''a pas été saisie correctement.',      10, 'EN_ATTENTE',                    2);
+INSERT INTO reclamation (message, controle_id, statut, admin_id, etudiant_id) VALUES
+('Ma note de DS BDD ne correspond pas à ma copie corrigée.',       9,  'EN_ATTENTE',                    1, 14),
+('Je conteste ma note de DS Réseaux, le corrigé est illisible.',   13, 'REFUSEE_PAR_LE_PROFESSEUR',     2, 9),
+('Erreur de calcul sur mon TP Java, deux questions non notées.',   7,  'ACCEPTEE_PAR_LE_PROFESSEUR',    1, 7),
+('Ma note d''EXAM BDD GL3 n''a pas été saisie correctement.',      10, 'EN_ATTENTE',                    2, 14);
 
 
 -- DEMANDE  (etudiant_id à la place de user_id)

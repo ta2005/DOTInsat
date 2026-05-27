@@ -15,6 +15,10 @@ require BASE_PATH . '/views/layouts/header.php';
 
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/prof.css">
 
+<div class="calculator-page">
+<div class="container">
+<div class="calculator-wrapper">
+
 <div class="scanner-wrap">
 
     <h2>
@@ -143,26 +147,14 @@ require BASE_PATH . '/views/layouts/header.php';
 
             </div>
 
-            <div class="result-block">
-
-                <label>
-                    Console
-                </label>
-
-                <div id="logStream" class="log-stream">
-
-                    <div class="log-entry">
-                        [Système] En attente d'une image...
-                    </div>
-
-                </div>
-
-            </div>
-
         </div>
 
     </div>
 
+</div>
+
+</div>
+</div>
 </div>
 
 <script src="<?= BASE_URL ?>/js/qcm-scanner.js"></script>

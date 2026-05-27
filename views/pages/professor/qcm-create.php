@@ -15,7 +15,11 @@ require BASE_PATH . '/views/layouts/header.php';
 
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/prof.css">
 
-<div class="qcm-wrap no-print-layer">
+<div class="calculator-page no-print-layer">
+<div class="container">
+<div class="calculator-wrapper">
+
+<div class="qcm-wrap">
 
     <h2>Créer une clé QCM</h2>
 
@@ -122,6 +126,10 @@ require BASE_PATH . '/views/layouts/header.php';
 
     </form>
 
+</div>
+
+</div>
+</div>
 </div>
 
 <div id="printableBubbleDocument">

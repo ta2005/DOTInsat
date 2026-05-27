@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function writeLog(message) {
+        if (!logStream) {
+            console.log(message);
+            return;
+        }
         const entry = document.createElement('div');
         entry.className = 'log-entry';
         entry.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;

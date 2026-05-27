@@ -3,9 +3,9 @@
 
 $config = [
     'nav' => [
-        ['href' => '/?page=home',              'label' => 'Accueil'],
-        ['href' => '/?page=forum',             'label' => 'Blog'],
-        ['href' => '/?page=examens-prof',      'label' => 'Examens'],
+        ['href' => '/?page=home', 'label' => 'Accueil'],
+        ['href' => '/?page=forum', 'label' => 'Blog'],
+        ['href' => '/?page=examens-prof', 'label' => 'Examens'],
         ['href' => '/?page=prof-reclamations', 'label' => 'Réclamations'],
     ]
 ];
@@ -15,281 +15,280 @@ require BASE_PATH . '/views/layouts/header.php';
 
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/prof.css">
 
-<div class="dash-wrap">
+<div class="calculator-page">
+    <div class="container">
+        <div class="calculator-wrapper">
 
-    <div class="dashboard-header">
-        <h1>Dashboard QCM</h1>
-        <p>Gestion des examens et correction automatique</p>
-    </div>
+            <div class="dash-wrap">
 
-    <div class="dash-grid">
-
-
-        <!-- SIDEBAR -->
-        <div class="sidebar-card">
-
-            <div class="sidebar-title">
-                Mes cours
-            </div>
-
-            <?php if (empty($courses)): ?>
-
-                <div class="empty-sidebar">
-                    Aucun cours disponible
+                <div class="dashboard-header">
+                    <h1>Dashboard QCM</h1>
+                    <p>Gestion des examens et correction automatique</p>
                 </div>
 
-            <?php else: ?>
+                <div class="dash-grid">
 
-                <?php foreach ($courses as $c): ?>
 
-                    <a
-                        href="?page=qcm-dashboard&course_id=<?= (int)$c['id'] ?>"
-                        class="course-item <?= (int)$c['id'] === $selectedCourseId ? 'active' : '' ?>"
-                    >
+                    <!-- SIDEBAR -->
+                    <div class="sidebar-card">
 
-                        <div class="course-name">
-                            <?= htmlspecialchars($c['nom']) ?>
+                        <div class="sidebar-title">
+                            Mes cours
                         </div>
 
-                        <?php if (!empty($c['filiere']) || !empty($c['annee'])): ?>
+                        <?php if (empty($courses)): ?>
 
-                            <div class="course-meta">
-                                <?= htmlspecialchars(
-                                    trim(
-                                        ($c['filiere'] ?? '') .
-                                        ' — ' .
-                                        ($c['annee'] ?? ''),
-                                        ' —'
-                                    )
-                                ) ?>
-                            </div>
-
-                        <?php endif; ?>
-
-                    </a>
-
-                <?php endforeach; ?>
-
-            <?php endif; ?>
-
-        </div>
-
-        <!-- MAIN -->
-        <div class="main-card">
-
-            <div class="main-header">
-
-                <div>
-                    <h2>
-
-                        <?php if ($selectedCourseId > 0):
-
-                            $activeCourse = array_filter(
-                                $courses,
-                                fn($c) => (int)$c['id'] === $selectedCourseId
-                            );
-
-                            $activeCourse = reset($activeCourse);
-
-                            echo htmlspecialchars($activeCourse['nom'] ?? '');
-
-                        else: ?>
-
-                            Sélectionnez un cours
-
-                        <?php endif; ?>
-
-                    </h2>
-
-                    <span>
-                        Tableau des examens
-                    </span>
-                </div>
-
-                <?php if ($selectedCourseId > 0): ?>
-
-                    <button
-                        class="btn btn-primary"
-                        onclick="openModal()"
-                    >
-                        + Nouvel examen
-                    </button>
-
-                <?php endif; ?>
-
-            </div>
-
-            <?php if ($selectedCourseId <= 0): ?>
-
-                <div class="empty-state">
-                    Sélectionnez un cours pour afficher les examens
-                </div>
-
-            <?php else: ?>
-
-                <?php
-                $groupedExams = [
-                    'TP'    => [],
-                    'DS'    => [],
-                    'EXAM'  => []
-                ];
-
-                foreach ($exams as $exam) {
-
-                    $type = strtoupper($exam['type']);
-
-                    if (isset($groupedExams[$type])) {
-                        $groupedExams[$type][] = $exam;
-                    }
-                }
-                ?>
-
-                <?php foreach ($groupedExams as $section => $items): ?>
-
-                    <div class="exam-section">
-
-                        <div class="section-header">
-
-                            <h3 class="section-title">
-                                <?= $section ?>
-                            </h3>
-
-                            <span class="section-count">
-                                <?= count($items) ?> examen(s)
-                            </span>
-
-                        </div>
-
-                        <?php if (empty($items)): ?>
-
-                            <div class="empty-category">
-                                Aucun <?= $section ?>
-                            </div>
+                                <div class="empty-sidebar">
+                                    Aucun cours disponible
+                                </div>
 
                         <?php else: ?>
 
-                            <table class="exam-table">
+                                <?php foreach ($courses as $c): ?>
 
-                                <thead>
+                                        <a href="?page=qcm-dashboard&course_id=<?= (int) $c['id'] ?>"
+                                            class="course-item <?= (int) $c['id'] === $selectedCourseId ? 'active' : '' ?>">
 
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Type</th>
-                                        <th>Format</th>
-                                        <th>Statut</th>
-                                        <th>Note</th>
-                                        <th>Actions</th>
-                                    </tr>
+                                            <div class="course-name">
+                                                <?= htmlspecialchars($c['nom']) ?>
+                                            </div>
 
-                                </thead>
+                                            <?php if (!empty($c['filiere']) || !empty($c['annee'])): ?>
 
-                                <tbody>
-
-                                <?php foreach ($items as $exam): ?>
-
-                                    <tr>
-
-                                        <td>
-                                            <strong>
-                                                #<?= (int)$exam['id'] ?>
-                                            </strong>
-                                        </td>
-
-                                        <td>
-
-                                            <span class="type-badge">
-                                                <?= htmlspecialchars($exam['type']) ?>
-                                            </span>
-
-                                        </td>
-
-                                        <td>
-
-                                            <span class="format-badge">
-
-                                                <?= htmlspecialchars($exam['format']) ?>
-
-                                            </span>
-
-                                        </td>
-
-                                        <td>
-
-                                            <?php
-                                            $statusClass =
-                                                ($exam['statut'] ?? '') === 'CORRIGE'
-                                                ? 'status-corrige'
-                                                : 'status-en-attente';
-                                            ?>
-
-                                            <span class="status-badge <?= $statusClass ?>">
-
-                                                <?= htmlspecialchars($exam['statut']) ?>
-
-                                            </span>
-
-                                        </td>
-
-                                        <td>
-
-                                            <?=
-                                                $exam['note'] !== null
-                                                ? '<strong>' .
-                                                    htmlspecialchars((string)$exam['note']) .
-                                                    '</strong> / 20'
-                                                : '--'
-                                            ?>
-
-                                        </td>
-
-                                        <td class="actions-cell">
-
-                                            <?php if (
-                                                in_array(
-                                                    $exam['format'],
-                                                    ['QCM', 'MIX'],
-                                                    true
-                                                )
-                                            ): ?>
-
-                                                <a
-                                                    href="?page=qcm-create&exam_id=<?= (int)$exam['id'] ?>"
-                                                    class="btn btn-secondary btn-sm"
-                                                >
-                                                    Clé
-                                                </a>
+                                                    <div class="course-meta">
+                                                        <?= htmlspecialchars(
+                                                            trim(
+                                                                ($c['filiere'] ?? '') .
+                                                                ' — ' .
+                                                                ($c['annee'] ?? ''),
+                                                                ' —'
+                                                            )
+                                                        ) ?>
+                                                    </div>
 
                                             <?php endif; ?>
 
-                                            <a
-                                                href="?page=qcm-scan&exam_id=<?= (int)$exam['id'] ?>"
-                                                class="btn btn-primary btn-sm"
-                                            >
-                                                Scanner
-                                            </a>
-
-                                        </td>
-
-                                    </tr>
+                                        </a>
 
                                 <?php endforeach; ?>
-
-                                </tbody>
-
-                            </table>
 
                         <?php endif; ?>
 
                     </div>
 
-                <?php endforeach; ?>
+                    <!-- MAIN -->
+                    <div class="main-card">
 
-            <?php endif; ?>
+                        <div class="main-header">
+
+                            <div>
+                                <h2>
+
+                                    <?php if ($selectedCourseId > 0):
+
+                                        $activeCourse = array_filter(
+                                            $courses,
+                                            fn($c) => (int) $c['id'] === $selectedCourseId
+                                        );
+
+                                        $activeCourse = reset($activeCourse);
+
+                                        echo htmlspecialchars($activeCourse['nom'] ?? '');
+
+                                    else: ?>
+
+                                            Sélectionnez un cours
+
+                                    <?php endif; ?>
+
+                                </h2>
+
+                                <span>
+                                    Tableau des examens
+                                </span>
+                            </div>
+
+                            <?php if ($selectedCourseId > 0): ?>
+
+                                    <button class="btn btn-primary" onclick="openModal()">
+                                        + Nouvel examen
+                                    </button>
+
+                            <?php endif; ?>
+
+                        </div>
+
+                        <?php if ($selectedCourseId <= 0): ?>
+
+                                <div class="empty-state">
+                                    Sélectionnez un cours pour afficher les examens
+                                </div>
+
+                        <?php else: ?>
+
+                                <?php
+                                $groupedExams = [
+                                    'TP' => [],
+                                    'DS' => [],
+                                    'EXAM' => []
+                                ];
+
+                                foreach ($exams as $exam) {
+
+                                    $type = strtoupper($exam['type']);
+
+                                    if (isset($groupedExams[$type])) {
+                                        $groupedExams[$type][] = $exam;
+                                    }
+                                }
+                                ?>
+
+                                <?php foreach ($groupedExams as $section => $items): ?>
+
+                                        <div class="exam-section">
+
+                                            <div class="section-header">
+
+                                                <h3 class="section-title">
+                                                    <?= $section ?>
+                                                </h3>
+
+                                                <span class="section-count">
+                                                    <?= count($items) ?> examen(s)
+                                                </span>
+
+                                            </div>
+
+                                            <?php if (empty($items)): ?>
+
+                                                    <div class="empty-category">
+                                                        Aucun <?= $section ?>
+                                                    </div>
+
+                                            <?php else: ?>
+
+                                                    <table class="exam-table">
+
+                                                        <thead>
+
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>Type</th>
+                                                                <th>Format</th>
+                                                                <th>Statut</th>
+                                                                <th>Note</th>
+                                                                <th>Actions</th>
+                                                            </tr>
+
+                                                        </thead>
+
+                                                        <tbody>
+
+                                                            <?php foreach ($items as $exam): ?>
+
+                                                                    <tr>
+
+                                                                        <td>
+                                                                            <strong>
+                                                                                #<?= (int) $exam['id'] ?>
+                                                                            </strong>
+                                                                        </td>
+
+                                                                        <td>
+
+                                                                            <span class="type-badge">
+                                                                                <?= htmlspecialchars($exam['type']) ?>
+                                                                            </span>
+
+                                                                        </td>
+
+                                                                        <td>
+
+                                                                            <span class="format-badge">
+
+                                                                                <?= htmlspecialchars($exam['format']) ?>
+
+                                                                            </span>
+
+                                                                        </td>
+
+                                                                        <td>
+
+                                                                            <?php
+                                                                            $statusClass =
+                                                                                ($exam['statut'] ?? '') === 'CORRIGE'
+                                                                                ? 'status-corrige'
+                                                                                : 'status-en-attente';
+                                                                            ?>
+
+                                                                            <span class="status-badge <?= $statusClass ?>">
+
+                                                                                <?= htmlspecialchars($exam['statut']) ?>
+
+                                                                            </span>
+
+                                                                        </td>
+
+                                                                        <td>
+
+                                                                            <?=
+                                                                                $exam['note'] !== null
+                                                                                ? '<strong>' .
+                                                                                htmlspecialchars((string) $exam['note']) .
+                                                                                '</strong> / 20'
+                                                                                : '--'
+                                                                                ?>
+
+                                                                        </td>
+
+                                                                        <td class="actions-cell">
+
+                                                                            <?php if (
+                                                                                in_array(
+                                                                                    $exam['format'],
+                                                                                    ['QCM', 'MIX'],
+                                                                                    true
+                                                                                )
+                                                                            ): ?>
+
+                                                                                    <a href="?page=qcm-create&exam_id=<?= (int) $exam['id'] ?>"
+                                                                                        class="btn btn-secondary btn-sm">
+                                                                                        Clé
+                                                                                    </a>
+
+                                                                            <?php endif; ?>
+
+                                                                            <a href="?page=qcm-scan&exam_id=<?= (int) $exam['id'] ?>"
+                                                                                class="btn btn-primary btn-sm">
+                                                                                Scanner
+                                                                            </a>
+
+                                                                        </td>
+
+                                                                    </tr>
+
+                                                            <?php endforeach; ?>
+
+                                                        </tbody>
+
+                                                    </table>
+
+                                            <?php endif; ?>
+
+                                        </div>
+
+                                <?php endforeach; ?>
+
+                        <?php endif; ?>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
-
     </div>
-
 </div>
 
 <!-- MODAL -->
@@ -302,10 +301,7 @@ require BASE_PATH . '/views/layouts/header.php';
 
             <h3>Nouvel examen</h3>
 
-            <button
-                class="modal-close"
-                onclick="closeModal()"
-            >
+            <button class="modal-close" onclick="closeModal()">
                 ×
             </button>
 
@@ -315,11 +311,7 @@ require BASE_PATH . '/views/layouts/header.php';
 
             <div class="modal-body">
 
-                <input
-                    type="hidden"
-                    name="enseignement_id"
-                    value="<?= $selectedCourseId ?>"
-                >
+                <input type="hidden" name="enseignement_id" value="<?= $selectedCourseId ?>">
 
                 <div class="form-group">
 
@@ -373,18 +365,11 @@ require BASE_PATH . '/views/layouts/header.php';
 
             <div class="modal-footer">
 
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    onclick="closeModal()"
-                >
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">
                     Annuler
                 </button>
 
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                >
+                <button type="submit" class="btn btn-primary">
                     Créer
                 </button>
 
@@ -398,29 +383,29 @@ require BASE_PATH . '/views/layouts/header.php';
 
 <script>
 
-function openModal() {
+    function openModal() {
+
+        document
+            .getElementById('createModal')
+            .classList
+            .add('open');
+    }
+
+    function closeModal() {
+
+        document
+            .getElementById('createModal')
+            .classList
+            .remove('open');
+    }
 
     document
         .getElementById('createModal')
-        .classList
-        .add('open');
-}
+        .addEventListener('click', function (e) {
 
-function closeModal() {
-
-    document
-        .getElementById('createModal')
-        .classList
-        .remove('open');
-}
-
-document
-    .getElementById('createModal')
-    .addEventListener('click', function(e) {
-
-        if (e.target === this) {
-            closeModal();
-        }
-});
+            if (e.target === this) {
+                closeModal();
+            }
+        });
 
 </script>
