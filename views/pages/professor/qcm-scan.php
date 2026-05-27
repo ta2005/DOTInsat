@@ -1,164 +1,168 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+// views/pages/professor/qcm-scan.php
 
-<head>
-    <meta charset="UTF-8">
-    <title>Professor Panel - Automated QCM Scanner Engine</title>
-    <link rel="stylesheet" href="/css/main.css">
-    <style>
-        .scanner-layout {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 30px;
-            margin-top: 20px;
-        }
+$config = [
+    'nav' => [
+        ['href' => '/?page=home',              'label' => 'Accueil'],
+        ['href' => '/?page=forum',             'label' => 'Blog'],
+        ['href' => '/?page=examens-prof',      'label' => 'Examens'],
+        ['href' => '/?page=prof-reclamations', 'label' => 'Réclamations'],
+    ]
+];
 
-        /* Drag and Drop Capture Frame Area */
-        .dropzone-container {
-            border: 3px dashed #0d6efd;
-            background: #f8f9fa;
-            padding: 40px;
-            text-align: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
+require BASE_PATH . '/views/layouts/header.php';
+?>
 
-        .dropzone-container.dragover {
-            background: #e7f1ff;
-            border-color: #0a58ca;
-        }
+<link rel="stylesheet" href="<?= BASE_URL ?>/css/prof.css">
 
-        /* Hidden Processing Canvas Layout */
-        #processingCanvas {
-            display: none;
-            max-width: 100%;
-            border: 1px solid #dee2e6;
-            margin-top: 20px;
-        }
+<div class="scanner-wrap">
 
-        /* Live Results Processing Feed Sidebar Layout */
-        .results-sidebar {
-            background: #fff;
-            border: 1px solid #dee2e6;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-            height: max-content;
-        }
+    <h2>
+        Scanner les feuilles QCM
+    </h2>
 
-        .log-stream {
-            max-height: 300px;
-            overflow-y: auto;
-            background: #212529;
-            color: #0dfd53;
-            font-family: monospace;
-            padding: 12px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            margin-top: 15px;
-        }
+    <div class="scanner-filter">
 
-        .log-entry {
-            margin-bottom: 6px;
-            border-bottom: 1px solid #343a40;
-            padding-bottom: 4px;
-        }
+        <div class="input-wrapper">
 
-        .score-badge {
-            display: inline-block;
-            font-size: 2rem;
-            font-weight: bold;
-            color: #198754;
-            margin: 15px 0;
-        }
+            <label for="scanExamId">
+                ID examen
+            </label>
 
-        .status-pill {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            background: #ffc107;
-            color: #000;
-        }
-
-        .status-pill.success {
-            background: #198754;
-            color: #fff;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="container" style="padding: 30px; max-width: 1300px; margin: 0 auto;">
-        <div
-            style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e9ecef; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); display: flex; gap: 20px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column;">
-                <label style="font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #495057;">Select Exam
-                    Context (ID)</label>
-                <input type="number" id="scanExamId" min="1" value="14" required
-                    style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem;">
-            </div>
-            <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column;">
-                <label style="font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #495057;">Student ID
-                    (CIN/Serial)</label>
-                <input type="number" id="scanStudentId" min="1" value="1002" required
-                    style="padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem;">
-            </div>
-        </div>
-
-        <div class="scanner-layout">
-
-            <div>
-                <div id="dropzone" class="dropzone-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#0d6efd" viewBox="0 0 16 16"
-                        style="margin-bottom:15px;">
-                        <path
-                            d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                        <path
-                            d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                    <h4>Drag & Drop Student Sheet Image Here</h4>
-                    <p class="text-muted">Supports PNG, JPG, or JPEG source files</p>
-                    <input type="file" id="fileFallbackInput" accept="image/*" style="display: none;">
-                    <button type="button" class="btn btn-primary"
-                        onclick="document.getElementById('fileFallbackInput').click()">Browse Files</button>
-                </div>
-
-                <canvas id="processingCanvas"></canvas>
-            </div>
-
-            <div class="results-sidebar">
-                <h3>Processing Console</h3>
-                <hr>
-                <div style="margin-bottom: 15px;">
-                    <label><strong>Current Student Session ID:</strong></label>
-                    <div id="lblSessionStudent" style="font-size: 1.2rem; font-weight: bold; color: #495057;">Pending
-                        Scan...</div>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <label><strong>Execution Status:</strong></label>
-                    <div><span id="pillStatus" class="status-pill">Awaiting Target Payload</span></div>
-                </div>
-
-                <div>
-                    <label><strong>Calculated Return Grade Score:</strong></label>
-                    <div><span id="lblCalculatedScore" class="score-badge">0.00</span></div>
-                </div>
-
-                <strong>System Engine Activity Log:</strong>
-                <div id="logStream" class="log-stream">
-                    <div class="log-entry">[System] Core engine active. Awaiting image upload...</div>
-                </div>
-            </div>
+            <input
+                type="number"
+                id="scanExamId"
+                min="1"
+                value="14"
+                required
+            >
 
         </div>
+
+        <div class="input-wrapper">
+
+            <label for="scanStudentId">
+                CIN étudiant
+            </label>
+
+            <input
+                type="number"
+                id="scanStudentId"
+                min="1"
+                value="1002"
+                required
+            >
+
+        </div>
+
     </div>
 
-    <script src="/js/qcm-scanner.js"></script>
-</body>
+    <div class="scanner-layout">
 
-</html>
+        <!-- LEFT -->
+
+        <div>
+
+            <div id="dropzone" class="dropzone-container">
+
+                <h3>
+                    Déposez la feuille ici
+                </h3>
+
+                <p>
+                    PNG / JPG / JPEG
+                </p>
+
+                <input
+                    type="file"
+                    id="fileFallbackInput"
+                    accept="image/*"
+                    style="display:none;"
+                >
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="document.getElementById('fileFallbackInput').click()"
+                >
+                    Parcourir
+                </button>
+
+            </div>
+
+            <canvas id="processingCanvas"></canvas>
+
+        </div>
+
+        <!-- RIGHT -->
+
+        <div class="results-sidebar">
+
+            <h3>
+                Résultats
+            </h3>
+
+            <hr>
+
+            <div class="result-block">
+
+                <label>
+                    Étudiant
+                </label>
+
+                <div id="lblSessionStudent">
+                    En attente...
+                </div>
+
+            </div>
+
+            <div class="result-block">
+
+                <label>
+                    Statut
+                </label>
+
+                <span
+                    id="pillStatus"
+                    class="status-badge status-en-attente"
+                >
+                    En attente
+                </span>
+
+            </div>
+
+            <div class="result-block">
+
+                <label>
+                    Note
+                </label>
+
+                <div id="lblCalculatedScore" class="score-badge">
+                    0.00
+                </div>
+
+            </div>
+
+            <div class="result-block">
+
+                <label>
+                    Console
+                </label>
+
+                <div id="logStream" class="log-stream">
+
+                    <div class="log-entry">
+                        [Système] En attente d'une image...
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="<?= BASE_URL ?>/js/qcm-scanner.js"></script>

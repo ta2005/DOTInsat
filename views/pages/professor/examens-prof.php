@@ -1,8 +1,19 @@
 <?php
 // views/pages/professor/examens-prof.php
+
+$config = [
+    'nav' => [
+        ['href' => '/?page=home',              'label' => 'Accueil'],
+        ['href' => '/?page=forum',             'label' => 'Blog'],
+        ['href' => '/?page=examens-prof',      'label' => 'Examens'],
+        ['href' => '/?page=prof-reclamations', 'label' => 'Réclamations'],
+    ]
+];
 ?>
 
 <?php require BASE_PATH . '/views/layouts/header.php'; ?>
+
+<link rel="stylesheet" href="<?= BASE_URL ?>/css/prof.css">
 
 <div class="calculator-page">
 <div class="container">

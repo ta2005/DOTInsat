@@ -1,6 +1,6 @@
 <?php
 // Point d'entrée unique : public/
-define('BASE_URL',  '/DOTInsat/public');
+define('BASE_URL', '');
 
 
 // Durée du cookie "Se souvenir de moi" : 30 jours
