@@ -221,6 +221,30 @@ $routes = [
         'roles'      => [ROLE_PROFESSEUR]
     ],
 
+    [
+        'page'       => 'api-create-exam',
+        'controller' => 'QcmController',
+        'method'     => 'createExam',
+        'http'       => 'POST',
+        'roles'      => [ROLE_PROFESSEUR],
+    ],
+
+    [
+        'page'       => 'api-modify-exam',
+        'controller' => 'QcmController',
+        'method'     => 'modifyExam',
+        'http'       => 'POST',
+        'roles'      => [ROLE_PROFESSEUR],
+    ],
+
+    [
+        'page'       => 'api-modify-student-grade',
+        'controller' => 'QcmController',
+        'method'     => 'modifyStudentGrade',
+        'http'       => 'POST',
+        'roles'      => [ROLE_PROFESSEUR],
+    ],
+
     // ───────────────── FORUM ─────────────────
     [
         'page'       => 'forum',

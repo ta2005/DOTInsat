@@ -33,7 +33,90 @@ class QcmController
         $exams            = [];
 
         if ($selectedCourseId > 0) {
-            $exams = $this->controleRepo->fetchExamsByCourse($selectedCourseId);
+            $examsRaw = $this->controleRepo->fetchExamsByCourse($selectedCourseId);
+            $enrolledStudents = $this->controleRepo->fetchStudentsByCourse($selectedCourseId);
+            
+            // Group exams into unique exams and compile their student entries
+            $grouped = [];
+            foreach ($examsRaw as $row) {
+                $type = strtoupper($row['type']);
+                $format = strtoupper($row['format']);
+                $key = "{$type}-{$format}";
+
+                if (!isset($grouped[$key])) {
+                    $grouped[$key] = [
+                        'id' => null,
+                        'type' => $type,
+                        'format' => $format,
+                        'statut' => 'EN_ATTENTE',
+                        'note' => null,
+                        'students' => []
+                    ];
+                }
+
+                if ($row['etudiant_id'] === null) {
+                    $grouped[$key]['id'] = (int)$row['id'];
+                    $grouped[$key]['statut'] = $row['statut'];
+                } else {
+                    $grouped[$key]['students'][] = [
+                        'id' => (int)$row['id'],
+                        'student_id' => (int)$row['etudiant_id'],
+                        'cin' => $row['student_cin'],
+                        'nom' => $row['student_nom'],
+                        'prenom' => $row['student_prenom'],
+                        'email' => $row['student_email'],
+                        'note' => $row['note'],
+                        'statut' => $row['statut']
+                    ];
+                }
+            }
+
+            // Cleanup & Summarize
+            foreach ($grouped as $key => &$exam) {
+                if ($exam['id'] === null && !empty($exam['students'])) {
+                    $exam['id'] = $exam['students'][0]['id'];
+                }
+                
+                // Merge enrolled students with graded students
+                $actualStudents = [];
+                $studentGrades = [];
+                foreach ($exam['students'] as $s) {
+                    $studentGrades[$s['student_id']] = $s;
+                }
+
+                foreach ($enrolledStudents as $es) {
+                    $sid = $es['student_id'];
+                    if (isset($studentGrades[$sid])) {
+                        $actualStudents[] = $studentGrades[$sid];
+                    } else {
+                        $actualStudents[] = [
+                            'id' => null,
+                            'student_id' => $sid,
+                            'cin' => $es['cin'],
+                            'nom' => $es['nom'],
+                            'prenom' => $es['prenom'],
+                            'email' => $es['email'],
+                            'note' => null,
+                            'statut' => '--'
+                        ];
+                    }
+                }
+                $exam['students'] = $actualStudents;
+
+                if (!empty($exam['students'])) {
+                    $allCorrige = true;
+                    foreach ($exam['students'] as $s) {
+                        if ($s['statut'] === 'EN_ATTENTE' || $s['statut'] === '--') {
+                            $allCorrige = false;
+                            break;
+                        }
+                    }
+                    $exam['statut'] = $allCorrige ? 'CORRIGE' : 'EN_ATTENTE';
+                }
+            }
+            unset($exam);
+
+            $exams = array_values($grouped);
         }
 
         require BASE_PATH . '/views/pages/professor/qcm-dashboard.php';
@@ -167,7 +250,87 @@ class QcmController
         $this->jsonSuccess($data);
     }
 
-   
+
+    public function createExam(): void
+    {
+        $this->requirePost();
+
+        $enseignementId = $_POST['enseignement_id'] ?? null;
+        $type = $_POST['type'] ?? null;
+        $format = $_POST['format'] ?? null;
+
+        if (empty($enseignementId) || empty($type) || empty($format)) {
+            $this->jsonError('Champs requis manquants : enseignement_id, type ou format.', 400);
+            return;
+        }
+
+        $data = [
+            'type' => $type,
+            'format' => $format,
+            'enseignement_id' => (int)$enseignementId,
+        ];
+
+        $examId = $this->controleRepo->createExam($data);
+
+        $this->jsonSuccess([
+            'exam_id' => $examId,
+            'format' => $format,
+            'enseignement_id' => (int)$enseignementId,
+            'message' => "Examen créé avec succès.",
+        ]);
+    }
+
+    public function modifyExam(): void
+    {
+        $this->requirePost();
+
+        $examId = (int)($_POST['exam_id'] ?? 0);
+        $format = $_POST['format'] ?? '';
+
+        if ($examId <= 0 || !in_array($format, ['QCM', 'MIX', 'NON_QCM'], true)) {
+            $this->jsonError('Données invalides.');
+            return;
+        }
+
+        $success = $this->controleRepo->updateExamFormat($examId, $format);
+        if ($success) {
+            $this->jsonSuccess(['message' => 'Format mis à jour avec succès.']);
+        } else {
+            $this->jsonError('Impossible de mettre à jour le format.');
+        }
+    }
+
+    public function modifyStudentGrade(): void
+    {
+        $this->requirePost();
+
+        $studentId = (int)($_POST['student_id'] ?? 0);
+        $examId = (int)($_POST['exam_id'] ?? 0);
+        $status = $_POST['statut'] ?? '';
+        $noteRaw = $_POST['note'] ?? '';
+
+        if ($studentId <= 0 || $examId <= 0 || !in_array($status, ['EN_ATTENTE', 'CORRIGE', 'VERIFIE', 'CONTESTE'], true)) {
+            $this->jsonError('Données de requête invalides.');
+            return;
+        }
+
+        $grade = null;
+        if ($noteRaw !== '') {
+            $grade = (float)$noteRaw;
+            if ($grade < 0 || $grade > 20) {
+                $this->jsonError('La note doit être comprise entre 0 et 20.');
+                return;
+            }
+        }
+
+        $success = $this->controleRepo->modifyStudentGradeAndStatus($studentId, $examId, $grade, $status);
+        if ($success) {
+            $this->jsonSuccess(['message' => 'Note et statut mis à jour avec succès.']);
+        } else {
+            $this->jsonError('Impossible de mettre à jour la note ou le statut.');
+        }
+    }
+
 
     private function requirePost(): void
     {
