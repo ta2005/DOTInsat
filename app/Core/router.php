@@ -198,6 +198,14 @@ $routes = [
 
     // ───────────────── API QCM ─────────────────
     [
+        'page'       => 'api-create-exam',
+        'controller' => 'QcmController',
+        'method'     => 'createExam',
+        'http'       => 'POST',
+        'roles'      => [ROLE_PROFESSEUR]
+    ],
+
+    [
         'page'       => 'api-save-template',
         'controller' => 'QcmController',
         'method'     => 'saveTemplate',
