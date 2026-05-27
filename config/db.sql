@@ -161,6 +161,8 @@ CREATE TABLE reclamation (
     statut statut_reclamation,
 
     admin_id INT REFERENCES admin(id)
+    
+    etudiant_id INT REFERENCES etudiant(id)
 );
 
 
