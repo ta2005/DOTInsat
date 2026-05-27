@@ -1,14 +1,16 @@
 <?php
-function get_pdo(): ?PDO {
+function get_pdo(): ?PDO
+{
     static $instance = 'unset';
 
-    if ($instance !== 'unset') return $instance;
+    if ($instance !== 'unset')
+        return $instance;
 
     $host = 'localhost';
     $port = '5432';
-    $db   = 'dotinsat';
+    $db = 'dotinsat';
     $user = 'postgres';
-    $pass = '123456';
+    $pass = 'root';
 
     try {
         $instance = new PDO(
@@ -16,13 +18,13 @@ function get_pdo(): ?PDO {
             $user,
             $pass,
             [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]
         );
     } catch (PDOException $e) {
-    die('Erreur BD : ' . $e->getMessage());
-}
+        die('Erreur BD : ' . $e->getMessage());
+    }
 
     return $instance;
 }

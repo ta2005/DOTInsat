@@ -273,397 +273,202 @@ CREATE TABLE notification (
 
 
 
--- =========================
--- USERS
--- =========================
+
+-- USERS  (1-2 admins | 3-6 profs | 7-16 étudiants)
 
 INSERT INTO users (cin, nom, prenom, email, mot_passe) VALUES
-(11111111, 'Ben Salah', 'Ahmed', 'ahmed.admin@esprit.tn', 'admin123'),
-(22222222, 'Trabelsi', 'Mouna', 'mouna.admin@esprit.tn', 'admin123'),
+(12345678, 'Ben Salah',  'Ahmed',   'ahmed.bensalah@insat.tn',           'hashed_pw_1'),
+(23456789, 'Trabelsi',   'Fatma',   'fatma.trabelsi@insat.tn',           'hashed_pw_2'),
+(34567890, 'Chaabane',   'Mohamed', 'mohamed.chaabane@insat.tn',         'hashed_pw_3'),
+(45678901, 'Bouaziz',    'Sana',    'sana.bouaziz@insat.tn',             'hashed_pw_4'),
+(56789012, 'Meddeb',     'Youssef', 'youssef.meddeb@insat.tn',           'hashed_pw_5'),
+(67890123, 'Jebali',     'Ines',    'ines.jebali@insat.tn',              'hashed_pw_6'),
+(78901234, 'Gharbi',     'Khalil',  'khalil.gharbi@etudiant.insat.tn',   'hashed_pw_7'),
+(89012345, 'Hammami',    'Amira',   'amira.hammami@etudiant.insat.tn',   'hashed_pw_8'),
+(90123456, 'Baccar',     'Nizar',   'nizar.baccar@etudiant.insat.tn',    'hashed_pw_9'),
+(11223344, 'Sfar',       'Rania',   'rania.sfar@etudiant.insat.tn',      'hashed_pw_10'),
+(22334455, 'Mzoughi',    'Tarek',   'tarek.mzoughi@etudiant.insat.tn',   'hashed_pw_11'),
+(33445566, 'Dridi',      'Leila',   'leila.dridi@etudiant.insat.tn',     'hashed_pw_12'),
+(44556677, 'Ayari',      'Bilel',   'bilel.ayari@etudiant.insat.tn',     'hashed_pw_13'),
+(55667788, 'Tlili',      'Mariem',  'mariem.tlili@etudiant.insat.tn',    'hashed_pw_14'),
+(66778899, 'Ben Amor',   'Oussama', 'oussama.benamor@etudiant.insat.tn', 'hashed_pw_15'),
+(77889900, 'Khelifi',    'Cyrine',  'cyrine.khelifi@etudiant.insat.tn',  'hashed_pw_16');
 
-(33333333, 'Jlassi', 'Karim', 'karim.prof@esprit.tn', 'prof123'),
-(44444444, 'Gharbi', 'Sonia', 'sonia.prof@esprit.tn', 'prof123'),
-(55555555, 'Masmoudi', 'Ali', 'ali.prof@esprit.tn', 'prof123'),
 
-(66666666, 'Ben Ali', 'Youssef', 'youssef.etu@esprit.tn', 'etud123'),
-(77777777, 'Ayari', 'Lina', 'lina.etu@esprit.tn', 'etud123'),
-(88888888, 'Chahed', 'Amine', 'amine.etu@esprit.tn', 'etud123'),
-(99999999, 'Haddad', 'Mariem', 'mariem.etu@esprit.tn', 'etud123'),
-(10101010, 'Kefi', 'Omar', 'omar.etu@esprit.tn', 'etud123');
-
--- =========================
--- ADMIN
--- ids auto générés :
--- 1,2 = admins
--- =========================
+-- ADMIN  (id 1, 2)
 
 INSERT INTO admin (id, titre) VALUES
-(1, 'Directeur des études'),
-(2, 'Responsable scolarité');
+(1, 'Directeur des Études'),
+(2, 'Responsable Scolarité');
 
--- =========================
--- PROFESSEUR
--- ids :
--- 3,4,5
--- =========================
 
-INSERT INTO professeur (id) VALUES
-(3),
-(4),
-(5);
+-- PROFESSEUR  (id 3 → 6)
 
--- =========================
--- ETUDIANT
--- ids :
--- 6,7,8,9,10
--- =========================
+INSERT INTO professeur (id) VALUES (3), (4), (5), (6);
+
+
+-- ETUDIANT  (id 7 → 16)
 
 INSERT INTO etudiant (id, niveau_scolaire_info) VALUES
-(6, ROW('INFO2A', 2025, '2EME', 'Informatique')),
-(7, ROW('INFO2A', 2025, '2EME', 'Informatique')),
-(8, ROW('INFO3B', 2025, '3EME', 'GL')),
-(9, ROW('INFO1A', 2025, '1ERE', 'RT')),
-(10, ROW('INFO3B', 2025, '3EME', 'GL'));
+(7,  ROW('GL2-1',  2024, '2', 'GL' )::niveau_scolaire),
+(8,  ROW('GL2-2',  2024, '2', 'GL' )::niveau_scolaire),
+(9,  ROW('RT3-1',  2024, '3', 'RT' )::niveau_scolaire),
+(10, ROW('RT3-2',  2024, '3', 'RT' )::niveau_scolaire),
+(11, ROW('IIA4-1', 2024, '4', 'IIA')::niveau_scolaire),
+(12, ROW('IIA4-1', 2024, '4', 'IIA')::niveau_scolaire),
+(13, ROW('IMI2-1', 2024, '2', 'IMI')::niveau_scolaire),
+(14, ROW('GL3-2',  2024, '3', 'GL' )::niveau_scolaire),
+(15, ROW('RT2-1',  2024, '2', 'RT' )::niveau_scolaire),
+(16, ROW('IMI4-1', 2024, '4', 'IMI')::niveau_scolaire);
 
--- =========================
+
 -- MATIERES
--- =========================
 
-INSERT INTO matieres (
-    filiere,
-    niveau,
-    semestre,
-    nom_matiere,
-    coefficient,
-    types_controle
-) VALUES
+INSERT INTO matieres (filiere, niveau, semestre, nom_matiere, coefficient, types_controle) VALUES
+('GL',  2, 1, 'Algèbre',    2.00, ARRAY['DS', 'EXAM']::type_controle[]),
+('GL',  2, 1, 'Analyse',    2.00, ARRAY['DS', 'EXAM']::type_controle[]),
+('GL',  2, 2, 'Java',       3.00, ARRAY['DS', 'EXAM', 'TP']::type_controle[]),
+('GL',  3, 1, 'BDD',        3.00, ARRAY['DS', 'EXAM', 'TP']::type_controle[]),
+('GL',  3, 2, 'Conception', 2.50, ARRAY['DS', 'EXAM']::type_controle[]),
+('RT',  2, 1, 'Réseaux',    3.00, ARRAY['DS', 'EXAM', 'TP']::type_controle[]),
+('RT',  2, 1, 'Algèbre',    2.00, ARRAY['DS', 'EXAM']::type_controle[]),
+('RT',  3, 1, 'BDD',        3.00, ARRAY['DS', 'EXAM', 'TP']::type_controle[]),
+('IIA', 4, 1, 'Conception', 2.50, ARRAY['DS', 'EXAM']::type_controle[]),
+('IIA', 4, 2, 'Dev Web',    3.00, ARRAY['DS', 'EXAM', 'TP']::type_controle[]),
+('IMI', 2, 1, 'Dev Web',    3.00, ARRAY['DS', 'EXAM', 'TP']::type_controle[]),
+('IMI', 4, 2, 'Réseaux',    3.00, ARRAY['DS', 'EXAM']::type_controle[]);
 
-(
-    'INFO',
-    2,
-    1,
-    'Base de Donnees',
-    3.0,
-    ARRAY['DS', 'EXAM', 'TP']::type_controle[]
-),
 
-(
-    'INFO',
-    2,
-    1,
-    'Programmation Web',
-    2.5,
-    ARRAY['DS', 'TP']::type_controle[]
-),
-
-(
-    'GL',
-    3,
-    2,
-    'Architecture Logicielle',
-    4.0,
-    ARRAY['DS', 'EXAM']::type_controle[]
-),
-
-(
-    'RT',
-    1,
-    1,
-    'Algorithmique',
-    2.0,
-    ARRAY['DS', 'EXAM', 'TP']::type_controle[]
-);
-
--- =========================
 -- ENSEIGNEMENT
--- matiere ids :
--- 1,2,3,4
--- =========================
 
-INSERT INTO enseignement (
-    nom,
-    date_debut,
-    niveau_scolaire_info,
-    professeur_id,
-    matiere_id
-) VALUES
+INSERT INTO enseignement (nom, date_debut, niveau_scolaire_info, professeur_id, matiere_id) VALUES
+('Algèbre GL2',    '2024-09-15 08:00:00', ROW('GL2-1',  2024, '2', 'GL' )::niveau_scolaire, 3, 1),
+('Analyse GL2',    '2024-09-15 10:00:00', ROW('GL2-2',  2024, '2', 'GL' )::niveau_scolaire, 4, 2),
+('Java GL2',       '2024-09-16 08:00:00', ROW('GL2-1',  2024, '2', 'GL' )::niveau_scolaire, 3, 3),
+('BDD GL3',        '2024-09-16 10:00:00', ROW('GL3-2',  2024, '3', 'GL' )::niveau_scolaire, 5, 4),
+('Conception GL3', '2024-09-17 08:00:00', ROW('GL3-2',  2024, '3', 'GL' )::niveau_scolaire, 6, 5),
+('Réseaux RT2',    '2024-09-17 10:00:00', ROW('RT2-1',  2024, '2', 'RT' )::niveau_scolaire, 5, 6),
+('BDD RT3',        '2024-09-18 08:00:00', ROW('RT3-1',  2024, '3', 'RT' )::niveau_scolaire, 5, 8),
+('Conception IIA', '2024-09-18 10:00:00', ROW('IIA4-1', 2024, '4', 'IIA')::niveau_scolaire, 6, 9),
+('Dev Web IMI2',   '2024-09-19 08:00:00', ROW('IMI2-1', 2024, '2', 'IMI')::niveau_scolaire, 4, 11);
 
-(
-    'BD INFO2',
-    '2025-09-01',
-    ROW('INFO2A', 2025, '2EME', 'Informatique'),
-    3,
-    1
-),
 
-(
-    'WEB INFO2',
-    '2025-09-02',
-    ROW('INFO2A', 2025, '2EME', 'Informatique'),
-    4,
-    2
-),
+-- CONTROLE  (etudiant_id est maintenant direct sur la table)
 
-(
-    'ARCHI GL3',
-    '2025-09-05',
-    ROW('INFO3B', 2025, '3EME', 'GL'),
-    5,
-    3
-),
+INSERT INTO controle (note, type, statut, format, enseignement_id, etudiant_id) VALUES
+-- Algèbre GL2
+(14.50, 'DS',   'VERIFIE',    'QCM',     1, 7),
+(11.00, 'DS',   'CORRIGE',    'QCM',     1, 8),
+(16.00, 'EXAM', 'VERIFIE',    'MIX',     1, 7),
+(13.50, 'EXAM', 'VERIFIE',    'MIX',     1, 8),
+-- Analyse GL2
+(16.75, 'DS',   'VERIFIE',    'NON_QCM', 2, 7),
+(12.00, 'DS',   'CORRIGE',    'NON_QCM', 2, 8),
+-- Java GL2
+( 7.25, 'TP',   'CORRIGE',    'NON_QCM', 3, 7),
+(15.00, 'TP',   'VERIFIE',    'NON_QCM', 3, 8),
+-- BDD GL3
+( 9.50, 'DS',   'CONTESTE',   'QCM',     4, 14),
+(13.00, 'EXAM', 'EN_ATTENTE', 'MIX',     4, 14),
+-- Conception GL3
+(18.00, 'DS',   'VERIFIE',    'NON_QCM', 5, 14),
+-- Réseaux RT2
+(12.50, 'DS',   'VERIFIE',    'QCM',     6, 15),
+(10.00, 'DS',   'CONTESTE',   'QCM',     6, 9),
+-- BDD RT3
+(11.50, 'DS',   'CORRIGE',    'MIX',     7, 9),
+(14.00, 'EXAM', 'EN_ATTENTE', 'MIX',     7, 10),
+-- Conception IIA
+(17.00, 'DS',   'VERIFIE',    'NON_QCM', 8, 11),
+(15.50, 'DS',   'VERIFIE',    'NON_QCM', 8, 12),
+-- Dev Web IMI2
+(13.00, 'TP',   'EN_ATTENTE', 'NON_QCM', 9, 13);
 
-(
-    'ALGO RT1',
-    '2025-09-03',
-    ROW('INFO1A', 2025, '1ERE', 'RT'),
-    3,
-    4
-);
 
--- =========================
--- CONTROLE
--- enseignement ids :
--- 1,2,3,4
--- =========================
+-- RECLAMATION  (référence controle_id directement)
 
-INSERT INTO controle (
-    note,
-    type,
-    statut,
-    format,
-    enseignement_id,
-    etudiant_id
-) VALUES
+INSERT INTO reclamation (message, controle_id, statut, admin_id) VALUES
+('Ma note de DS BDD ne correspond pas à ma copie corrigée.',       9,  'EN_ATTENTE',                    1),
+('Je conteste ma note de DS Réseaux, le corrigé est illisible.',   13, 'REFUSEE_PAR_LE_PROFESSEUR',     2),
+('Erreur de calcul sur mon TP Java, deux questions non notées.',   7,  'ACCEPTEE_PAR_LE_PROFESSEUR',    1),
+('Ma note d''EXAM BDD GL3 n''a pas été saisie correctement.',      10, 'EN_ATTENTE',                    2);
 
-(15.5, 'DS', 'CORRIGE', 'QCM', 1, 6),
-(12.0, 'EXAM', 'VERIFIE', 'NON_QCM', 1, 6),
-(18.0, 'TP', 'CORRIGE', 'MIX', 2, 6),
 
-(9.5, 'DS', 'CONTESTE', 'QCM', 1, 7),
-(11.0, 'TP', 'EN_ATTENTE', 'MIX', 2, 7),
+-- DEMANDE  (etudiant_id à la place de user_id)
 
-(14.0, 'EXAM', 'VERIFIE', 'NON_QCM', 3, 8),
-(16.0, 'DS', 'CORRIGE', 'QCM', 3, 10),
+INSERT INTO demande (message, type, statut, etudiant_id, admin_id) VALUES
+('Attestation d''inscription pour dossier bancaire.',  'ATTESTATION_DE_INSCRIPTION', 'EN_ATTENTE', 7,  1),
+('Feuilles de stage pour mon PFE entreprise.',         'FEUILLES_DE_STAGE',          'ACCEPTEE',   9,  2),
+('Attestation de présence pour bourse CNSS.',          'ATTESTATION_DE_PRESENCE',    'EN_ATTENTE', 11, 1),
+('Feuilles de notes du semestre 1.',                   'FEUILLES_DE_NOTES',          'REFUSEE',    15, 2),
+('Attestation d''inscription pour demande de visa.',   'ATTESTATION_DE_INSCRIPTION', 'ACCEPTEE',   16, 1),
+('Demande de document pour concours externe.',         'AUTRES',                     'EN_ATTENTE', 13, 1);
 
-(7.5, 'DS', 'CONTESTE', 'NON_QCM', 4, 9);
 
--- =========================
--- RECLAMATION
--- controle ids :
--- 1..8
--- =========================
-
-INSERT INTO reclamation (
-    message,
-    controle_id,
-    statut,
-    admin_id
-) VALUES
-
-(
-    'Je pense que ma note de DS est incorrecte.',
-    4,
-    'EN_ATTENTE',
-    1
-),
-
-(
-    'La correction de lexamen contient une erreur.',
-    8,
-    'ACCEPTEE_PAR_LE_PROFESSEUR',
-    2
-),
-
-(
-    'Ma copie na pas ete bien corrigee.',
-    1,
-    'REFUSEE_PAR_ADMINISTRATEUR',
-    1
-);
-
--- =========================
--- DEMANDE
--- =========================
-
-INSERT INTO demande (
-    message,
-    type,
-    statut,
-    etudiant_id,
-    admin_id
-) VALUES
-
-(
-    'Je veux une attestation dinscription.',
-    'ATTESTATION_DE_INSCRIPTION',
-    'ACCEPTEE',
-    6,
-    1
-),
-
-(
-    'Besoin des feuilles de notes.',
-    'FEUILLES_DE_NOTES',
-    'EN_ATTENTE',
-    7,
-    2
-),
-
-(
-    'Demande de feuilles de stage.',
-    'FEUILLES_DE_STAGE',
-    'REFUSEE',
-    8,
-    1
-),
-
-(
-    'Autre demande administrative.',
-    'AUTRES',
-    'EN_ATTENTE',
-    9,
-    2
-);
-
--- =========================
 -- GROUPE
--- =========================
 
-INSERT INTO groupe (
-    nom,
-    moderateur_id
-) VALUES
+INSERT INTO groupe (nom, moderateur_id) VALUES
+('GL2 - Entraide Cours',    7),
+('RT3 - Révisions Réseaux', 9),
+('IIA4 - Projets & PFE',    11),
+('Forum Général INSAT',     1);
 
-('GL2 Community', 6),
-('Club Robotique', 7);
 
--- =========================
 -- MEMBRE_GROUPE
--- groupe ids :
--- 1,2
--- =========================
 
-INSERT INTO membre_groupe (
-    user_id,
-    groupe_id
-) VALUES
+INSERT INTO membre_groupe (user_id, groupe_id) VALUES
+(7,  1), (8,  1), (13, 1), (14, 1),
+(9,  2), (10, 2), (15, 2),
+(11, 3), (12, 3), (16, 3),
+(7,  4), (9,  4), (11, 4), (3,  4), (1,  4);
 
-(6, 1),
-(7, 1),
-(8, 1),
 
-(7, 2),
-(9, 2),
-(10, 2);
-
--- =========================
 -- POST
--- =========================
 
-INSERT INTO post (
-    contenu,
-    groupe_id,
-    auteur_id
-) VALUES
+INSERT INTO post (contenu, groupe_id, auteur_id) VALUES
+('Quelqu''un a le corrigé du DS Algèbre de l''an dernier ?',   1, 7),
+('Rappel : TP Réseaux demain 8h salle B12 !',                  2, 9),
+('Je partage mes notes de cours Conception UML, dispo en MP.', 3, 11),
+('Bienvenue sur le forum INSAT ! Présentez-vous 👋',           4, 1),
+('Est-ce que l''exam Java couvre les threads aussi ?',          1, 14),
+('Résultats BDD RT3 affichés sur l''ENT ce matin.',             2, 10);
 
-(
-    'Quelquun a compris le TP de base de donnees ?',
-    1,
-    6
-),
 
-(
-    'La reunion du club robotique est demain.',
-    2,
-    7
-),
-
-(
-    'Partage des ressources pour le DS.',
-    1,
-    8
-);
-
--- =========================
 -- COMMENTAIRE
--- post ids :
--- 1,2,3
--- =========================
 
-INSERT INTO commentaire (
-    contenu,
-    post_id,
-    auteur_id
-) VALUES
+INSERT INTO commentaire (contenu, post_id, auteur_id) VALUES
+('Oui je l''ai, je t''envoie en privé.',          1, 8),
+('Merci pour le rappel, j''avais oublié !',       2, 10),
+('Super partage, merci beaucoup !',               3, 12),
+('Salut tout le monde, GL2-2 ici !',              4, 8),
+('Non, les threads ne sont pas au programme.',    5, 13),
+('J''ai eu 14, super content !',                  6, 9);
 
-(
-    'Oui je peux texpliquer.',
-    1,
-    7
-),
-
-(
-    'Merci pour linfo.',
-    2,
-    9
-),
-
-(
-    'Je vais envoyer des resumes.',
-    3,
-    10
-);
-
--- =========================
 -- VOTE
--- =========================
 
-INSERT INTO vote (
-    type,
-    post_id,
-    user_id
-) VALUES
+INSERT INTO vote (type, post_id, user_id) VALUES
+('UPVOTE',   1, 8),
+('UPVOTE',   1, 13),
+('UPVOTE',   2, 10),
+('DOWNVOTE', 2, 15),
+('UPVOTE',   3, 12),
+('UPVOTE',   3, 16),
+('UPVOTE',   4, 7),
+('UPVOTE',   5, 8),
+('DOWNVOTE', 5, 13),
+('UPVOTE',   6, 9);
 
-('UPVOTE', 1, 7),
-('UPVOTE', 1, 8),
-('DOWNVOTE', 2, 10),
-('UPVOTE', 3, 6);
 
--- =========================
 -- NOTIFICATION
--- =========================
 
-INSERT INTO notification (
-    message,
-    lue,
-    user_id,
-    createur_id
-) VALUES
-
-(
-    'Votre reclamation est en attente.',
-    FALSE,
-    7,
-    1
-),
-
-(
-    'Votre demande a ete acceptee.',
-    TRUE,
-    6,
-    2
-),
-
-(
-    'Nouveau commentaire sur votre post.',
-    FALSE,
-    8,
-    7
-),
-
-(
-    'Nouvelle note disponible.',
-    FALSE,
-    9,
-    3
-);
+INSERT INTO notification (message, lue, user_id, createur_id) VALUES
+('Votre demande d''attestation a été acceptée.',              FALSE, 9,  2),
+('Votre réclamation DS BDD est en cours de traitement.',      FALSE, 14, 1),
+('Nouveau post dans le groupe GL2.',                          TRUE,  8,  7),
+('Votre demande de feuilles de notes a été refusée.',         FALSE, 15, 2),
+('Nouveau commentaire sur votre post.',                       TRUE,  7,  8),
+('Votre réclamation TP Java a été acceptée par le prof.',     FALSE, 7,  3),
+('Résultats examen BDD GL3 publiés sur l''ENT.',              FALSE, 14, 5),
+('Bienvenue sur la plateforme INSAT !',                       TRUE,  16, 1),
+('Votre réclamation DS Réseaux a été refusée.',               FALSE, 9,  2),
+('Nouvelle demande de stage soumise avec succès.',            TRUE,  9,  9);
