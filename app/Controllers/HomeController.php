@@ -3,6 +3,8 @@
 
 require_once BASE_PATH . '/app/Repositories/EtudiantRepository.php';
 require_once BASE_PATH . '/app/Repositories/AdminRepository.php';
+require_once BASE_PATH . '/app/Repositories/ProfesseurRepository.php';
+require_once BASE_PATH . '/app/Repositories/EnseignementRepository.php';
 
 class HomeController
 {
@@ -23,6 +25,8 @@ class HomeController
         $role = $_SESSION['user_role'] ?? '';
 
         $adminRepo = new AdminRepository($this->pdo);
+        $profRepo  = new ProfesseurRepository($this->pdo);
+        $ensRepo   = new EnseignementRepository($this->pdo);
 
         $config = match ($role) {
             ROLE_PROFESSEUR => require BASE_PATH . '/config/enseignant.php',

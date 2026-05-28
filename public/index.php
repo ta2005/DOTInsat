@@ -24,11 +24,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // 4. Connexion à la base de données
 require_once BASE_PATH . '/config/db_connect.php';
 
-// 5. Helpers de stockage (reclamations, demandes, notifications)
-require_once BASE_PATH . '/config/storage.php';
-storage_init();
-
-// 6. Router → contient dispatch(), auth_guard(), role_guard()
+// 5. Router → contient dispatch(), auth_guard(), role_guard()
 require_once BASE_PATH . '/app/Core/router.php';
 
 dispatch($routes, $pdo);

@@ -3,16 +3,19 @@
 
 require_once BASE_PATH . '/app/Repositories/ReclamationRepository.php';
 require_once BASE_PATH . '/app/Repositories/EnseignementRepository.php';
+require_once BASE_PATH . '/app/Repositories/ProfesseurRepository.php';
 
 class ProfessorController
 {
     private ReclamationRepository  $repo;
     private EnseignementRepository $ensRepo;
+    private ProfesseurRepository   $profRepo;
 
     public function __construct(private ?PDO $pdo)
     {
-        $this->repo    = new ReclamationRepository($this->pdo);
-        $this->ensRepo = new EnseignementRepository($this->pdo);
+        $this->repo     = new ReclamationRepository($this->pdo);
+        $this->ensRepo  = new EnseignementRepository($this->pdo);
+        $this->profRepo = new ProfesseurRepository($this->pdo);
     }
 
     /*
@@ -22,8 +25,9 @@ class ProfessorController
     */
     public function home(): void
     {
-        $pdo    = $this->pdo;
-        $config = require BASE_PATH . '/config/enseignant.php';
+        $profRepo = $this->profRepo;
+        $ensRepo  = $this->ensRepo;
+        $config   = require BASE_PATH . '/config/enseignant.php';
         require BASE_PATH . '/views/pages/home.php';
     }
 

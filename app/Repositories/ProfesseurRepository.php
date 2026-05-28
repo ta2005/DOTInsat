@@ -11,8 +11,57 @@ class ProfesseurRepository
     }
 
     /**
-     * Retourne tous les professeurs avec leurs enseignements
-     * (classes + matières), filtrables par recherche textuelle.
+     * Retourne le profil (nom, prenom) d'un professeur par son id.
+     */
+    public function getProfil(int $profId): ?array
+    {
+        $stmt = $this->db->prepare("
+            SELECT u.nom, u.prenom
+            FROM users u
+            JOIN professeur p ON p.id = u.id
+            WHERE u.id = :id
+        ");
+        $stmt->execute([':id' => $profId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    /**
+     * Retourne les enseignements du prof + la classe sélectionnée + l'id de l'enseignement sélectionné.
+     * Utilisé par config/enseignant.php pour alimenter le dropdown et les stats.
+     */
+    public function getEnseignementsAvecSelection(int $profId, ?string $selectedNom = null): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT id, nom
+            FROM enseignement
+            WHERE professeur_id = :prof_id
+            ORDER BY nom
+        ");
+        $stmt->execute([':prof_id' => $profId]);
+        $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $classes = array_column($all, 'nom');
+
+        $selectedNom = $selectedNom ?? ($classes[0] ?? null);
+
+        $enseignementId = null;
+        foreach ($all as $ens) {
+            if ($ens['nom'] === $selectedNom) {
+                $enseignementId = (int)$ens['id'];
+                break;
+            }
+        }
+
+        return [
+            'classes'        => $classes,
+            'selected_nom'   => $selectedNom,
+            'enseignement_id' => $enseignementId,
+        ];
+    }
+
+    /**
+     * Retourne tous les professeurs avec leurs enseignements,
+     * filtrables par recherche textuelle.
      */
     public function getAllWithEnseignements(?string $search = null): array
     {

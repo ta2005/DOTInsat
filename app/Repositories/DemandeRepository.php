@@ -1,10 +1,13 @@
 <?php
+// app/Repositories/DemandeRepository.php
 
 require_once BASE_PATH . '/app/Repositories/Repository.php';
 
 class DemandeRepository extends Repository
 {
+    // -------------------------------------------------------------------------
     // Toutes les demandes avec infos étudiant
+    // -------------------------------------------------------------------------
     public function getAll(): array
     {
         if (!$this->isConnected()) return [];
@@ -27,7 +30,63 @@ class DemandeRepository extends Repository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Récupérer les valeurs ENUM type_demande directement depuis la BD
+    // -------------------------------------------------------------------------
+    // Demandes d'un étudiant donné
+    // -------------------------------------------------------------------------
+    public function getAllForEtudiant(int $etudiantId): array
+    {
+        if (!$this->isConnected()) return [];
+
+        $stmt = $this->db->prepare("
+            SELECT
+                d.id,
+                u.nom,
+                u.prenom,
+                d.message,
+                d.type::TEXT        AS type,
+                d.type::TEXT        AS type_label,
+                d.statut::TEXT      AS statut,
+                d.date_creation     AS date_soumission
+            FROM demande d
+            JOIN users u ON u.id = d.etudiant_id
+            WHERE d.etudiant_id = :id
+            ORDER BY d.date_creation DESC
+        ");
+
+        $stmt->execute([':id' => $etudiantId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // -------------------------------------------------------------------------
+    // Demande par ID
+    // -------------------------------------------------------------------------
+    public function getById(int $id): ?array
+    {
+        if (!$this->isConnected()) return null;
+
+        $stmt = $this->db->prepare("
+            SELECT
+                d.id,
+                u.nom,
+                u.prenom,
+                d.message,
+                d.type::TEXT        AS type,
+                d.type::TEXT        AS type_label,
+                d.statut::TEXT      AS statut,
+                d.date_creation     AS date_soumission
+            FROM demande d
+            JOIN users u ON u.id = d.etudiant_id
+            WHERE d.id = ?
+        ");
+
+        $stmt->execute([$id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Valeurs ENUM type_demande depuis la BDD
+    // -------------------------------------------------------------------------
     public function getTypesDemande(): array
     {
         if (!$this->isConnected()) return [];
@@ -38,7 +97,6 @@ class DemandeRepository extends Repository
 
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Labels lisibles pour chaque valeur ENUM
         $labels = [
             'ATTESTATION_DE_INSCRIPTION' => "Attestation d'inscription",
             'ATTESTATION_DE_PRESENCE'    => "Attestation de présence",
@@ -53,7 +111,9 @@ class DemandeRepository extends Repository
         ], $rows);
     }
 
+    // -------------------------------------------------------------------------
     // Créer une demande
+    // -------------------------------------------------------------------------
     public function create(array $data): bool
     {
         if (!$this->isConnected()) return false;
@@ -70,21 +130,25 @@ class DemandeRepository extends Repository
         ]);
     }
 
+    // -------------------------------------------------------------------------
     // Supprimer
+    // -------------------------------------------------------------------------
     public function delete(int $id): bool
     {
         if (!$this->isConnected()) return false;
 
-        $stmt = $this->db->prepare("DELETE FROM demande WHERE id = ?");
-        return $stmt->execute([$id]);
+        return $this->db->prepare("DELETE FROM demande WHERE id = ?")
+                        ->execute([$id]);
     }
 
+    // -------------------------------------------------------------------------
     // Changer le statut
+    // -------------------------------------------------------------------------
     public function updateStatut(int $id, string $statut): bool
     {
         if (!$this->isConnected()) return false;
 
-        $stmt = $this->db->prepare("UPDATE demande SET statut = ? WHERE id = ?");
-        return $stmt->execute([$statut, $id]);
+        return $this->db->prepare("UPDATE demande SET statut = ? WHERE id = ?")
+                        ->execute([$statut, $id]);
     }
 }
