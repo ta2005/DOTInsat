@@ -28,8 +28,10 @@ class DemandeController
         }
         unset($item);
 
-        $demandes     = $this->repo->getAll();
         $typesDemande = $this->repo->getTypesDemande();
+        $mesDemandes  = $this->repo->getAllForEtudiant(
+            (int)($_SESSION['user_id'] ?? 0)
+        );
 
         require BASE_PATH . '/views/pages/student/demande.php';
     }

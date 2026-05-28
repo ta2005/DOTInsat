@@ -80,6 +80,73 @@ unset($_SESSION['flash']);
     </div>
 
 </form>
+
+<!-- ═══════════════════════════════════════════════════════
+     MES DEMANDES — historique de l'étudiant
+═══════════════════════════════════════════════════════ -->
+<?php
+$statutConfig = [
+    'EN_ATTENTE' => ['label' => 'En attente', 'class' => 'badge--yellow'],
+    'ACCEPTEE'   => ['label' => 'Acceptée',   'class' => 'badge--green'],
+    'REFUSEE'    => ['label' => 'Refusée',    'class' => 'badge--red'],
+];
+$typesLabels = [
+    'ATTESTATION_DE_INSCRIPTION' => "Attestation d'inscription",
+    'ATTESTATION_DE_PRESENCE'    => "Attestation de présence",
+    'FEUILLES_DE_STAGE'          => "Feuilles de stage",
+    'AUTRE'                      => "Autre",
+];
+?>
+
+<?php if (!empty($mesDemandes)): ?>
+<div class="form-page-header" style="margin-top:32px;">
+    <div class="form-page-icon">
+        <i class="ti ti-history"></i>
+    </div>
+    <div>
+        <h2 class="form-page-title">Mes demandes</h2>
+        <p class="form-page-sub"><?= count($mesDemandes) ?> demande(s) soumise(s)</p>
+    </div>
+</div>
+
+<?php foreach ($mesDemandes as $d): ?>
+<?php $s = $statutConfig[$d['statut']] ?? ['label' => $d['statut'], 'class' => 'badge--yellow']; ?>
+<div class="card recl-card">
+
+    <div class="recl-header">
+        <div class="recl-meta">
+            <span class="recl-student">
+                <?= htmlspecialchars($typesLabels[$d['type']] ?? $d['type_label']) ?>
+            </span>
+        </div>
+        <span class="badge <?= $s['class'] ?>"><?= $s['label'] ?></span>
+    </div>
+
+    <div class="recl-body">
+        <?php if (!empty($d['message'])): ?>
+        <div class="recl-info-row recl-info-row--full">
+            <span class="recl-label">Message</span>
+            <span class="recl-val"><?= htmlspecialchars($d['message']) ?></span>
+        </div>
+        <?php endif; ?>
+
+        <span class="recl-date"><?= $d['date_soumission'] ?></span>
+
+        <?php if ($d['statut'] === 'EN_ATTENTE'): ?>
+        <form method="POST" action="/?page=delete-demande" style="margin-top:8px;">
+            <input type="hidden" name="id" value="<?= $d['id'] ?>">
+            <button type="submit" class="form-btn-secondary"
+                    onclick="return confirm('Supprimer cette demande ?')">
+                <i class="ti ti-trash"></i> Supprimer
+            </button>
+        </form>
+        <?php endif; ?>
+    </div>
+
+</div>
+<?php endforeach; ?>
+<?php endif; ?>
+
 </main>
 </div>
 
