@@ -1,0 +1,711 @@
+﻿diff --git a/public/js/qcm-scanner.js b/public/js/qcm-scanner.js
+index 424f7d6..541fa1e 100644
+--- a/public/js/qcm-scanner.js
++++ b/public/js/qcm-scanner.js
+@@ -1,40 +1,34 @@
+-// public/js/qcm-scanner.js
++// public/js/qcm-scanner.js  ÔÇö  Improved OMR accuracy build
+ document.addEventListener('DOMContentLoaded', () => {
+     const dropzone = document.getElementById('dropzone');
+     const fileInput = document.getElementById('fileFallbackInput');
+     const canvas = document.getElementById('processingCanvas');
+     const ctx = canvas.getContext('2d');
+-    
+-    // UI Logging elements
++
+     const logStream = document.getElementById('logStream');
+     const lblStudent = document.getElementById('lblSessionStudent');
+     const pillStatus = document.getElementById('pillStatus');
+     const lblScore = document.getElementById('lblCalculatedScore');
+ 
+-    const alphabetOptions = ['A', 'B', 'C', 'D', 'E'];
+-
+-    // Drag and drop event listeners
+-    ['dragenter', 'dragover'].forEach(name => {
+-        dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); }, false);
+-    });
+-    ['dragleave', 'drop'].forEach(name => {
+-        dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); }, false);
+-    });
+-
+-    dropzone.addEventListener('drop', (e) => {
+-        const files = e.dataTransfer.files;
+-        if (files.length > 0) processIncomingImageFile(files[0]);
++    const alphabetOptions = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
++
++    // ÔöÇÔöÇ Drag & drop ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++    ['dragenter', 'dragover'].forEach(name =>
++        dropzone.addEventListener(name, e => { e.preventDefault(); dropzone.classList.add('dragover'); }, false)
++    );
++    ['dragleave', 'drop'].forEach(name =>
++        dropzone.addEventListener(name, e => { e.preventDefault(); dropzone.classList.remove('dragover'); }, false)
++    );
++    dropzone.addEventListener('drop', e => {
++        if (e.dataTransfer.files.length > 0) processIncomingImageFile(e.dataTransfer.files[0]);
+     });
+-
+-    fileInput.addEventListener('change', (e) => {
++    fileInput.addEventListener('change', e => {
+         if (e.target.files.length > 0) processIncomingImageFile(e.target.files[0]);
+     });
+ 
++    // ÔöÇÔöÇ Logger ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+     function writeLog(message) {
+-        if (!logStream) {
+-            console.log(message);
+-            return;
+-        }
++        if (!logStream) { console.log(message); return; }
+         const entry = document.createElement('div');
+         entry.className = 'log-entry';
+         entry.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
+@@ -42,21 +36,17 @@ document.addEventListener('DOMContentLoaded', () => {
+         logStream.scrollTop = logStream.scrollHeight;
+     }
+ 
++    // ÔöÇÔöÇ File loader ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+     function processIncomingImageFile(file) {
+-        writeLog(`Loading selected image file: ${file.name}`);
++        writeLog(`Loading image file: ${file.name}`);
+         const reader = new FileReader();
+-        
+-        reader.onload = (event) => {
++        reader.onload = event => {
+             const img = new Image();
+             img.onload = () => {
+-                // Initialize canvas dimensions matching source file proportions
+                 canvas.width = img.width;
+                 canvas.height = img.height;
+                 ctx.drawImage(img, 0, 0);
+                 canvas.style.display = 'block';
+-                writeLog(`Image dimensions matched: ${img.width}x${img.height}px.`);
+-                
+-                // Execute OMR Scan Engine
+                 executeOpticalBubbleAnalysis(img);
+             };
+             img.src = event.target.result;
+@@ -64,373 +54,304 @@ document.addEventListener('DOMContentLoaded', () => {
+         reader.readAsDataURL(file);
+     }
+ 
+-    /**
+-     * Optical Mark Recognition (OMR) Scan Machine
+-     * Analyzes relative layout matrices to isolate selected bubbles.
+-     */
++    // ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
++    //  CORE OMR ENGINE
++    // ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+     async function executeOpticalBubbleAnalysis(imgSource) {
+-        pillStatus.innerText = "Analyzing Pixels...";
+-        pillStatus.className = "status-pill";
+-        writeLog("Extracting operational tracking data variables...");
++        pillStatus.innerText = 'Processing StructureÔÇª';
++        pillStatus.className = 'status-badge status-en-attente';
++
++        if (typeof cv === 'undefined' || !window.opencvReady) {
++            writeLog('Waiting for OpenCV.js framework instantiationÔÇª');
++            document.addEventListener('opencv-ready', () => executeOpticalBubbleAnalysis(imgSource), { once: true });
++            return;
++        }
++
++        // ÔöÇÔöÇ Fetch template config ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++        const mockDetectedExamId = parseInt(document.getElementById('scanExamId').value) || 14;
++        const realStudentIdEl = document.getElementById('scanRealStudentId');
++        const mockDetectedStudentId = (realStudentIdEl?.value)
++            ? parseInt(realStudentIdEl.value)
++            : (parseInt(document.getElementById('scanStudentId').value) || 1002);
+ 
+-        const mockDetectedExamId = parseInt(document.getElementById('scanExamId').value) || 14; 
+-        const mockDetectedStudentId = parseInt(document.getElementById('scanStudentId').value) || 1002; 
+-        
+         let mockTotalQuestions = 10;
+-        let mockChoicesCount = 2; // A, B
++        let mockChoicesCount = 4;
++        let cols = 3;
+ 
+-        // First, fetch template context to get exact question count and choices per question
+         try {
+-            writeLog("Fetching template configurations to calibrate grid dimensions...");
+-            const response = await fetch(`/api/qcm/get-template?exam_id=${mockDetectedExamId}`);
++            const response = await fetch(`/?page=api-get-template&exam_id=${mockDetectedExamId}`);
+             const resParsed = await response.json();
+             if (resParsed.success && resParsed.data) {
+                 mockTotalQuestions = resParsed.data.total_questions || 10;
+-                mockChoicesCount = resParsed.data.choices_per_question || 2;
+-                writeLog(`Grid calibration active: ${mockTotalQuestions} questions, ${mockChoicesCount} choices per question.`);
++                mockChoicesCount = resParsed.data.choices_per_question || 4;
++                cols = resParsed.data.columns_count || 3;
++                writeLog(`Template: ${mockTotalQuestions}Q | ${mockChoicesCount} choices | ${cols} cols`);
+             }
+-        } catch (e) {
+-            writeLog("Warning: Could not fetch template config. Calibrating with standard defaults.");
++        } catch {
++            writeLog('Warning: Using local layout fallback variables.');
+         }
+ 
+-        lblStudent.innerText = `Etudiant ID: ${mockDetectedStudentId} (Exam Context #${mockDetectedExamId})`;
+-        writeLog(`Targeting Configuration File Blueprint: exam_${mockDetectedExamId}.json`);
++        lblStudent.innerText = `Student ID: ${mockDetectedStudentId} (Exam #${mockDetectedExamId})`;
++
++        // ÔöÇÔöÇ OpenCV pipeline ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++        let src = cv.imread(canvas);
++        let gray = new cv.Mat();
++        let blurred = new cv.Mat();
++        let thresh = new cv.Mat();
++
++        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
++
++        // FIX 1 ÔöÇÔöÇ Gaussian blur BEFORE threshold removes salt-and-pepper noise
++        //          that otherwise generates dozens of spurious micro-contours.
++        cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
++
++        // Block size 25 (wider) + C=8 handles uneven scanner illumination better.
++        cv.adaptiveThreshold(blurred, thresh, 255,
++            cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 25, 8);
++
++        let contours = new cv.MatVector();
++        let hierarchy = new cv.Mat();
++        cv.findContours(thresh, contours, hierarchy,
++            cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
++
++        let validBubbles = [];
++        const hData = hierarchy.data32S;
++
++        for (let i = 0; i < contours.size(); ++i) {
++            const hIdx = i * 4;
++            const firstChild = hData[hIdx + 2];
++            const parentEl = hData[hIdx + 3];
++            const rect = cv.boundingRect(contours.get(i));
++            const aspectRatio = rect.width / rect.height;
++
++            // Size band ÔÇö upper limit raised to 80 to catch heavy ink-blot fills (Q1-type)
++            if (rect.width < 12 || rect.width > 80 || rect.height < 12 || rect.height > 80) continue;
++
++            // Circularity filter  (4¤Ç┬ÀA / P┬▓)
++            // Empty bubbles score Ôëê 0.78; heavily over-inked blobs deform to Ôëê 0.45.
++            // Threshold lowered to 0.42 so Q1-style solid fills are never rejected.
++            const area = cv.contourArea(contours.get(i));
++            const perimeter = cv.arcLength(contours.get(i), true);
++            const circularity = perimeter > 0 ? (4 * Math.PI * area) / (perimeter * perimeter) : 0;
++            if (circularity < 0.42) continue;
++
++            // Shape & topology guard
++            const hasChild = firstChild !== -1;
++            const insideParent = parentEl !== -1;
++            if (aspectRatio < 0.65 || aspectRatio > 1.45) continue;
++            if (insideParent && !hasChild) continue;
++
++            // Density guard (reject extremely sparse marks)
++            const roi = thresh.roi(rect);
++            const nonZero = cv.countNonZero(roi);
++            const density = nonZero / (rect.width * rect.height);
++            roi.delete();
++            if (density < 0.15) continue;
++
++            validBubbles.push({ rect, density });
++        }
+ 
+-        const compiledStudentAnswers = {};
+-        writeLog("Executing real Optical Mark Recognition (OMR) pixel scanner...");
+-
+-        const W = canvas.width;
+-        const H = canvas.height;
+-        const imgData = ctx.getImageData(0, 0, W, H);
+-        const pixels = imgData.data;
+-
+-        // Exclude edges (2% margin) to avoid scan borders
+-        const padX = Math.floor(W * 0.02);
+-        const padY = Math.floor(H * 0.02);
+-
+-        // Precompute binary isDark array
+-        const isDark = new Uint8Array(W * H);
+-        for (let i = 0; i < W * H; i++) {
+-            const idx = i * 4;
+-            if (pixels[idx] < 180 && pixels[idx+1] < 180 && pixels[idx+2] < 180) {
+-                isDark[i] = 1;
+-            }
++        writeLog(`Bubble candidates after filtering: ${validBubbles.length}`);
++
++        if (validBubbles.length < mockTotalQuestions * 2) {
++            writeLog('Error: Not enough bubble candidates detected. Check scan quality.');
++            pillStatus.innerText = 'Scan Failed';
++            cleanup(gray, blurred, thresh, contours, hierarchy, src);
++            return;
+         }
+ 
+-        // 1. Horizontal projection (find row bands)
+-        const rowDarkness = new Int32Array(H);
+-        for (let y = padY; y < H - padY; y++) {
+-            let count = 0;
+-            for (let x = padX; x < W - padX; x++) {
+-                if (isDark[y * W + x]) {
+-                    count++;
++        // ÔöÇÔöÇ FIX 3 ÔöÇÔöÇ Row clustering with running CENTER-Y average ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++        //             Old code used row[0].rect.y which drifts badly when the
++        //             first bubble in a row is slightly misaligned.
++        validBubbles.sort((a, b) => a.rect.y - b.rect.y);
++        let horizontalRows = [];
++
++        for (const bubble of validBubbles) {
++            const bCenterY = bubble.rect.y + bubble.rect.height / 2;
++            let assigned = false;
++
++            for (const row of horizontalRows) {
++                // Running average of center-Y across all bubbles already in row
++                const rowAvgY = row.reduce((s, b) => s + b.rect.y + b.rect.height / 2, 0) / row.length;
++                const tolerance = bubble.rect.height * 0.80;   // slightly generous
++                if (Math.abs(rowAvgY - bCenterY) < tolerance) {
++                    row.push(bubble);
++                    assigned = true;
++                    break;
+                 }
+             }
+-            rowDarkness[y] = count;
++            if (!assigned) horizontalRows.push([bubble]);
+         }
+ 
+-        const rowThreshold = Math.max(5, W * 0.005);
+-        const rawIntervals = [];
+-        let inInterval = false;
+-        let startY = 0;
+-        for (let y = padY; y < H - padY; y++) {
+-            const isActive = rowDarkness[y] > rowThreshold;
+-            if (isActive && !inInterval) {
+-                inInterval = true;
+-                startY = y;
+-            } else if (!isActive && inInterval) {
+-                inInterval = false;
+-                rawIntervals.push({ start: startY, end: y - 1 });
++        // Keep any row that holds at least ONE full question worth of bubbles.
++        // The old (cols ├ù choices ├ù 0.60) threshold killed the last row when it
++        // contains fewer questions than cols (e.g. Q10 alone = 4 bubbles < 7).
++        const minExpected = mockChoicesCount;   // = 4 for a standard 4-choice sheet
++        horizontalRows = horizontalRows.filter(r => r.length >= minExpected);
++        horizontalRows.forEach(row => row.sort((a, b) => a.rect.x - b.rect.x));
++
++        writeLog(`Valid rows detected: ${horizontalRows.length} (expected ${Math.ceil(mockTotalQuestions / cols)})`);
++
++        // ÔöÇÔöÇ FIX 4 ÔöÇÔöÇ Gap-based column detection ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++        //             Old code used equal division (totalItems / cols) which
++        //             breaks as soon as one row has a stray extra contour.
++        function detectColumnGroups(rowBubbles, expectedCols) {
++            if (rowBubbles.length < expectedCols) return [rowBubbles];
++
++            const sorted = [...rowBubbles].sort((a, b) => a.rect.x - b.rect.x);
++
++            // Measure gap between consecutive bubbles' right-edge ÔåÆ left-edge
++            const gaps = [];
++            for (let i = 1; i < sorted.length; i++) {
++                const prevRight = sorted[i - 1].rect.x + sorted[i - 1].rect.width;
++                const gap = sorted[i].rect.x - prevRight;
++                gaps.push({ idx: i, gap });
+             }
+-        }
+-        if (inInterval) {
+-            rawIntervals.push({ start: startY, end: H - padY - 1 });
+-        }
+ 
+-        const filteredIntervals = rawIntervals.filter(interval => (interval.end - interval.start + 1) >= 5);
+-
+-        const cols = 3;
+-        const numRows = Math.ceil(mockTotalQuestions / cols);
+-        
+-        // Take the bottom-most numRows intervals
+-        filteredIntervals.sort((a, b) => b.start - a.start);
+-        const detectedRowIntervals = filteredIntervals.slice(0, numRows);
+-        detectedRowIntervals.sort((a, b) => a.start - b.start);
+-
+-        let rowIntervals = [];
+-        let colIntervals = [];
+-        let fallbackMode = false;
+-
+-        // 2. Vertical projection (find column bands within rows)
+-        if (detectedRowIntervals.length === numRows) {
+-            rowIntervals = detectedRowIntervals;
+-            
+-            const colDarkness = new Int32Array(W);
+-            for (let x = padX; x < W - padX; x++) {
+-                let count = 0;
+-                for (const row of rowIntervals) {
+-                    for (let y = row.start; y <= row.end; y++) {
+-                        if (isDark[y * W + x]) {
+-                            count++;
+-                        }
+-                    }
+-                }
+-                colDarkness[x] = count;
++            // The (expectedCols-1) largest gaps are column separators
++            const splitPoints = gaps
++                .sort((a, b) => b.gap - a.gap)
++                .slice(0, expectedCols - 1)
++                .map(g => g.idx)
++                .sort((a, b) => a - b);
++
++            const groups = [];
++            let prev = 0;
++            for (const sp of splitPoints) {
++                groups.push(sorted.slice(prev, sp));
++                prev = sp;
+             }
++            groups.push(sorted.slice(prev));
++            return groups;
++        }
+ 
+-            // Smooth colDarkness using a moving average window to bridge gaps between labels and bubbles
+-            const smoothWindow = 35;
+-            const smoothedColDarkness = new Float32Array(W);
+-            for (let x = padX; x < W - padX; x++) {
+-                let sum = 0;
+-                let count = 0;
+-                for (let wx = x - Math.floor(smoothWindow/2); wx <= x + Math.floor(smoothWindow/2); wx++) {
+-                    if (wx >= padX && wx < W - padX) {
+-                        sum += colDarkness[wx];
+-                        count++;
+-                    }
+-                }
+-                smoothedColDarkness[x] = sum / count;
+-            }
++        // ÔöÇÔöÇ Answer extraction ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++        const compiledStudentAnswers = {};
+ 
+-            const colThreshold = Math.max(2, H * 0.002);
+-            const rawColIntervals = [];
+-            let inColInterval = false;
+-            let startX = 0;
+-            for (let x = padX; x < W - padX; x++) {
+-                const isActive = smoothedColDarkness[x] > colThreshold;
+-                if (isActive && !inColInterval) {
+-                    inColInterval = true;
+-                    startX = x;
+-                } else if (!isActive && inColInterval) {
+-                    inColInterval = false;
+-                    rawColIntervals.push({ start: startX, end: x - 1 });
+-                }
+-            }
+-            if (inColInterval) {
+-                rawColIntervals.push({ start: startX, end: W - padX - 1 });
+-            }
++        for (let rowIdx = 0; rowIdx < horizontalRows.length; rowIdx++) {
++            const targetRow = horizontalRows[rowIdx];
++            const columnGroups = detectColumnGroups(targetRow, cols);
+ 
+-            const filteredColIntervals = rawColIntervals.filter(col => (col.end - col.start + 1) >= 20);
+-            filteredColIntervals.sort((a, b) => (b.end - b.start) - (a.end - a.start));
+-            
+-            const detectedColIntervals = filteredColIntervals.slice(0, cols);
+-            detectedColIntervals.sort((a, b) => a.start - b.start);
++            for (let colIdx = 0; colIdx < cols; colIdx++) {
++                const q = rowIdx * cols + colIdx + 1;
++                if (q > mockTotalQuestions) break;
+ 
+-            if (detectedColIntervals.length === cols) {
+-                colIntervals = detectedColIntervals;
+-            } else {
+-                fallbackMode = true;
+-            }
+-        } else {
+-            fallbackMode = true;
+-        }
++                // Grab exactly mockChoicesCount bubbles from this column group, LÔåÆR
++                const questionChoices = (columnGroups[colIdx] || [])
++                    .sort((a, b) => a.rect.x - b.rect.x)
++                    .slice(0, mockChoicesCount);
++
++                const choiceEvaluations = [];
+ 
+-        if (fallbackMode) {
+-            writeLog(`Warning: Grid calibration could not resolve all bands. Falling back to uniform grid calculation.`);
+-            let minX = W, minY = H, maxX = 0, maxY = 0;
+-            let foundAny = false;
+-            for (let y = padY; y < H - padY; y++) {
+-                for (let x = padX; x < W - padX; x++) {
+-                    if (isDark[y * W + x]) {
+-                        if (x < minX) minX = x;
+-                        if (y < minY) minY = y;
+-                        if (x > maxX) maxX = x;
+-                        if (y > maxY) maxY = y;
+-                        foundAny = true;
++                for (let c = 0; c < mockChoicesCount; c++) {
++                    const targetBubble = questionChoices[c];
++                    const currentLetter = alphabetOptions[c];
++
++                    if (!targetBubble) {
++                        choiceEvaluations.push({ choice: currentLetter, density: 0, rect: null });
++                        continue;
+                     }
++
++                    // Inner 65 % ROI to avoid ring artifacts on empty bubbles
++                    const innerW = Math.round(targetBubble.rect.width * 0.65);
++                    const innerH = Math.round(targetBubble.rect.height * 0.65);
++
++                    // FIX 5 ÔöÇÔöÇ Clamp ROI to canvas bounds to prevent cv.Mat crashes
++                    const innerX = Math.max(0,
++                        Math.min(thresh.cols - innerW - 1,
++                            targetBubble.rect.x + Math.round((targetBubble.rect.width - innerW) / 2)));
++                    const innerY = Math.max(0,
++                        Math.min(thresh.rows - innerH - 1,
++                            targetBubble.rect.y + Math.round((targetBubble.rect.height - innerH) / 2)));
++
++                    const roi = thresh.roi(new cv.Rect(innerX, innerY, innerW, innerH));
++                    const fillDensity = cv.countNonZero(roi) / (innerW * innerH);
++                    roi.delete();
++
++                    choiceEvaluations.push({ choice: currentLetter, density: fillDensity, rect: targetBubble.rect });
+                 }
+-            }
+-            if (!foundAny) {
+-                writeLog("Error: Could not locate active sheet border lines. Ensure image is high-contrast.");
+-                pillStatus.innerText = "Scan Failed";
+-                return;
+-            }
+-            minX = Math.max(0, minX - 10);
+-            minY = Math.max(0, minY - 10);
+-            maxX = Math.min(W - 1, maxX + 10);
+-            maxY = Math.min(H - 1, maxY + 10);
+-
+-            const contentW = maxX - minX;
+-            const contentH = maxY - minY;
+-
+-            // Highlight content box in green
+-            ctx.strokeStyle = '#28a745';
+-            ctx.lineWidth = 3;
+-            ctx.strokeRect(minX, minY, contentW, contentH);
+-
+-            const colW = contentW / cols;
+-            const rowH = contentH / numRows;
+-
+-            rowIntervals = [];
+-            for (let r = 0; r < numRows; r++) {
+-                rowIntervals.push({
+-                    start: Math.floor(minY + r * rowH),
+-                    end: Math.ceil(minY + (r + 1) * rowH)
+-                });
+-            }
+-            colIntervals = [];
+-            for (let c = 0; c < cols; c++) {
+-                colIntervals.push({
+-                    start: Math.floor(minX + c * colW),
+-                    end: Math.ceil(minX + (c + 1) * colW)
+-                });
+-            }
+-        } else {
+-            writeLog(`Active OMR grid boundaries resolved: ${rowIntervals.length} row bands, ${colIntervals.length} column bands.`);
+-            // Highlight detected grid boundaries in green
+-            ctx.strokeStyle = '#28a745';
+-            ctx.lineWidth = 2;
+-            for (const r of rowIntervals) {
+-                for (const c of colIntervals) {
+-                    ctx.strokeRect(c.start, r.start, c.end - c.start, r.end - r.start);
+-                }
+-            }
+-        }
+ 
+-        // 3. Scan each question cell inside grid intervals
+-        for (let q = 1; q <= mockTotalQuestions; q++) {
+-            const colIdx = (q - 1) % cols;
+-            const rowIdx = Math.floor((q - 1) / cols);
+-
+-            const rowInterval = rowIntervals[rowIdx];
+-            const colInterval = colIntervals[colIdx];
+-
+-            const cellX1 = colInterval.start;
+-            const cellX2 = colInterval.end;
+-            const cellY1 = rowInterval.start;
+-            const cellY2 = rowInterval.end;
+-
+-            const cellW = cellX2 - cellX1;
+-            const cellH = cellY2 - cellY1;
+-
+-            // Draw cell boundary debug line
+-            ctx.strokeStyle = 'rgba(0, 123, 255, 0.2)';
+-            ctx.lineWidth = 1;
+-            ctx.strokeRect(cellX1, cellY1, cellW, cellH);
+-
+-            // Calculate start ratio of bubbles relative to question text label width
+-            // Derived from CSS: label width = 45px, bubble = 26px, gap = 18px
+-            const totalContentWidth = 45 + mockChoicesCount * 26 + (mockChoicesCount - 1) * 18;
+-            const startRatio = 45 / totalContentWidth;
+-
+-            const bubbleRegionX1 = cellX1 + cellW * startRatio;
+-            const bubbleRegionW = cellW * (1 - startRatio);
+-            const segmentW = bubbleRegionW / mockChoicesCount;
+-
+-            const choiceResults = [];
+-
+-            for (let c = 0; c < mockChoicesCount; c++) {
+-                const choiceX1 = bubbleRegionX1 + c * segmentW;
+-                const choiceX2 = choiceX1 + segmentW;
+-
+-                // Focus scanning bounds slightly inside the bubble region to avoid border artifacts
+-                const scanX1 = choiceX1 + segmentW * 0.15;
+-                const scanX2 = choiceX2 - segmentW * 0.15;
+-                const scanY1 = cellY1 + cellH * 0.15;
+-                const scanY2 = cellY2 - cellH * 0.15;
+-
+-                const scanW = scanX2 - scanX1;
+-                const scanH = scanY2 - scanY1;
+-                const totalScanPixels = Math.max(1, scanW * scanH);
+-
+-                let darkPixelCount = 0;
+-                for (let sy = Math.floor(scanY1); sy < Math.ceil(scanY2); sy++) {
+-                    for (let sx = Math.floor(scanX1); sx < Math.ceil(scanX2); sx++) {
+-                        if (sx >= 0 && sx < W && sy >= 0 && sy < H) {
+-                            if (isDark[sy * W + sx]) {
+-                                darkPixelCount++;
+-                            }
+-                        }
++                // ÔöÇÔöÇ FIX 6 ÔöÇÔöÇ Adaptive fill threshold per question ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++                //             Instead of a fixed 0.55 cut-off (which fails on dark
++                //             or light scans), we derive the threshold from the
++                //             question's own density spread:
++                //               threshold = avg + 0.5 ├ù (max ÔêÆ avg)
++                //             A clearly filled bubble is always a local outlier.
++                const densities = choiceEvaluations.map(c => c.density);
++                const maxDensity = Math.max(...densities);
++                const avgDensity = densities.reduce((a, b) => a + b, 0) / densities.length;
++                const fillThresh = Math.max(0.38, avgDensity + (maxDensity - avgDensity) * 0.50);
++
++                choiceEvaluations.sort((a, b) => b.density - a.density);
++                const topChoice = choiceEvaluations[0];
++                const runnerUp = choiceEvaluations[1];
++
++                let pickedAnswer = '';
++
++                if (topChoice.density >= fillThresh && topChoice.density >= 0.35 && topChoice.rect) {
++                    // Ambiguity check: two bubbles with near-identical density ÔåÆ likely correction mark
++                    const ambiguous = runnerUp
++                        && runnerUp.density > 0.38
++                        && (topChoice.density - runnerUp.density) < 0.12;
++
++                    if (ambiguous) {
++                        writeLog(`Q${q}: Ambiguous double-mark detected ÔÇö discarding.`);
++                    } else {
++                        pickedAnswer = topChoice.choice;
+                     }
++                } else {
++                    writeLog(`Q${q}: No answer (max density ${topChoice.density.toFixed(2)} < threshold ${fillThresh.toFixed(2)}).`);
+                 }
+ 
+-                const darkRatio = darkPixelCount / totalScanPixels;
+-                choiceResults.push({
+-                    choice: alphabetOptions[c],
+-                    darkRatio: darkRatio,
+-                    scanX1: scanX1,
+-                    scanY1: scanY1,
+-                    scanW: scanW,
+-                    scanH: scanH
+-                });
+-
+-                // Visualize scanning bucket
+-                ctx.strokeStyle = 'rgba(255, 193, 7, 0.3)';
+-                ctx.lineWidth = 1;
+-                ctx.strokeRect(scanX1, scanY1, scanW, scanH);
+-            }
++                compiledStudentAnswers[`q${q}`] = pickedAnswer;
+ 
+-            // Determine the selected choice by finding the one with maximum darkRatio
+-            let bestChoice = choiceResults[0];
+-            for (let c = 1; c < mockChoicesCount; c++) {
+-                if (choiceResults[c].darkRatio > bestChoice.darkRatio) {
+-                    bestChoice = choiceResults[c];
++                // Draw green box on detected filled bubble
++                if (pickedAnswer && topChoice.rect) {
++                    cv.rectangle(src,
++                        new cv.Point(topChoice.rect.x, topChoice.rect.y),
++                        new cv.Point(topChoice.rect.x + topChoice.rect.width, topChoice.rect.y + topChoice.rect.height),
++                        new cv.Scalar(40, 167, 69, 255), 2);
+                 }
+             }
+-
+-            const selectedChoice = bestChoice.choice;
+-            compiledStudentAnswers[`q${q}`] = selectedChoice;
+-
+-            // Draw visual confirmation around chosen bubble
+-            ctx.strokeStyle = '#28a745';
+-            ctx.lineWidth = 2;
+-            ctx.strokeRect(bestChoice.scanX1, bestChoice.scanY1, bestChoice.scanW, bestChoice.scanH);
+-
+-            // Print overlay text showing detected choice
+-            ctx.fillStyle = '#28a745';
+-            ctx.font = 'bold 12px monospace';
+-            ctx.fillText(selectedChoice, bestChoice.scanX1 + bestChoice.scanW / 2 - 4, bestChoice.scanY1 - 2);
+         }
+ 
+-        writeLog("OMR Scanner successfully calculated answers from circle density profiles!");
++        cv.imshow(canvas, src);
++        cleanup(gray, blurred, thresh, contours, hierarchy, src);
+ 
+-        writeLog(`Successfully isolated student answers matrix. Dispatching to controller network pipe...`);
++        writeLog('OMR parsing cycle completed successfully.');
+         await dispatchGradesToControllerPipeline(mockDetectedExamId, mockDetectedStudentId, compiledStudentAnswers);
+     }
+ 
+-    /**
+-     * Sends the compiled results matrix to the backend API endpoint
+-     */
+-    async function dispatchGradesToControllerPipeline(examId, studentId, studentAnswers) {
+-        try {
+-            const endpointUrl = '/api/qcm/process-scan';
+-            const payload = {
+-                exam_id: examId,
+-                student_id: studentId,
+-                student_answers: studentAnswers
+-            };
++    // ÔöÇÔöÇ Memory cleanup helper ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++    function cleanup(...mats) {
++        for (const m of mats) { try { m.delete(); } catch { } }
++    }
++
++    // ÔöÇÔöÇ Grade dispatch ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++    async function dispatchGradesToControllerPipeline(examId, studentId, answers) {
++        writeLog(`Transmitting payload: ${JSON.stringify(answers)}`);
++        pillStatus.innerText = 'Syncing GradesÔÇª';
+ 
+-            const response = await fetch(endpointUrl, {
++        try {
++            const response = await fetch('/?page=api-process-scan', {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
+-                body: JSON.stringify(payload)
++                body: JSON.stringify({ exam_id: examId, student_id: studentId, student_answers: answers })
+             });
+-
+-            const responseText = await response.text();
+-            let result;
+-            
+-            try {
+-                result = JSON.parse(responseText);
+-            } catch (e) {
+-                writeLog(`Fatal Backend Parse Error: Encountered invalid structural response output markup.`);
+-                console.error("Raw markup dump error context:", responseText);
+-                return;
+-            }
+-
+-            if (result.success) {
+-                pillStatus.innerText = "Synced successfully";
+-                pillStatus.className = "status-pill success";
+-                lblScore.innerText = parseFloat(result.data.final_grade).toFixed(2);
+-                writeLog(`[Success] Grade calculation verified! Score written: ${result.data.final_grade} pts.`);
++            const res = await response.json();
++            if (res.success) {
++                pillStatus.innerText = 'Synchronis├® avec succ├¿s';
++                pillStatus.className = 'status-badge status-corrige';
++                if (lblScore) lblScore.innerText = parseFloat(res.data.final_grade).toFixed(2);
++                writeLog(`[Success] Grade: ${res.data.final_grade} pts`);
+             } else {
+-                pillStatus.innerText = "Sync Failed";
+-                writeLog(`[Error] Request rejected by endpoint matrix: ${result.message}`);
++                pillStatus.innerText = '├ëchec Synchro';
++                pillStatus.className = 'status-badge status-en-attente';
++                writeLog(`[Error] ${res.message}`);
+             }
+-
+         } catch (err) {
+-            writeLog(`[Critical Error] Failed to complete async network transport channel.`);
+-            console.error(err);
++            writeLog(`API sync failure: ${err.message}`);
++            pillStatus.innerText = 'Sync Error';
+         }
+     }
+ });
+\ No newline at end of file

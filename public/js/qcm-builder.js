@@ -1,5 +1,47 @@
 // public/js/qcm-builder.js
 document.addEventListener('DOMContentLoaded', () => {
+    // ── ROOT-LEVEL PRINT HEADERS SUPPRESSION ENGINE ─────────────────
+    const printStyle = document.createElement('style');
+    printStyle.innerHTML = `
+        /* Declared at the root level to bypass nested media query parsing bugs */
+        @media print {
+    @page {
+        margin: 0mm !important; /* Tells the browser: no room for your headers */
+    }
+    body {
+        margin: 15mm !important; /* Puts the margin back inside the document so your sheet doesn't get cut off by the printer */
+    }
+}
+        @media print {
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            /* Hide setup panels, administrative tools, and utility buttons */
+            body > *, #qcmMasterKeyForm, #interactiveMatrixWorkspace, button, .no-print {
+                display: none !important;
+            }
+            /* Isolate and protect the printable OMR document canvas boundary */
+            #printableBubbleDocument {
+                display: block !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 210mm !important;   /* Hardcoded standard A4 width */
+                height: 297mm !important;  /* Hardcoded standard A4 height */
+                padding: 20mm 15mm !important; /* Safe padding so content never clips the edge */
+                box-sizing: border-box !important;
+                margin: 0 !important;
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+            }
+        }
+    `;
+    document.head.appendChild(printStyle);
+
     // Structural Controls Interaction Anchors
     const btnInitialize = document.getElementById('btnInitializeWorkspace');
     const masterForm = document.getElementById('qcmMasterKeyForm');
@@ -18,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalQ = parseInt(document.getElementById('totalQuestions').value);
         const totalC = parseInt(document.getElementById('choicesPerQuestion').value);
 
-        // Explicit boundary input assertions
         if (!examIdStr || isNaN(totalQ) || isNaN(totalC)) {
             alert('Please specify valid initialization variables before proceeding.');
             return;
@@ -83,17 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
             documentGridTarget.appendChild(rowLine);
         }
 
-        // Reveal the active configuration areas
         masterForm.style.display = 'block';
         printableDocument.style.display = 'block';
     });
 
-    // Handle Printing System Routine Hooks
     triggerPrintBtn.addEventListener('click', () => {
         window.print();
     });
 
-    // Intercept Data Submission for Server Storage Write Operations
     masterForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -108,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
             grading_matrix: {}
         };
 
-        // Scrape array configurations out of dynamic rows
         for (let q = 1; q <= totalQ; q++) {
             const correctChecked = masterForm.querySelector(`input[name="matrix_correct[q${q}]"]:checked`);
             const pointWeightValue = masterForm.querySelector(`input[name="matrix_weight[q${q}]"]`);
