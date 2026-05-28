@@ -33,9 +33,50 @@ class ControleRepository extends Repository implements IControleRepo
 
     public function delete(string $id): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM controle WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-        return $stmt->rowCount() > 0;
+        $examId = (int)$id;
+        
+        // 1. Fetch the master exam details to get teaching course ID and type
+        $exam = $this->findExamById($examId);
+        if (!$exam) {
+            return false;
+        }
+
+        $ensId = (int)$exam['enseignement_id'];
+        $type = $exam['type'];
+
+        // 2. Fetch all controle rows (both master and student grades) for this exam
+        $stmt = $this->db->prepare("
+            SELECT id FROM controle 
+            WHERE enseignement_id = :ens_id AND type = :type
+        ");
+        $stmt->execute([
+            ':ens_id' => $ensId,
+            ':type'   => $type
+        ]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $ids = array_map(fn($r) => (int)$r['id'], $rows);
+
+        if (empty($ids)) {
+            return false;
+        }
+
+        // 3. Delete any reclamations referencing these controle IDs
+        $inQuery = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->db->prepare("DELETE FROM reclamation WHERE controle_id IN ($inQuery)");
+        $stmt->execute($ids);
+
+        // 4. Delete the controle rows themselves
+        $stmt = $this->db->prepare("DELETE FROM controle WHERE id IN ($inQuery)");
+        $stmt->execute($ids);
+
+        // 5. Unlink the Flat-File master-key JSON template if it exists
+        $storagePath = __DIR__ . '/../../storage/qcm_keys';
+        $filePath = sprintf('%s/exam_%d.json', $storagePath, $examId);
+        if (file_exists($filePath)) {
+            @unlink($filePath);
+        }
+
+        return true;
     }
 
     /*

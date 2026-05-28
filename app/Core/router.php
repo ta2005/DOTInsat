@@ -264,6 +264,14 @@ $routes = [
     ],
 
     [
+        'page'       => 'exam-delete',
+        'controller' => 'QcmController',
+        'method'     => 'deleteExam',
+        'http'       => 'GET',
+        'roles'      => [ROLE_PROFESSEUR]
+    ],
+
+    [
         'page'       => 'qcm-create',
         'controller' => 'QcmController',
         'method'     => 'create',

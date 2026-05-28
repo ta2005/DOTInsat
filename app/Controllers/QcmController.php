@@ -36,48 +36,51 @@ class QcmController
             $examsRaw = $this->controleRepo->fetchExamsByCourse($selectedCourseId);
             $enrolledStudents = $this->controleRepo->fetchStudentsByCourse($selectedCourseId);
             
-            // Group exams into unique exams and compile their student entries
-            $grouped = [];
+            // 1. Collect all master exams (rows where etudiant_id IS NULL)
+            $masterExams = [];
             foreach ($examsRaw as $row) {
-                $type = strtoupper($row['type']);
-                $format = strtoupper($row['format']);
-                $key = "{$type}-{$format}";
-
-                if (!isset($grouped[$key])) {
-                    $grouped[$key] = [
-                        'id' => null,
-                        'type' => $type,
-                        'format' => $format,
-                        'statut' => 'EN_ATTENTE',
-                        'note' => null,
-                        'students' => []
-                    ];
-                }
-
                 if ($row['etudiant_id'] === null) {
-                    $grouped[$key]['id'] = (int)$row['id'];
-                    $grouped[$key]['statut'] = $row['statut'];
-                } else {
-                    $grouped[$key]['students'][] = [
+                    $masterExams[(int)$row['id']] = [
                         'id' => (int)$row['id'],
-                        'student_id' => (int)$row['etudiant_id'],
-                        'cin' => $row['student_cin'],
-                        'nom' => $row['student_nom'],
-                        'prenom' => $row['student_prenom'],
-                        'email' => $row['student_email'],
-                        'note' => $row['note'],
-                        'statut' => $row['statut']
+                        'type' => strtoupper($row['type']),
+                        'format' => strtoupper($row['format']),
+                        'statut' => $row['statut'],
+                        'students' => []
                     ];
                 }
             }
 
-            // Cleanup & Summarize
-            foreach ($grouped as $key => &$exam) {
-                if ($exam['id'] === null && !empty($exam['students'])) {
-                    $exam['id'] = $exam['students'][0]['id'];
+            // 2. Associate student grade rows (where etudiant_id IS NOT NULL) to the matching master exam by type and format
+            foreach ($examsRaw as $row) {
+                if ($row['etudiant_id'] !== null) {
+                    $matchedMasterId = null;
+                    foreach ($masterExams as $mId => $mExam) {
+                        if ($mExam['type'] === strtoupper($row['type'])) {
+                            if ($mExam['format'] === strtoupper($row['format'])) {
+                                $matchedMasterId = $mId;
+                                break;
+                            }
+                            $matchedMasterId = $mId;
+                        }
+                    }
+
+                    if ($matchedMasterId !== null) {
+                        $masterExams[$matchedMasterId]['students'][] = [
+                            'id' => (int)$row['id'],
+                            'student_id' => (int)$row['etudiant_id'],
+                            'cin' => $row['student_cin'],
+                            'nom' => $row['student_nom'],
+                            'prenom' => $row['student_prenom'],
+                            'email' => $row['student_email'],
+                            'note' => $row['note'],
+                            'statut' => $row['statut']
+                        ];
+                    }
                 }
-                
-                // Merge enrolled students with graded students
+            }
+
+            // 3. For each master exam, merge enrolled students so all students are visible
+            foreach ($masterExams as &$exam) {
                 $actualStudents = [];
                 $studentGrades = [];
                 foreach ($exam['students'] as $s) {
@@ -103,6 +106,7 @@ class QcmController
                 }
                 $exam['students'] = $actualStudents;
 
+                // Calibrate the master exam status based on student correction statuses
                 if (!empty($exam['students'])) {
                     $allCorrige = true;
                     foreach ($exam['students'] as $s) {
@@ -116,7 +120,7 @@ class QcmController
             }
             unset($exam);
 
-            $exams = array_values($grouped);
+            $exams = array_values($masterExams);
         }
 
         require BASE_PATH . '/views/pages/professor/qcm-dashboard.php';
@@ -330,6 +334,33 @@ class QcmController
             $this->jsonSuccess(['message' => 'Note et statut mis à jour avec succès.']);
         } else {
             $this->jsonError('Impossible de mettre à jour la note ou le statut.');
+        }
+    }
+
+    public function deleteExam(): void
+    {
+        $examId = isset($_GET['exam_id']) ? (int)$_GET['exam_id'] : 0;
+
+        if ($examId <= 0) {
+            $this->jsonError('Paramètre exam_id manquant ou invalide.', 400);
+            return;
+        }
+
+        $exam = $this->controleRepo->findExamById($examId);
+        if ($exam === null) {
+            $this->jsonError("Aucun contrôle trouvé avec l'ID {$examId}.", 404);
+            return;
+        }
+
+        $ensId = (int)$exam['enseignement_id'];
+
+        $success = $this->controleRepo->delete((string)$examId);
+
+        if ($success) {
+            header("Location: /?page=qcm-dashboard&course_id={$ensId}");
+            exit;
+        } else {
+            $this->jsonError('Impossible de supprimer l\'examen.', 500);
         }
     }
 
