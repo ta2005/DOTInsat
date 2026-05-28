@@ -3,16 +3,19 @@
 
 require_once BASE_PATH . '/app/Repositories/DemandeRepository.php';
 require_once BASE_PATH . '/app/Repositories/ReclamationRepository.php';
+require_once BASE_PATH . '/app/Repositories/AdminRepository.php';
 
 class AdminController
 {
     private DemandeRepository     $demandeRepo;
     private ReclamationRepository $reclamationRepo;
+    private AdminRepository       $adminRepo;
 
     public function __construct(private ?PDO $pdo)
     {
         $this->demandeRepo     = new DemandeRepository($this->pdo);
         $this->reclamationRepo = new ReclamationRepository($this->pdo);
+        $this->adminRepo       = new AdminRepository($this->pdo);
     }
 
     /*
@@ -22,8 +25,8 @@ class AdminController
     */
     public function home(): void
     {
-        $pdo    = $this->pdo;
-        $config = require BASE_PATH . '/config/administrateur.php';
+        $adminRepo = $this->adminRepo;
+        $config    = require BASE_PATH . '/config/administrateur.php';
         require BASE_PATH . '/views/pages/home.php';
     }
 
@@ -34,9 +37,9 @@ class AdminController
     */
     public function demandes(): void
     {
-        $pdo      = $this->pdo;
-        $config   = require BASE_PATH . '/config/administrateur.php';
-        $demandes = $this->demandeRepo->getAll();
+        $adminRepo = $this->adminRepo;
+        $config    = require BASE_PATH . '/config/administrateur.php';
+        $demandes  = $this->demandeRepo->getAll();
 
         include BASE_PATH . '/views/layouts/header.php';
         include BASE_PATH . '/views/pages/admin/demandes.php';
@@ -49,7 +52,7 @@ class AdminController
     */
     public function reclamations(): void
     {
-        $pdo          = $this->pdo;
+        $adminRepo    = $this->adminRepo;
         $config       = require BASE_PATH . '/config/administrateur.php';
         $reclamations = $this->reclamationRepo->getAll();
 

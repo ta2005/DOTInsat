@@ -2,48 +2,48 @@
 // app/Controllers/AdminEtudiantController.php
 
 require_once BASE_PATH . '/app/Repositories/EtudiantRepository.php';
+require_once BASE_PATH . '/app/Repositories/AdminRepository.php';
 
 class AdminEtudiantController
 {
     private EtudiantRepository $repo;
+    private AdminRepository    $adminRepo;
 
     public function __construct(private ?PDO $pdo)
     {
-        $this->repo = new EtudiantRepository($this->pdo);
+        $this->repo      = new EtudiantRepository($this->pdo);
+        $this->adminRepo = new AdminRepository($this->pdo);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | GET ?page=etudiants
-    | Affiche la liste filtrée ou vide selon les paramètres GET
+    | GET ?page=etu_manage
     |--------------------------------------------------------------------------
     */
     public function index(): void
     {
-        $flash   = $_SESSION['flash'] ?? null;
+        $flash = $_SESSION['flash'] ?? null;
         unset($_SESSION['flash']);
 
         $groupes  = $this->repo->getGroupes();
         $filieres = array_unique(array_column($groupes, 'filiere'));
         sort($filieres);
 
-        // Grouper les classes par filière pour le JS
         $classesByFiliere = [];
         foreach ($groupes as $g) {
             $classesByFiliere[$g['filiere']][] = $g['classe'];
         }
 
-        // Filtres courants (depuis GET)
-        $filiere  = trim($_GET['filiere'] ?? '');
-        $classe   = trim($_GET['classe']  ?? '');
-
+        $filiere   = trim($_GET['filiere'] ?? '');
+        $classe    = trim($_GET['classe']  ?? '');
         $etudiants = [];
+
         if ($filiere !== '' && $classe !== '') {
             $etudiants = $this->repo->getByFiliereEtClasse($filiere, $classe);
         }
 
-        $pdo    = $this->pdo;
-        $config = require BASE_PATH . '/config/administrateur.php';
+        $adminRepo = $this->adminRepo;
+        $config    = require BASE_PATH . '/config/administrateur.php';
 
         include BASE_PATH . '/views/layouts/header.php';
         include BASE_PATH . '/views/pages/admin/etudiants.php';
@@ -51,22 +51,21 @@ class AdminEtudiantController
 
     /*
     |--------------------------------------------------------------------------
-    | POST ?page=save-etudiant
-    | Créer un nouvel étudiant
+    | POST ?page=etu_manage_save
     |--------------------------------------------------------------------------
     */
     public function store(): void
     {
         $data = [
-            'cin'      => $_POST['cin']      ?? null,
-            'nom'      => trim($_POST['nom']      ?? ''),
-            'prenom'   => trim($_POST['prenom']   ?? ''),
-            'email'    => trim($_POST['email']    ?? ''),
-            'mot_passe'=> $_POST['mot_passe']     ?? 'changeme123',
-            'classe'   => trim($_POST['classe']   ?? ''),
-            'filiere'  => trim($_POST['filiere']  ?? ''),
-            'niveau'   => trim($_POST['niveau']   ?? ''),
-            'annee'    => (int)($_POST['annee']   ?? date('Y')),
+            'cin'       => $_POST['cin']       ?? null,
+            'nom'       => trim($_POST['nom']       ?? ''),
+            'prenom'    => trim($_POST['prenom']    ?? ''),
+            'email'     => trim($_POST['email']     ?? ''),
+            'mot_passe' => $_POST['mot_passe']      ?? 'changeme123',
+            'classe'    => trim($_POST['classe']    ?? ''),
+            'filiere'   => trim($_POST['filiere']   ?? ''),
+            'niveau'    => trim($_POST['niveau']    ?? ''),
+            'annee'     => (int)($_POST['annee']    ?? date('Y')),
         ];
 
         if (
@@ -77,23 +76,13 @@ class AdminEtudiantController
             $data['filiere'] === '' ||
             $data['niveau']  === ''
         ) {
-            $_SESSION['flash'] = [
-                'type' => 'error',
-                'msg'  => 'Tous les champs obligatoires doivent être remplis.'
-            ];
+            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Tous les champs obligatoires doivent être remplis.'];
         } elseif ($this->repo->create($data)) {
-            $_SESSION['flash'] = [
-                'type' => 'success',
-                'msg'  => 'Étudiant ajouté avec succès.'
-            ];
+            $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Étudiant ajouté avec succès.'];
         } else {
-            $_SESSION['flash'] = [
-                'type' => 'error',
-                'msg'  => 'Erreur lors de la création. Vérifiez l\'email ou le CIN.'
-            ];
+            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Erreur lors de la création. Vérifiez l\'email ou le CIN.'];
         }
 
-        // Rediriger vers la même vue filtrée
         $filiere = $_POST['filiere'] ?? '';
         $classe  = $_POST['classe']  ?? '';
         header("Location: /?page=etu_manage&filiere={$filiere}&classe={$classe}");
@@ -102,8 +91,7 @@ class AdminEtudiantController
 
     /*
     |--------------------------------------------------------------------------
-    | POST ?page=update-etudiant
-    | Modifier un étudiant existant
+    | POST ?page=etu_manage_update
     |--------------------------------------------------------------------------
     */
     public function update(): void
@@ -136,8 +124,7 @@ class AdminEtudiantController
 
     /*
     |--------------------------------------------------------------------------
-    | POST ?page=delete-etudiant
-    | Supprimer un étudiant
+    | POST ?page=etu_manage_delete
     |--------------------------------------------------------------------------
     */
     public function destroy(): void

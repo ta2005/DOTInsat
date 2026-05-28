@@ -1,5 +1,5 @@
 <?php
-// views/pages/professor/examens-prof.php
+// illi fih les 3 bouttons : dashboard, create qcm, scan qcm
 
 $config = [
     'nav' => [

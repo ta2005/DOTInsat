@@ -2,6 +2,7 @@
 // app/Controllers/HomeController.php
 
 require_once BASE_PATH . '/app/Repositories/EtudiantRepository.php';
+require_once BASE_PATH . '/app/Repositories/AdminRepository.php';
 
 class HomeController
 {
@@ -20,6 +21,8 @@ class HomeController
     public function index(): void
     {
         $role = $_SESSION['user_role'] ?? '';
+
+        $adminRepo = new AdminRepository($this->pdo);
 
         $config = match ($role) {
             ROLE_PROFESSEUR => require BASE_PATH . '/config/enseignant.php',
@@ -103,8 +106,8 @@ class HomeController
         $repo  = new EtudiantRepository($this->pdo);
 
         // Profil
-        $profil  = $etuId ? $repo->getProfil($etuId) : null;
-        $classe  = $profil['classe'] ?? 'GL3-2';
+        $profil     = $etuId ? $repo->getProfil($etuId) : null;
+        $classe     = $profil['classe'] ?? 'GL3-2';
         $nomComplet = $profil
             ? trim($profil['prenom'] . ' ' . $profil['nom'])
             : 'Étudiant';

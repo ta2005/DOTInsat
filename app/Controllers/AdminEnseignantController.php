@@ -2,14 +2,17 @@
 // app/Controllers/AdminEnseignantController.php
 
 require_once BASE_PATH . '/app/Repositories/ProfesseurRepository.php';
+require_once BASE_PATH . '/app/Repositories/AdminRepository.php';
 
 class AdminEnseignantController
 {
     private ProfesseurRepository $repo;
+    private AdminRepository      $adminRepo;
 
     public function __construct(private ?PDO $pdo)
     {
-        $this->repo = new ProfesseurRepository($this->pdo);
+        $this->repo      = new ProfesseurRepository($this->pdo);
+        $this->adminRepo = new AdminRepository($this->pdo);
     }
 
     /*
@@ -19,13 +22,13 @@ class AdminEnseignantController
     */
     public function index(): void
     {
-        $search    = trim($_GET['q'] ?? '');
-        $profs     = $this->repo->getAllWithEnseignements($search ?: null);
-        $flash     = $_SESSION['flash'] ?? null;
+        $search = trim($_GET['q'] ?? '');
+        $profs  = $this->repo->getAllWithEnseignements($search ?: null);
+        $flash  = $_SESSION['flash'] ?? null;
         unset($_SESSION['flash']);
 
-        $pdo    = $this->pdo;
-        $config = require BASE_PATH . '/config/administrateur.php';
+        $adminRepo = $this->adminRepo;
+        $config    = require BASE_PATH . '/config/administrateur.php';
 
         include BASE_PATH . '/views/layouts/header.php';
         include BASE_PATH . '/views/pages/admin/enseignants.php';
@@ -39,11 +42,11 @@ class AdminEnseignantController
     public function store(): void
     {
         $data = [
-            'cin'       => $_POST['cin']    ?? null,
-            'nom'       => trim($_POST['nom']    ?? ''),
-            'prenom'    => trim($_POST['prenom'] ?? ''),
-            'email'     => trim($_POST['email']  ?? ''),
-            'mot_passe' => $_POST['mot_passe']   ?? 'changeme123',
+            'cin'       => $_POST['cin']       ?? null,
+            'nom'       => trim($_POST['nom']       ?? ''),
+            'prenom'    => trim($_POST['prenom']    ?? ''),
+            'email'     => trim($_POST['email']     ?? ''),
+            'mot_passe' => $_POST['mot_passe']      ?? 'changeme123',
         ];
 
         if (empty($data['nom']) || empty($data['prenom']) || empty($data['email'])) {

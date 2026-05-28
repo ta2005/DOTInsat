@@ -1,7 +1,5 @@
 <?php
-// config/etudiant.php
-// Toutes les données sont injectées par HomeController::buildEtudiantConfig()
-// Ce fichier ne contient aucune logique SQL — il assemble uniquement la config.
+
 
 return [
 
