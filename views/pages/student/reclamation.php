@@ -6,9 +6,7 @@
 
 <?php
 $etudiant_id   = 'etudiant_' . ($_SESSION['user_id'] ?? 1);
-$notifications = function_exists('notifications_pour')
-    ? array_values(notifications_pour($etudiant_id) ?? [])
-    : [];
+$notifications = []; // injecté par le controller via NotificationRepository si nécessaire
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
@@ -178,6 +176,4 @@ foreach ($matieres as $m) {
         }
     })();
 </script>
-</script>
 <script src="/js/reclamation.js"></script>
-<script>

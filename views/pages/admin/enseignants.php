@@ -299,53 +299,5 @@
 
 </div><!-- /.etu-page -->
 
-<script>
-/* ── Recherche dynamique ── */
-(function () {
-    const input = document.getElementById('ens-search-input');
-    const rows  = document.querySelectorAll('.ens-row');
-    const count = document.getElementById('ens-count');
-    if (!input) return;
-
-    let timer;
-    input.addEventListener('input', function () {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            const q = this.value.toLowerCase().trim();
-            let n = 0;
-            rows.forEach(row => {
-                const match = !q || (row.dataset.search || '').includes(q);
-                row.style.display = match ? '' : 'none';
-                if (match) n++;
-            });
-            count.textContent = n + ' enseignant' + (n !== 1 ? 's' : '')
-                + (q ? ' · « ' + this.value + ' »' : '');
-        }, 180);
-    });
-})();
-
-/* ── Modals (même API que etudiants.php) ── */
-function ouvrirModal(id) {
-    const m = document.getElementById(id);
-    if (!m) return;
-    m.classList.add('etu-modal-backdrop--open');
-    document.body.style.overflow = 'hidden';
-}
-function fermerModal(id) {
-    const m = document.getElementById(id);
-    if (!m) return;
-    m.classList.remove('etu-modal-backdrop--open');
-    document.body.style.overflow = '';
-}
-function fermerModalBackdrop(event, id) {
-    if (event.target === event.currentTarget) fermerModal(id);
-}
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-        document.querySelectorAll('.etu-modal-backdrop--open').forEach(m => {
-            m.classList.remove('etu-modal-backdrop--open');
-            document.body.style.overflow = '';
-        });
-    }
-});
-</script>
+<script src="/js/admin-modals.js"></script>
+<script src="/js/admin-enseignants.js"></script>
