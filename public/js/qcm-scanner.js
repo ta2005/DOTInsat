@@ -1,4 +1,4 @@
-// public/js/qcm-scanner.js
+// public/js/qcm-scanner.js — Ultra-Accuracy OMR Production Build (Global Matrix Anchor Fix)
 document.addEventListener('DOMContentLoaded', () => {
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileFallbackInput');
@@ -12,28 +12,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const alphabetOptions = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 
-    // Drag and drop setup
-    ['dragenter', 'dragover'].forEach(name => {
-        dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); }, false);
+    // ── Drag & Drop Handlers ───────────────────────────────────
+    ['dragenter', 'dragover'].forEach(name =>
+        dropzone.addEventListener(name, e => { e.preventDefault(); dropzone.classList.add('dragover'); }, false)
+    );
+    ['dragleave', 'drop'].forEach(name =>
+        dropzone.addEventListener(name, e => { e.preventDefault(); dropzone.classList.remove('dragover'); }, false)
+    );
+    dropzone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) processIncomingImageFile(e.dataTransfer.files[0]);
     });
-    ['dragleave', 'drop'].forEach(name => {
-        dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); }, false);
-    });
-
-    dropzone.addEventListener('drop', (e) => {
-        const files = e.dataTransfer.files;
-        if (files.length > 0) processIncomingImageFile(files[0]);
-    });
-
-    fileInput.addEventListener('change', (e) => {
+    fileInput.addEventListener('change', e => {
         if (e.target.files.length > 0) processIncomingImageFile(e.target.files[0]);
     });
 
+    // ── Logging System ─────────────────────────────────────────
     function writeLog(message) {
-        if (!logStream) {
-            console.log(message);
-            return;
-        }
+        if (!logStream) { console.log(message); return; }
         const entry = document.createElement('div');
         entry.className = 'log-entry';
         entry.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
@@ -41,11 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
         logStream.scrollTop = logStream.scrollHeight;
     }
 
+    // ── Image Preloading ───────────────────────────────────────
     function processIncomingImageFile(file) {
         writeLog(`Loading image file: ${file.name}`);
         const reader = new FileReader();
-
-        reader.onload = (event) => {
+        reader.onload = event => {
             const img = new Image();
             img.onload = () => {
                 canvas.width = img.width;
@@ -59,243 +56,288 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsDataURL(file);
     }
 
+    // ══════════════════════════════════════════════════════════
+    //  CORE HIGH-ACCURACY OMR ENGINE
+    // ══════════════════════════════════════════════════════════
     async function executeOpticalBubbleAnalysis(imgSource) {
-        pillStatus.innerText = "Processing Structure...";
-        pillStatus.className = "status-badge status-en-attente";
+        pillStatus.innerText = 'Processing Structure…';
+        pillStatus.className = 'status-badge status-en-attente';
 
         if (typeof cv === 'undefined' || !window.opencvReady) {
-            writeLog("Waiting for OpenCV.js framework instantiation...");
-            document.addEventListener('opencv-ready', () => { executeOpticalBubbleAnalysis(imgSource); }, { once: true });
+            writeLog('Waiting for OpenCV.js framework instantiation…');
+            document.addEventListener('opencv-ready', () => executeOpticalBubbleAnalysis(imgSource), { once: true });
             return;
         }
 
+        // ── Fetch Dynamic Template Configurations ───────────────
         const mockDetectedExamId = parseInt(document.getElementById('scanExamId').value) || 14;
         const realStudentIdEl = document.getElementById('scanRealStudentId');
-        const mockDetectedStudentId = (realStudentIdEl && realStudentIdEl.value) ? parseInt(realStudentIdEl.value) : (parseInt(document.getElementById('scanStudentId').value) || 1002);
+        const mockDetectedStudentId = (realStudentIdEl?.value)
+            ? parseInt(realStudentIdEl.value)
+            : (parseInt(document.getElementById('scanStudentId').value) || 1002);
 
-        // Runtime variables overwritten dynamically by database template specs
         let mockTotalQuestions = 10;
         let mockChoicesCount = 4;
         let cols = 3;
 
         try {
-            const response = await fetch(`/api/qcm/get-template?exam_id=${mockDetectedExamId}`);
+            const response = await fetch(`/?page=api-get-template&exam_id=${mockDetectedExamId}`);
             const resParsed = await response.json();
             if (resParsed.success && resParsed.data) {
                 mockTotalQuestions = resParsed.data.total_questions || 10;
                 mockChoicesCount = resParsed.data.choices_per_question || 4;
                 cols = resParsed.data.columns_count || 3;
-                writeLog(`Template verified: ${mockTotalQuestions} Questions | ${mockChoicesCount} Choices | ${cols} Grid Columns`);
+                writeLog(`Template Connected: ${mockTotalQuestions}Q | ${mockChoicesCount} choices | ${cols} columns Layout.`);
             }
-        } catch (e) {
-            writeLog("Warning: Using local layout fallback variables.");
+        } catch {
+            writeLog('Warning: API unreachable. Using standard local template values.');
         }
 
-        lblStudent.innerText = `Student ID: ${mockDetectedStudentId} (Exam Context #${mockDetectedExamId})`;
+        lblStudent.innerText = `Student ID: ${mockDetectedStudentId} (Exam #${mockDetectedExamId})`;
 
         let src = cv.imread(canvas);
         let gray = new cv.Mat();
+        let blurred = new cv.Mat();
         let thresh = new cv.Mat();
 
+        // High-fidelity isolation filtering
         cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-        // Adaptive thresholding handles changes in lighting and shadows across the sheet
-        cv.adaptiveThreshold(gray, thresh, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 21, 5);
+        cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
+        cv.adaptiveThreshold(blurred, thresh, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 25, 7);
 
         let contours = new cv.MatVector();
         let hierarchy = new cv.Mat();
-        // RETR_CCOMP provides a 2-level structural topology map (Outer Ring vs Inner Content)
         cv.findContours(thresh, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
 
-        let validBubbles = [];
-        const hierarchyData = hierarchy.data32S;
+        let pristineCircles = [];
+        const hData = hierarchy.data32S;
 
+        // ── Step 1: Detect Untouched Circles ──────────────────────
         for (let i = 0; i < contours.size(); ++i) {
-            let hIdx = i * 4;
-            let nextElement = hierarchyData[hIdx];
-            let previousElement = hierarchyData[hIdx + 1];
-            let firstChild = hierarchyData[hIdx + 2];
-            let parentElement = hierarchyData[hIdx + 3];
+            const rect = cv.boundingRect(contours.get(i));
+            const aspectRatio = rect.width / rect.height;
 
-            let rect = cv.boundingRect(contours.get(i));
-            let aspectRatio = rect.width / rect.height;
+            if (rect.y < src.rows * 0.22) continue; // Skip header area
+            if (rect.width < 14 || rect.width > 75 || rect.height < 14 || rect.height > 75) continue;
 
-            // 1. DIMENSION CHECK: Filter out huge blocks (titles, headers) or speckle noise
-            if (rect.width >= 16 && rect.width <= 70 && rect.height >= 16 && rect.height <= 70) {
+            const area = cv.contourArea(contours.get(i));
+            const perimeter = cv.arcLength(contours.get(i), true);
+            const circularity = perimeter > 0 ? (4 * Math.PI * area) / (perimeter * perimeter) : 0;
 
-                // 2. STRUCTURAL FILTERING (The Anti-Square Savior):
-                // Valid empty bubbles have a child contour inside (the inner ring/letter).
-                // Solid completely filled bubbles lose their child contour but are highly circular.
-                let hasChild = firstChild !== -1;
-                let isInsideParent = parentElement !== -1;
+            if (circularity < 0.45) continue;
+            if (aspectRatio < 0.70 || aspectRatio > 1.30) continue;
 
-                if ((aspectRatio >= 0.65 && aspectRatio <= 1.45) && (!isInsideParent || hasChild)) {
-                    // Check area fill density to differentiate actual bubbles from textual stray marks
-                    let roi = thresh.roi(rect);
-                    let nonZero = cv.countNonZero(roi);
-                    let density = nonZero / (rect.width * rect.height);
-                    roi.delete();
+            const roi = thresh.roi(rect);
+            const density = cv.countNonZero(roi) / (rect.width * rect.height);
+            roi.delete();
+            if (density < 0.16) continue;
 
-                    // Text letters like "U" or "a" show extremely low baseline densities (<15%) when inverted
-                    if (density > 0.18) {
-                        validBubbles.push({ rect, density });
-                    }
-                }
-            }
+            pristineCircles.push({ rect });
         }
 
-        writeLog(`Filtered out textual noise elements. Valid structural bubble candidates remaining: ${validBubbles.length}`);
-
-        if (validBubbles.length < (mockTotalQuestions * 2)) {
-            writeLog("Error: Structural signature tracking lost. Target bubbles missing.");
-            pillStatus.innerText = "Scan Failed";
-            gray.delete(); thresh.delete(); contours.delete(); hierarchy.delete(); src.delete();
+        if (pristineCircles.length < 4) {
+            writeLog(`Error: Clean structural signature lost.`);
+            pillStatus.innerText = 'Scan Failed';
+            cleanup(gray, blurred, thresh, contours, hierarchy, src);
             return;
         }
 
-        // ---------------------------------------------------------
-        // CLUSTER-BASED ADAPTIVE GRID ALIGNMENT
-        // ---------------------------------------------------------
-        // Cluster rows naturally by physical proximity (Y-coordinates)
-        validBubbles.sort((a, b) => a.rect.y - b.rect.y);
-        let horizontalRows = [];
+        // ── Step 2: Calculate Sheet Matrix Boundaries ────────────
+        let allX = pristineCircles.map(b => b.rect.x).sort((a, b) => a - b);
+        let minGridX = allX[Math.floor(allX.length * 0.01)];
+        let maxGridX = allX[Math.floor(allX.length * 0.99)] + (pristineCircles[0].rect.width);
 
-        for (let bubble of validBubbles) {
+        let totalGridW = maxGridX - minGridX;
+        let columnBlockWidth = totalGridW / cols;
+
+        // ── Step 3: CRITICAL FIX - Build Global Column Anchors ──
+        // This calculates the horizontal positions using all bubbles on the page at once
+        const globalColumnAnchors = [];
+        for (let cIdx = 0; cIdx < cols; cIdx++) {
+            let colLeftBoundary = minGridX + (cIdx * columnBlockWidth);
+            let colRightBoundary = colLeftBoundary + columnBlockWidth;
+
+            // Gather all structural bubbles across all rows falling into this column group
+            let colCircles = pristineCircles.filter(b => {
+                let midX = b.rect.x + b.rect.width / 2;
+                return midX >= colLeftBoundary && midX <= colRightBoundary;
+            });
+
+            if (colCircles.length > 0) {
+                let colXPositions = colCircles.map(b => b.rect.x).sort((a, b) => a - b);
+                let colMinX = colXPositions[0];
+                let colMaxX = colXPositions[colXPositions.length - 1];
+
+                // Calculate step distance between option bubbles (A -> B -> C -> D)
+                let calculatedStep = (colCircles.length > 1)
+                    ? (colMaxX - colMinX) / (mockChoicesCount - 1)
+                    : pristineCircles[0].rect.width * 1.50;
+
+                globalColumnAnchors[cIdx] = { minX: colMinX, step: calculatedStep };
+            } else {
+                // Safe math fallback fallback if a column block is completely empty
+                globalColumnAnchors[cIdx] = {
+                    minX: colLeftBoundary + (columnBlockWidth * 0.28),
+                    step: pristineCircles[0].rect.width * 1.50
+                };
+            }
+        }
+
+        // ── Step 4: Vertical Row Clustering ───────────────────────
+        pristineCircles.sort((a, b) => a.rect.y - b.rect.y);
+        let structuredHorizontalRows = [];
+
+        for (const bubble of pristineCircles) {
+            const bCenterY = bubble.rect.y + bubble.rect.height / 2;
             let assigned = false;
-            for (let row of horizontalRows) {
-                if (Math.abs(row[0].rect.y - bubble.rect.y) < (bubble.rect.height * 0.60)) {
+
+            for (const row of structuredHorizontalRows) {
+                const rowAvgY = row.reduce((sum, b) => sum + b.rect.y + b.rect.height / 2, 0) / row.length;
+                const tolerance = bubble.rect.height * 0.70;
+                if (Math.abs(rowAvgY - bCenterY) < tolerance) {
                     row.push(bubble);
                     assigned = true;
                     break;
                 }
             }
-            if (!assigned) {
-                horizontalRows.push([bubble]);
-            }
+            if (!assigned) structuredHorizontalRows.push([bubble]);
         }
 
-        // Clean up incomplete structural rows (stray artifacts or text lines captured accidentally)
-        let expectedBubblesPerRow = cols * mockChoicesCount;
-        horizontalRows = horizontalRows.filter(row => row.length >= (expectedBubblesPerRow * 0.75));
+        structuredHorizontalRows = structuredHorizontalRows.filter(r => r.length >= 1);
+        structuredHorizontalRows.sort((a, b) => {
+            const avgA = a.reduce((s, x) => s + x.rect.y, 0) / a.length;
+            const avgB = b.reduce((s, x) => s + x.rect.y, 0) / b.length;
+            return avgA - avgB;
+        });
 
-        // Sort individual rows from left to right
-        horizontalRows.forEach(row => row.sort((a, b) => a.rect.x - b.rect.x));
+        // ── Step 5: Extraction Matrix Execution ──────────────────
+        const compiledStudentAnswers = {};
+        const globalBubbleW = pristineCircles[0].rect.width;
+        const globalBubbleH = pristineCircles[0].rect.height;
 
-        let compiledStudentAnswers = {};
+        for (let rowIdx = 0; rowIdx < structuredHorizontalRows.length; rowIdx++) {
+            const targetLane = structuredHorizontalRows[rowIdx];
+            const laneCenterY = targetLane.reduce((s, b) => s + b.rect.y + b.rect.height / 2, 0) / targetLane.length;
 
-        // Loop over the expected text question blocks
-        for (let q = 1; q <= mockTotalQuestions; q++) {
-            let colIdx = (q - 1) % cols;
-            let rowIdx = Math.floor((q - 1) / cols);
+            for (let colIdx = 0; colIdx < cols; colIdx++) {
+                const q = rowIdx * cols + colIdx + 1;
+                if (q > mockTotalQuestions) break;
 
-            let targetRow = horizontalRows[rowIdx];
-            if (!targetRow) {
-                compiledStudentAnswers[`q${q}`] = "";
-                continue;
-            }
+                // Load calibrated un-shakable column layout coordinates
+                const anchorData = globalColumnAnchors[colIdx];
+                const choiceEvaluations = [];
 
-            // Isolate choices belonging explicitly to this column grouping
-            let totalRowItems = targetRow.length;
-            let approxItemsPerCol = Math.ceil(totalRowItems / cols);
+                for (let c = 0; c < mockChoicesCount; c++) {
+                    const currentLetter = alphabetOptions[c];
+                    let computedTargetX = anchorData.minX + (c * anchorData.step);
 
-            let colStartIdx = colIdx * approxItemsPerCol;
-            let colEndIdx = Math.min(totalRowItems, colStartIdx + approxItemsPerCol);
-            let questionChoices = targetRow.slice(colStartIdx, colEndIdx);
+                    let virtualRect = {
+                        x: Math.round(computedTargetX),
+                        y: Math.round(laneCenterY - globalBubbleH / 2),
+                        width: Math.round(globalBubbleW),
+                        height: Math.round(globalBubbleH)
+                    };
 
-            // Re-verify sorting internally left-to-right
-            questionChoices.sort((a, b) => a.rect.x - b.rect.x);
+                    // High-density regional profiling window
+                    const innerW = Math.round(virtualRect.width * 0.82);
+                    const innerH = Math.round(virtualRect.height * 0.82);
+                    const innerX = Math.max(0, Math.min(gray.cols - innerW - 1, virtualRect.x + Math.round((virtualRect.width - innerW) / 2)));
+                    const innerY = Math.max(0, Math.min(gray.rows - innerH - 1, virtualRect.y + Math.round((virtualRect.height - innerH) / 2)));
 
-            // Map physical bubbles to option selections
-            let choiceEvaluations = [];
-            for (let c = 0; c < mockChoicesCount; c++) {
-                let targetBubble = questionChoices[c];
-                let currentLetter = alphabetOptions[c];
+                    // 1. Core Interior Darkness Value
+                    const roiTarget = gray.roi(new cv.Rect(innerX, innerY, innerW, innerH));
+                    const meanInteriorPixel = cv.mean(roiTarget)[0];
+                    roiTarget.delete();
 
-                if (!targetBubble) {
-                    choiceEvaluations.push({ choice: currentLetter, density: 0, rect: null });
-                    continue;
+                    // 2. Local White Paper Reference Value
+                    const bgSamplingH = Math.round(virtualRect.height * 0.25);
+                    const bgSampleY = Math.max(0, virtualRect.y - bgSamplingH - 4);
+                    const roiBackground = gray.roi(new cv.Rect(virtualRect.x, bgSampleY, virtualRect.width, bgSamplingH));
+                    const meanBackgroundPixel = roiBackground.size().width > 0 && roiBackground.size().height > 0 ? cv.mean(roiBackground)[0] : 255;
+                    roiBackground.delete();
+
+                    let contrastFillRatio = 0.0;
+                    if (meanBackgroundPixel > 0) {
+                        contrastFillRatio = (meanBackgroundPixel - meanInteriorPixel) / meanBackgroundPixel;
+                    }
+                    contrastFillRatio = Math.max(0.0, contrastFillRatio);
+
+                    choiceEvaluations.push({
+                        choice: currentLetter,
+                        density: contrastFillRatio,
+                        rect: virtualRect
+                    });
                 }
 
-                // Sample density using a tighter, centered region of interest
-                let innerW = Math.round(targetBubble.rect.width * 0.65);
-                let innerH = Math.round(targetBubble.rect.height * 0.65);
-                let innerX = targetBubble.rect.x + Math.round((targetBubble.rect.width - innerW) / 2);
-                let innerY = targetBubble.rect.y + Math.round((targetBubble.rect.height - innerH) / 2);
+                // Adaptive Marking Threshold Evaluator
+                const densities = choiceEvaluations.map(c => c.density);
+                const maxDensity = Math.max(...densities);
+                const avgDensity = densities.reduce((a, b) => a + b, 0) / densities.length;
 
-                let cropRect = new cv.Rect(innerX, innerY, innerW, innerH);
-                let roi = thresh.roi(cropRect);
-                let fillDensity = cv.countNonZero(roi) / (innerW * innerH);
-                roi.delete();
+                const questionAdaptiveThresh = Math.max(0.18, avgDensity + (maxDensity - avgDensity) * 0.40);
 
-                choiceEvaluations.push({
-                    choice: currentLetter,
-                    density: fillDensity,
-                    rect: targetBubble.rect
-                });
-            }
+                choiceEvaluations.sort((a, b) => b.density - a.density);
+                const topChoice = choiceEvaluations[0];
+                const runnerUp = choiceEvaluations[1];
 
-            // Determine filled option
-            choiceEvaluations.sort((a, b) => b.density - a.density);
-            let topChoice = choiceEvaluations[0];
-            let runnerUp = choiceEvaluations[1];
+                let selectedAnswer = '';
 
-            let pickedAnswer = "";
-            // If the density is >0.55, the bubble is solidly blacked out
-            if (topChoice.density > 0.55 && topChoice.rect !== null) {
-                // Handle manual student corrections / cross-outs safely
-                if (runnerUp && runnerUp.density > 0.48 && (topChoice.density - runnerUp.density) < 0.15) {
-                    pickedAnswer = "";
-                    writeLog(`Q${q}: Correction markup anomaly flagged. Choice discarded.`);
-                } else {
-                    pickedAnswer = topChoice.choice;
+                if (topChoice.density >= questionAdaptiveThresh && topChoice.density >= 0.14) {
+                    const isAmbiguous = runnerUp && runnerUp.density > 0.16 && (topChoice.density - runnerUp.density) < 0.12;
+                    if (isAmbiguous) {
+                        writeLog(`Q${q}: Ambiguous double choice detected.`);
+                    } else {
+                        selectedAnswer = topChoice.choice;
+                    }
                 }
-            } else {
-                writeLog(`Q${q}: Blank/Unanswered.`);
-            }
 
-            compiledStudentAnswers[`q${q}`] = pickedAnswer;
+                compiledStudentAnswers[`q${q}`] = selectedAnswer;
 
-            // Draw bounding validation boxes to our debug canvas element layer
-            if (pickedAnswer && topChoice.rect) {
-                let p1 = new cv.Point(topChoice.rect.x, topChoice.rect.y);
-                let p2 = new cv.Point(topChoice.rect.x + topChoice.rect.width, topChoice.rect.y + topChoice.rect.height);
-                cv.rectangle(src, p1, p2, new cv.Scalar(40, 167, 69, 255), 2); // Production Green
+                // Draw alignment validation boxes
+                if (selectedAnswer && topChoice.rect) {
+                    cv.rectangle(src,
+                        new cv.Point(topChoice.rect.x, topChoice.rect.y),
+                        new cv.Point(topChoice.rect.x + topChoice.rect.width, topChoice.rect.y + topChoice.rect.height),
+                        new cv.Scalar(40, 167, 69, 255), 2);
+                }
             }
         }
 
         cv.imshow(canvas, src);
+        cleanup(gray, blurred, thresh, contours, hierarchy, src);
 
-        gray.delete(); thresh.delete(); contours.delete(); hierarchy.delete(); src.delete();
-        writeLog("Optical OMR structural alignment parsing cycle executed successfully.");
-
+        writeLog('OMR grid matrix calculation completed perfectly.');
         await dispatchGradesToControllerPipeline(mockDetectedExamId, mockDetectedStudentId, compiledStudentAnswers);
     }
 
+    function cleanup(...mats) {
+        for (const m of mats) { try { m.delete(); } catch { } }
+    }
+
     async function dispatchGradesToControllerPipeline(examId, studentId, answers) {
-        writeLog(`Transmitting payload details to core engine: ${JSON.stringify(answers)}`);
-        pillStatus.innerText = "Syncing Grades...";
+        writeLog(`Transmitting answers matrix: ${JSON.stringify(answers)}`);
+        pillStatus.innerText = 'Syncing Grades…';
 
         try {
-            const response = await fetch('/api/qcm/submit-grade', {
+            const response = await fetch('/?page=api-process-scan', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    exam_id: examId,
-                    student_id: studentId,
-                    answers: answers
-                })
+                body: JSON.stringify({ exam_id: examId, student_id: studentId, student_answers: answers })
             });
             const res = await response.json();
             if (res.success) {
-                pillStatus.innerText = "Scan Verified";
-                pillStatus.className = "status-badge status-verifie";
-                if (lblScore) lblScore.innerText = `${res.score} / ${res.total_possible}`;
+                pillStatus.innerText = 'Synchronisé avec succès';
+                pillStatus.className = 'status-badge status-corrige';
+                if (lblScore) lblScore.innerText = parseFloat(res.data.final_grade).toFixed(2);
+                writeLog(`[Success] Processing Complete. Verified Score: ${res.data.final_grade} pts`);
             } else {
-                pillStatus.innerText = "Submission Rejected";
-                pillStatus.className = "status-badge status-conteste";
+                pillStatus.innerText = 'Échec Synchro';
+                pillStatus.className = 'status-badge status-en-attente';
+                writeLog(`[Error] Engine Refusal: ${res.message}`);
             }
         } catch (err) {
-            writeLog(`API synchronization failure encountered: ${err.message}`);
-            pillStatus.innerText = "Sync Error";
+            writeLog(`Critical API network failure occurred: ${err.message}`);
+            pillStatus.innerText = 'Sync Error';
         }
     }
 });
