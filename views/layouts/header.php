@@ -3,8 +3,10 @@
 $currentPage = $_GET['page'] ?? 'home';
 ?>
 <header>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/notifications.css">
     <nav class="topbar">
         <a href="/?page=home" class="brand">
             <img src="/resources/logo.svg" alt=".INSAT" class="brand-logo">
