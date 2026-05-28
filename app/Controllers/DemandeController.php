@@ -1,6 +1,8 @@
 <?php
+// app/Controllers/DemandeController.php
 
 require_once BASE_PATH . '/app/Repositories/DemandeRepository.php';
+require_once BASE_PATH . '/app/Controllers/EtudiantController.php';
 
 class DemandeController
 {
@@ -11,25 +13,34 @@ class DemandeController
         $this->repo = new DemandeRepository($this->pdo);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | GET ?page=demande
+    |--------------------------------------------------------------------------
+    */
     public function index(): void
     {
-        $config = require BASE_PATH . '/config/etudiant.php';
+        $etudiant = new EtudiantController($this->pdo);
+        $config   = $etudiant->buildEtudiantConfig();
+
         foreach ($config['nav'] as &$item) {
             $item['active'] = ($item['href'] === '/?page=demande');
         }
         unset($item);
 
-        $demandes = $this->repo->getAll();
-
-        // Types récupérés dynamiquement depuis l'ENUM BD
+        $demandes     = $this->repo->getAll();
         $typesDemande = $this->repo->getTypesDemande();
 
         require BASE_PATH . '/views/pages/student/demande.php';
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | POST ?page=save-demande
+    |--------------------------------------------------------------------------
+    */
     public function store(): void
     {
-        // Récupérer les valeurs valides depuis la BD
         $typesValides = array_column($this->repo->getTypesDemande(), 'value');
         $type         = $_POST['type'] ?? '';
 
@@ -70,6 +81,11 @@ class DemandeController
         exit;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | POST ?page=delete-demande
+    |--------------------------------------------------------------------------
+    */
     public function delete(): void
     {
         $id = (int)($_POST['id'] ?? 0);

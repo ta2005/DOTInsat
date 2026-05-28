@@ -1,6 +1,7 @@
 <?php require_once BASE_PATH . '/views/layouts/header.php'; ?>
 
 <div class="wrap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <main>
 
 <?php
@@ -27,30 +28,6 @@ unset($_SESSION['flash']);
 </div>
 
 <form class="card form-card" method="POST" action="/?page=save-demande">
-
-    <!-- INFORMATIONS PERSONNELLES -->
-    <div class="form-section">
-        <div class="form-section-label">
-            <i class="ti ti-user"></i> Informations personnelles
-        </div>
-        <div class="form-grid-2">
-            <div class="form-group">
-                <label class="form-label" for="dem-nom">Nom</label>
-                <input class="form-input" type="text" id="dem-nom" name="nom"
-                       placeholder="Votre nom" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label" for="dem-prenom">Prénom</label>
-                <input class="form-input" type="text" id="dem-prenom" name="prenom"
-                       placeholder="Votre prénom" required>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="form-label" for="dem-num">Numéro d'inscription</label>
-            <input class="form-input" type="text" id="dem-num" name="num_inscription"
-                   placeholder="Ex: 2024GL1234" required>
-        </div>
-    </div>
 
     <!-- TYPE DE DEMANDE -->
     <div class="form-section">
@@ -119,7 +96,7 @@ function hide(id) {
 }
 function toggleAutre(sel) {
     const input = document.getElementById('dem-autre');
-    if (sel.value === 'FEUILLES_DE_NOTES') {
+    if (sel.value === 'AUTRES') {
         show('autre-field');
         input.required = true;
     } else {

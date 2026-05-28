@@ -20,7 +20,7 @@ class DemandeRepository extends Repository
                 d.statut::TEXT      AS statut,
                 d.date_creation     AS date_soumission
             FROM demande d
-            JOIN users u ON u.id = d.user_id
+            JOIN users u ON u.id = d.etudiant_id
             ORDER BY d.date_creation DESC
         ");
 
@@ -59,7 +59,7 @@ class DemandeRepository extends Repository
         if (!$this->isConnected()) return false;
 
         $stmt = $this->db->prepare("
-            INSERT INTO demande (message, type, statut, user_id, admin_id)
+            INSERT INTO demande (message, type, statut, etudiant_id, admin_id)
             VALUES (:message, :type, 'EN_ATTENTE', :user_id, 1)
         ");
 

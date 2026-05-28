@@ -1,7 +1,7 @@
 <?php
 // config/enseignant.php
+// $pdo est injecté par ProfessorController (via $pdo = $this->pdo avant le require)
 
-$pdo     = get_pdo();
 $prof_id = $_SESSION['user_id'] ?? null;
 
 $profile_row  = null;

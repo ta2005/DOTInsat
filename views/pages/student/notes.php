@@ -14,8 +14,11 @@ if (!$etudiantId) {
     exit;
 }
 
-$filiere = strtoupper(trim($_SESSION['filiere'] ?? 'GL'));
-$niveau  = (int)($_SESSION['annee'] ?? 2);
+$filiereRaw = strtoupper(trim($_SESSION['filiere'] ?? ''));
+preg_match('/^([A-Z]+)/', $filiereRaw, $mF);
+$filiere = $mF[1] ?? 'GL';
+preg_match('/^[A-Z]+(\d)/', $filiereRaw, $mN);
+$niveau = isset($mN[1]) ? (int)$mN[1] : 2;
 
 // =========================================================
 // RÉCUPÉRATION DES NOTES

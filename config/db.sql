@@ -474,3 +474,12 @@ INSERT INTO notification (message, lue, user_id, createur_id) VALUES
 ('Bienvenue sur la plateforme INSAT !',                       TRUE,  16, 1),
 ('Votre réclamation DS Réseaux a été refusée.',               FALSE, 9,  2),
 ('Nouvelle demande de stage soumise avec succès.',            TRUE,  9,  9);
+
+
+
+
+ALTER TABLE reclamation
+    ADD COLUMN IF NOT EXISTS note_nouvelle NUMERIC(5,2)
+        CHECK (note_nouvelle >= 0 AND note_nouvelle <= 20),
+    ADD COLUMN IF NOT EXISTS raison_refus  TEXT;
+ 

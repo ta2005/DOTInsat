@@ -1,7 +1,8 @@
 <?php
+// config/administrateur.php
+// $pdo est injecté par AdminController (via $pdo = $this->pdo avant le require)
 
-$pdo = get_pdo();
-$stats    = [];
+$stats       = [];
 $profile_row = null;
 
 if ($pdo) {

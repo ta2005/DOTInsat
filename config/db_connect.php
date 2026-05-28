@@ -10,7 +10,7 @@ function get_pdo(): ?PDO
     $port = '5432';
     $db = 'dotinsat';
     $user = 'postgres';
-    $pass = 'root';
+    $pass = '123456';
 
     try {
         $instance = new PDO(

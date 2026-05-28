@@ -3,8 +3,18 @@
 
 require_once BASE_PATH . '/app/Repositories/MatiereRepository.php';
 
-$filiere = strtoupper(trim($_SESSION['filiere'] ?? 'GL'));
-$niveau  = (int)($_SESSION['annee'] ?? 2);
+// $filiere et $niveau sont injectés par HomeController::calculMoyenne()
+// Ne pas les recalculer ici pour éviter d'utiliser $_SESSION['annee'] (= année scolaire ex: 2024)
+if (!isset($filiere) || !isset($niveau)) {
+    $filiereRaw = strtoupper(trim($_SESSION['filiere'] ?? ''));
+    preg_match('/^([A-Z]+)/', $filiereRaw, $mF);
+    $filiere = $mF[1] ?? 'GL';
+    preg_match('/^[A-Z]+(\d)/', $filiereRaw, $mN);
+    $niveau = isset($mN[1]) ? (int)$mN[1] : 2;
+}
+
+// Année scolaire pour affichage uniquement
+$anneeAffichage = $_SESSION['annee'] ?? '';
 
 $matiereRepo = new MatiereRepository($pdo);
 $matieresS1  = $matiereRepo->getMatieres($filiere, $niveau, 1);
@@ -188,7 +198,9 @@ $afficherMoyenne = fn(?float $m) => $m !== null ? number_format($m, 2) : '--.--'
                     </span>
 
                     <span class="student-level-value">
-                        <?php echo htmlspecialchars($filiere . $niveau); ?>
+                        <?php echo htmlspecialchars($_SESSION['filiere'] ?? ''); ?>
+                        <span class="student-level-sep">·</span>
+                        <?php echo htmlspecialchars((string)$anneeAffichage); ?>
                     </span>
 
                 </div>
@@ -235,36 +247,45 @@ $afficherMoyenne = fn(?float $m) => $m !== null ? number_format($m, 2) : '--.--'
                             >
 
                                 <?php if ($aUnDS): ?>
-                                    <input
-                                        type="number"
-                                        name="<?php echo $nameClean; ?>DS"
-                                        class="matiere"
-                                        min="0" max="20" step="0.25"
-                                        placeholder="DS"
-                                        value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'DS'] ?? ''); ?>"
-                                    >
+                                    <div class="input-field">
+                                        <span class="input-field__label">DS</span>
+                                        <input
+                                            type="number"
+                                            name="<?php echo $nameClean; ?>DS"
+                                            class="matiere"
+                                            min="0" max="20" step="0.25"
+                                            placeholder="—"
+                                            value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'DS'] ?? ''); ?>"
+                                        >
+                                    </div>
                                 <?php endif; ?>
 
                                 <?php if ($aUnTP): ?>
-                                    <input
-                                        type="number"
-                                        name="<?php echo $nameClean; ?>TP"
-                                        class="matiere"
-                                        min="0" max="20" step="0.25"
-                                        placeholder="TP"
-                                        value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'TP'] ?? ''); ?>"
-                                    >
+                                    <div class="input-field">
+                                        <span class="input-field__label">TP</span>
+                                        <input
+                                            type="number"
+                                            name="<?php echo $nameClean; ?>TP"
+                                            class="matiere"
+                                            min="0" max="20" step="0.25"
+                                            placeholder="—"
+                                            value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'TP'] ?? ''); ?>"
+                                        >
+                                    </div>
                                 <?php endif; ?>
 
                                 <?php if ($aUnExam): ?>
-                                    <input
-                                        type="number"
-                                        name="<?php echo $nameClean; ?>EX"
-                                        class="matiere"
-                                        min="0" max="20" step="0.25"
-                                        placeholder="Ex"
-                                        value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'EX'] ?? ''); ?>"
-                                    >
+                                    <div class="input-field">
+                                        <span class="input-field__label">Exam</span>
+                                        <input
+                                            type="number"
+                                            name="<?php echo $nameClean; ?>EX"
+                                            class="matiere"
+                                            min="0" max="20" step="0.25"
+                                            placeholder="—"
+                                            value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'EX'] ?? ''); ?>"
+                                        >
+                                    </div>
                                 <?php endif; ?>
 
                             </div>
@@ -307,36 +328,45 @@ $afficherMoyenne = fn(?float $m) => $m !== null ? number_format($m, 2) : '--.--'
                             >
 
                                 <?php if ($aUnDS): ?>
-                                    <input
-                                        type="number"
-                                        name="<?php echo $nameClean; ?>DS"
-                                        class="matiere"
-                                        min="0" max="20" step="0.25"
-                                        placeholder="DS"
-                                        value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'DS'] ?? ''); ?>"
-                                    >
+                                    <div class="input-field">
+                                        <span class="input-field__label">DS</span>
+                                        <input
+                                            type="number"
+                                            name="<?php echo $nameClean; ?>DS"
+                                            class="matiere"
+                                            min="0" max="20" step="0.25"
+                                            placeholder="—"
+                                            value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'DS'] ?? ''); ?>"
+                                        >
+                                    </div>
                                 <?php endif; ?>
 
                                 <?php if ($aUnTP): ?>
-                                    <input
-                                        type="number"
-                                        name="<?php echo $nameClean; ?>TP"
-                                        class="matiere"
-                                        min="0" max="20" step="0.25"
-                                        placeholder="TP"
-                                        value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'TP'] ?? ''); ?>"
-                                    >
+                                    <div class="input-field">
+                                        <span class="input-field__label">TP</span>
+                                        <input
+                                            type="number"
+                                            name="<?php echo $nameClean; ?>TP"
+                                            class="matiere"
+                                            min="0" max="20" step="0.25"
+                                            placeholder="—"
+                                            value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'TP'] ?? ''); ?>"
+                                        >
+                                    </div>
                                 <?php endif; ?>
 
                                 <?php if ($aUnExam): ?>
-                                    <input
-                                        type="number"
-                                        name="<?php echo $nameClean; ?>EX"
-                                        class="matiere"
-                                        min="0" max="20" step="0.25"
-                                        placeholder="Ex"
-                                        value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'EX'] ?? ''); ?>"
-                                    >
+                                    <div class="input-field">
+                                        <span class="input-field__label">Exam</span>
+                                        <input
+                                            type="number"
+                                            name="<?php echo $nameClean; ?>EX"
+                                            class="matiere"
+                                            min="0" max="20" step="0.25"
+                                            placeholder="—"
+                                            value="<?php echo htmlspecialchars($notesEnregistrees[$nameClean . 'EX'] ?? ''); ?>"
+                                        >
+                                    </div>
                                 <?php endif; ?>
 
                             </div>

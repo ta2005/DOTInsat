@@ -2,6 +2,7 @@
 // boutonet , graphe stat mtaa ll prof 
 ?>
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/forms.css">
     <link rel="stylesheet" href="/css/notifications.css">

@@ -6,19 +6,19 @@ $flash         = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
 // Le professeur ne voit que les réclamations que l'admin lui a transmises
-$a_traiter = array_values(array_filter($reclamations, fn($r) => $r['statut'] === 'approuve_admin'));
+$a_traiter = array_values(array_filter($reclamations, fn($r) => $r['statut'] === 'ACCEPTEE_PAR_ADMINISTRATEUR'));
 
 $traitees = array_values(array_filter($reclamations, fn($r) =>
-    in_array($r['statut'], ['approuve_prof', 'refuse_prof'])
+    in_array($r['statut'], ['ACCEPTEE_PAR_LE_PROFESSEUR', 'REFUSEE_PAR_LE_PROFESSEUR'])
 ));
 
 $statut_labels = [
-    'approuve_prof' => [
+    'ACCEPTEE_PAR_LE_PROFESSEUR' => [
         'label' => 'Note modifiée',
         'class' => 'badge--green'
     ],
 
-    'refuse_prof' => [
+    'REFUSEE_PAR_LE_PROFESSEUR' => [
         'label' => 'Refusée',
         'class' => 'badge--red'
     ],
@@ -29,7 +29,7 @@ $statut_labels = [
 
 <div class="wrap">
 
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <main>
 
     <!-- FLASH -->
@@ -198,7 +198,7 @@ $statut_labels = [
 
             <form
                 method="POST"
-                action="index.php?action=prof-reclamation"
+                action="/?page=prof-reclamation-action"
             >
 
                 <input
@@ -271,7 +271,7 @@ $statut_labels = [
 
             <form
                 method="POST"
-                action="index.php?action=prof-reclamation"
+                action="/?page=prof-reclamation-action"
             >
 
                 <input

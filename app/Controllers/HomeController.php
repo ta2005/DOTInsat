@@ -1,4 +1,7 @@
 <?php
+// app/Controllers/HomeController.php
+
+require_once BASE_PATH . '/app/Repositories/EtudiantRepository.php';
 
 class HomeController
 {
@@ -9,113 +12,116 @@ class HomeController
         $this->pdo = $pdo;
     }
 
-    // ─────────────────────────────────────────────
-    // HOME
-    // ─────────────────────────────────────────────
-    public function index()
+    /*
+    |--------------------------------------------------------------------------
+    | GET ?page=home
+    |--------------------------------------------------------------------------
+    */
+    public function index(): void
     {
         $role = $_SESSION['user_role'] ?? '';
 
         $config = match ($role) {
-
-            ROLE_PROFESSEUR =>
-                require BASE_PATH . '/config/enseignant.php',
-
-            ROLE_ADMIN =>
-                require BASE_PATH . '/config/administrateur.php',
-
-            default =>
-                require BASE_PATH . '/config/etudiant.php',
+            ROLE_PROFESSEUR => require BASE_PATH . '/config/enseignant.php',
+            ROLE_ADMIN      => require BASE_PATH . '/config/administrateur.php',
+            default         => $this->buildEtudiantConfig(),
         };
 
         require BASE_PATH . '/views/pages/home.php';
     }
 
-    // ─────────────────────────────────────────────
-    // PAGE EXAMENS
-    // ─────────────────────────────────────────────
-    public function examens()
+    /*
+    |--------------------------------------------------------------------------
+    | GET ?page=examens
+    |--------------------------------------------------------------------------
+    */
+    public function examens(): void
     {
-        $config = require BASE_PATH . '/config/etudiant.php';
-
+        $config = $this->buildEtudiantConfig();
         require BASE_PATH . '/views/pages/student/examens/index.php';
     }
 
-    // ─────────────────────────────────────────────
-    // CALCUL MOYENNE
-    // ─────────────────────────────────────────────
-    public function calculMoyenne()
+    /*
+    |--------------------------------------------------------------------------
+    | GET ?page=calcul-moyenne
+    |--------------------------------------------------------------------------
+    */
+    public function calculMoyenne(): void
     {
-        $config = require BASE_PATH . '/config/etudiant.php';
+        $config = $this->buildEtudiantConfig();
 
         /*
-        |--------------------------------------------------------------------------
-        | Données étudiant
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | $_SESSION['filiere'] = 'GL3-2'  (classe complète)
+        | On extrait filiere et niveau depuis cette valeur uniquement.
+        | 'GL3-2'  → filiere='GL'  niveau=3
+        | 'IIA4-1' → filiere='IIA' niveau=4
+        |----------------------------------------------------------------------
         */
+        $filiereRaw = strtoupper(trim($_SESSION['filiere'] ?? ''));
 
-        $filiere = strtoupper(
-            trim($_SESSION['filiere'] ?? 'GL')
-        );
+        preg_match('/^([A-Z]+)/', $filiereRaw, $mF);
+        $filiere = $mF[1] ?? '';
 
-        $niveau = (int) (
-            $_SESSION['annee'] ?? 2
-        );
+        preg_match('/^[A-Z]+(\d)/', $filiereRaw, $mN);
+        $niveau = isset($mN[1]) ? (int)$mN[1] : 0;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Validation
-        |--------------------------------------------------------------------------
-        */
-
-        $filieresAutorisees = [
-            'GL',
-            'RT',
-            'IIA',
-            'IMI'
-        ];
+        $filieresAutorisees = ['GL', 'RT', 'IIA', 'IMI'];
 
         if (!in_array($filiere, $filieresAutorisees)) {
-
-            die(
-                "Filière non supportée : " .
-                htmlspecialchars($filiere)
-            );
+            die("Filière non supportée : " . htmlspecialchars($filiereRaw));
         }
 
         if ($niveau < 1 || $niveau > 5) {
-
-            die(
-                "Niveau non supporté : " .
-                htmlspecialchars($niveau)
-            );
+            die("Niveau non supporté : " . htmlspecialchars((string)$niveau));
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Variables accessibles dans la vue
-        |--------------------------------------------------------------------------
-        */
 
         $pdo = $this->pdo;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Vue unique dynamique
-        |--------------------------------------------------------------------------
-        */
-
-        require BASE_PATH .
-            '/views/pages/student/examens/calculator.php';
+        require BASE_PATH . '/views/pages/student/examens/calculator.php';
     }
 
-    // ─────────────────────────────────────────────
-    // MES NOTES
-    // ─────────────────────────────────────────────
-    public function mesNotes()
+    /*
+    |--------------------------------------------------------------------------
+    | GET ?page=mes-notes
+    |--------------------------------------------------------------------------
+    */
+    public function mesNotes(): void
     {
-        $config = require BASE_PATH . '/config/etudiant.php';
-
+        $config = $this->buildEtudiantConfig();
         require BASE_PATH . '/views/pages/student/notes.php';
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Construction de la config étudiant via EtudiantRepository
+    |--------------------------------------------------------------------------
+    */
+    private function buildEtudiantConfig(): array
+    {
+        $etuId = (int)($_SESSION['user_id'] ?? 0);
+        $repo  = new EtudiantRepository($this->pdo);
+
+        // Profil
+        $profil  = $etuId ? $repo->getProfil($etuId) : null;
+        $classe  = $profil['classe'] ?? 'GL3-2';
+        $nomComplet = $profil
+            ? trim($profil['prenom'] . ' ' . $profil['nom'])
+            : 'Étudiant';
+
+        // Stats
+        $nbNotes = $etuId ? $repo->getNbNotes($etuId) : 0;
+
+        $derniereNoteRow = $etuId ? $repo->getDerniereNote($etuId) : null;
+        $derniereNote    = $derniereNoteRow
+            ? $derniereNoteRow['nom_matiere'] . ' — ' . number_format((float)$derniereNoteRow['note'], 2)
+            : '—';
+
+        $reclamRow      = $etuId ? $repo->getDerniereReclamation($etuId) : null;
+        $derniereReclam = $reclamRow
+            ? ucfirst(strtolower(str_replace('_', ' ', $reclamRow['statut'])))
+            : '—';
+
+        return require BASE_PATH . '/config/etudiant.php';
     }
 }

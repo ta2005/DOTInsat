@@ -4,34 +4,86 @@ require_once BASE_PATH . '/app/Repositories/Repository.php';
 
 class ReclamationRepository extends Repository
 {
-    // Toutes les réclamations avec infos étudiant + matière + prof
+    // Toutes les réclamations (admin : toutes ; prof : filtrées par prof connecté)
     public function getAll(): array
     {
         if (!$this->isConnected()) return [];
 
+        $role = $_SESSION['user_role'] ?? '';
+
+        // Pour le professeur : on ne retourne que les réclamations
+        // dont l'enseignement lui appartient
+        if ($role === 'professeur') {
+            return $this->getAllForProf((int)($_SESSION['user_id'] ?? 0));
+        }
+
+        // Pour l'admin : toutes les réclamations
         $stmt = $this->db->query("
             SELECT
                 r.id,
                 r.etudiant_id,
                 u.nom,
                 u.prenom,
-                e.id   AS enseignement_id,
-                e.nom  AS matiere_nom,
-                r.type_controle::TEXT AS type_eval,
-                r.type_controle::TEXT AS type_eval_label,
-                r.message             AS commentaire,
-                r.statut::TEXT        AS statut,
-                r.date_creation       AS date_soumission,
-                pu.nom || ' ' || pu.prenom AS prof_nom
+                u.cin                        AS num,
+                e.id                         AS enseignement_id,
+                e.nom                        AS matiere_nom,
+                c.type::TEXT                 AS type_eval,
+                c.type::TEXT                 AS type_eval_label,
+                c.note                       AS note_actuelle,
+                r.message                    AS commentaire,
+                r.statut::TEXT               AS statut,
+                r.date_creation              AS date_soumission,
+                r.note_nouvelle,
+                r.raison_refus,
+                pu.nom || ' ' || pu.prenom   AS prof_nom
             FROM reclamation r
-            JOIN etudiant    et ON et.id = r.etudiant_id
-            JOIN users        u ON u.id  = et.id
-            JOIN enseignement e ON e.id  = r.enseignement_id
-            JOIN professeur   p ON p.id  = e.professeur_id
-            JOIN users       pu ON pu.id = p.id
+            JOIN etudiant     et ON et.id = r.etudiant_id
+            JOIN users         u ON u.id  = et.id
+            JOIN controle      c ON c.id  = r.controle_id
+            JOIN enseignement  e ON e.id  = c.enseignement_id
+            JOIN professeur    p ON p.id  = e.professeur_id
+            JOIN users        pu ON pu.id = p.id
             ORDER BY r.date_creation DESC
         ");
 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Réclamations filtrées pour un professeur donné
+    public function getAllForProf(int $profId): array
+    {
+        if (!$this->isConnected()) return [];
+
+        $stmt = $this->db->prepare("
+            SELECT
+                r.id,
+                r.etudiant_id,
+                u.nom,
+                u.prenom,
+                u.cin                        AS num,
+                e.id                         AS enseignement_id,
+                e.nom                        AS matiere_nom,
+                c.type::TEXT                 AS type_eval,
+                c.type::TEXT                 AS type_eval_label,
+                c.note                       AS note_actuelle,
+                r.message                    AS commentaire,
+                r.statut::TEXT               AS statut,
+                r.date_creation              AS date_soumission,
+                r.note_nouvelle,
+                r.raison_refus,
+                pu.nom || ' ' || pu.prenom   AS prof_nom
+            FROM reclamation r
+            JOIN etudiant     et ON et.id = r.etudiant_id
+            JOIN users         u ON u.id  = et.id
+            JOIN controle      c ON c.id  = r.controle_id
+            JOIN enseignement  e ON e.id  = c.enseignement_id
+            JOIN professeur    p ON p.id  = e.professeur_id
+            JOIN users        pu ON pu.id = p.id
+            WHERE p.id = :prof_id
+            ORDER BY r.date_creation DESC
+        ");
+
+        $stmt->execute([':prof_id' => $profId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -42,91 +94,122 @@ class ReclamationRepository extends Repository
 
         $stmt = $this->db->prepare("
             SELECT
-                r.id, r.etudiant_id,
-                u.nom, u.prenom,
-                e.id AS enseignement_id, e.nom AS matiere_nom,
-                r.type_controle::TEXT AS type_eval,
-                r.message AS commentaire,
-                r.statut::TEXT AS statut,
-                r.date_creation AS date_soumission,
-                pu.nom || ' ' || pu.prenom AS prof_nom
+                r.id,
+                r.etudiant_id,
+                u.nom,
+                u.prenom,
+                u.cin                        AS num,
+                e.id                         AS enseignement_id,
+                e.nom                        AS matiere_nom,
+                c.type::TEXT                 AS type_eval,
+                c.type::TEXT                 AS type_eval_label,
+                c.note                       AS note_actuelle,
+                r.message                    AS commentaire,
+                r.statut::TEXT               AS statut,
+                r.date_creation              AS date_soumission,
+                r.note_nouvelle,
+                r.raison_refus,
+                pu.nom || ' ' || pu.prenom   AS prof_nom
             FROM reclamation r
-            JOIN etudiant et ON et.id = r.etudiant_id
-            JOIN users u     ON u.id  = et.id
-            JOIN enseignement e ON e.id = r.enseignement_id
-            JOIN professeur p   ON p.id = e.professeur_id
-            JOIN users pu       ON pu.id = p.id
+            JOIN etudiant     et ON et.id = r.etudiant_id
+            JOIN users         u ON u.id  = et.id
+            JOIN controle      c ON c.id  = r.controle_id
+            JOIN enseignement  e ON e.id  = c.enseignement_id
+            JOIN professeur    p ON p.id  = e.professeur_id
+            JOIN users        pu ON pu.id = p.id
             WHERE r.id = ?
         ");
+
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ?: null;
     }
 
-    // Liste des matières avec notes DS/EXAM — pour le formulaire étudiant
-    // CORRECTION: controle n'a pas de colonne etudiant_id dans le schéma.
-    // On récupère les notes via la table controle liée à enseignement,
-    // et on filtre l'étudiant via ses réclamations existantes (ou on affiche
-    // toutes les matières sans filtrage par étudiant sur controle).
+    /**
+     * CORRECTION : on ajoute un filtre sur l'étudiant dans la jointure enseignement
+     * pour s'assurer que le prof retourné est bien celui qui enseigne à cet étudiant.
+     * On utilise aussi un subquery pour éviter le problème du DISTINCT ON avec mauvais prof.
+     */
     public function getMatieres(): array
     {
-        if (!$this->isConnected()) {
-            return [
-                ['id' => '1', 'nom' => 'Algorithmique',    'prof' => 'Dr. Sonia Trabelsi', 'ds' => 12, 'examen' => 11],
-                ['id' => '2', 'nom' => 'Java',             'prof' => 'Dr. Ahmed Ben Ali',  'ds' => 14, 'examen' => 16],
-                ['id' => '3', 'nom' => 'Bases de Données', 'prof' => 'Dr. Karim Meddeb',   'ds' => 17, 'examen' => 19],
-                ['id' => '4', 'nom' => 'Réseaux',          'prof' => 'Dr. Leila Gharbi',   'ds' => 10, 'examen' => 13],
-                ['id' => '5', 'nom' => 'Mathématiques',    'prof' => 'Dr. Nizar Hajji',    'ds' => 15, 'examen' => 14],
-            ];
-        }
+        if (!$this->isConnected()) return [];
 
-        $etudiantId = $_SESSION['user_id'] ?? 0;
+        $etudiantId = (int)($_SESSION['user_id'] ?? 0);
 
-        // controle.note est la note finale du contrôle (pas par étudiant individuellement).
-        // On affiche les matières de l'étudiant via son niveau scolaire,
-        // et on récupère les notes du contrôle associé à chaque enseignement.
         $stmt = $this->db->prepare("
             SELECT
-                e.id::TEXT                  AS id,
-                e.nom                       AS nom,
-                pu.nom || ' ' || pu.prenom  AS prof,
-                MAX(CASE WHEN c.type::TEXT = 'DS'   THEN c.note END) AS ds,
-                MAX(CASE WHEN c.type::TEXT = 'EXAM' THEN c.note END) AS examen
-            FROM enseignement e
-            JOIN professeur  p  ON p.id  = e.professeur_id
-            JOIN users       pu ON pu.id = p.id
-            LEFT JOIN controle c ON c.enseignement_id = e.id
-            WHERE e.niveau_scolaire_info = (
-                SELECT et.niveau_scolaire_info
-                FROM etudiant et
-                WHERE et.id = ?
-            )
-            GROUP BY e.id, e.nom, pu.nom, pu.prenom
-            ORDER BY e.nom
+                m.id,
+                m.nom_matiere                AS nom,
+                m.filiere,
+                m.niveau,
+                m.semestre,
+                m.coefficient,
+                m.types_controle,
+                u.nom || ' ' || u.prenom     AS prof
+            FROM matieres m
+            JOIN etudiant    et ON (et.niveau_scolaire_info).filiere = m.filiere
+                                AND (et.niveau_scolaire_info).niveau = m.niveau::TEXT
+            JOIN enseignement en ON en.matiere_id = m.id
+            JOIN professeur   p  ON p.id          = en.professeur_id
+            JOIN users        u  ON u.id          = p.id
+            WHERE et.id = :etudiant_id
+              AND EXISTS (
+                  SELECT 1
+                  FROM controle c2
+                  WHERE c2.enseignement_id = en.id
+                    AND c2.etudiant_id     = :etudiant_id2
+              )
+            ORDER BY m.id, en.id
+            LIMIT 1 OFFSET 0
         ");
-        $stmt->execute([$etudiantId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // CORRECTION : on utilise un GROUP BY propre au lieu du DISTINCT ON problématique
+        $stmt2 = $this->db->prepare("
+            SELECT DISTINCT ON (m.id)
+                m.id,
+                m.nom_matiere                AS nom,
+                m.filiere,
+                m.niveau,
+                m.semestre,
+                m.coefficient,
+                m.types_controle,
+                u.nom || ' ' || u.prenom     AS prof
+            FROM matieres m
+            JOIN etudiant    et ON (et.niveau_scolaire_info).filiere = m.filiere
+                                AND (et.niveau_scolaire_info).niveau = m.niveau::TEXT
+            JOIN enseignement en ON en.matiere_id = m.id
+            JOIN professeur   p  ON p.id          = en.professeur_id
+            JOIN users        u  ON u.id          = p.id
+            JOIN controle      c  ON c.enseignement_id = en.id
+                                 AND c.etudiant_id     = :etudiant_id
+            WHERE et.id = :etudiant_id2
+            ORDER BY m.id, en.id
+        ");
+
+        $stmt2->execute([
+            ':etudiant_id'  => $etudiantId,
+            ':etudiant_id2' => $etudiantId,
+        ]);
+
+        return $stmt2->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
-    // Créer une réclamation
     public function create(array $data): bool
     {
         if (!$this->isConnected()) return false;
 
         $stmt = $this->db->prepare("
-            INSERT INTO reclamation (message, type_controle, statut, enseignement_id, etudiant_id, admin_id)
-            VALUES (:message, :type_controle, 'EN_ATTENTE', :enseignement_id, :etudiant_id, 1)
+            INSERT INTO reclamation (message, statut, controle_id, etudiant_id)
+            VALUES (:message, 'EN_ATTENTE', :controle_id, :etudiant_id)
         ");
 
         return $stmt->execute([
-            ':message'         => $data['message'],
-            ':type_controle'   => $data['type_controle'],
-            ':enseignement_id' => $data['enseignement_id'],
-            ':etudiant_id'     => $data['etudiant_id'],
+            ':message'     => $data['message'],
+            ':controle_id' => $data['controle_id'],
+            ':etudiant_id' => $data['etudiant_id'],
         ]);
     }
 
-    // Supprimer
     public function delete(int $id): bool
     {
         if (!$this->isConnected()) return false;
@@ -135,12 +218,85 @@ class ReclamationRepository extends Repository
         return $stmt->execute([$id]);
     }
 
-    // Changer le statut (admin ou prof)
     public function updateStatut(int $id, string $statut): bool
     {
         if (!$this->isConnected()) return false;
 
-        $stmt = $this->db->prepare("UPDATE reclamation SET statut = ? WHERE id = ?");
+        $stmt = $this->db->prepare("
+            UPDATE reclamation 
+            SET statut = ?::statut_reclamation 
+            WHERE id = ?
+        ");
+
         return $stmt->execute([$statut, $id]);
+    }
+
+    public function approuverParProf(int $id, float $nouvelleNote): bool
+    {
+        if (!$this->isConnected()) return false;
+
+        // Met à jour la réclamation
+        $stmt = $this->db->prepare("
+            UPDATE reclamation
+            SET statut       = 'ACCEPTEE_PAR_LE_PROFESSEUR'::statut_reclamation,
+                note_nouvelle = :note
+            WHERE id = :id
+        ");
+        $ok = $stmt->execute([':note' => $nouvelleNote, ':id' => $id]);
+
+        if (!$ok) return false;
+
+        // Met aussi à jour la note dans controle
+        $stmt2 = $this->db->prepare("
+            UPDATE controle c
+            SET    note   = :note
+            FROM   reclamation r
+            WHERE  r.id          = :reclamation_id
+              AND  c.id          = r.controle_id
+        ");
+
+        return $stmt2->execute([':note' => $nouvelleNote, ':reclamation_id' => $id]);
+    }
+
+    public function refuserParProf(int $id, string $raison): bool
+    {
+        if (!$this->isConnected()) return false;
+
+        $stmt = $this->db->prepare("
+            UPDATE reclamation
+            SET statut       = 'REFUSEE_PAR_LE_PROFESSEUR'::statut_reclamation,
+                raison_refus = :raison
+            WHERE id = :id
+        ");
+
+        return $stmt->execute([':raison' => $raison, ':id' => $id]);
+    }
+
+    /**
+     * CORRECTION : suppression du GROUP BY inutile, ORDER BY ajouté pour cohérence.
+     * La requête retourne maintenant tous les controles de l'étudiant pour cette matière.
+     */
+    public function getTypesByMatiere(int $matiereId, int $etudiantId): array
+    {
+        if (!$this->isConnected()) return [];
+
+        $stmt = $this->db->prepare("
+            SELECT
+                c.id         AS controle_id,
+                c.type::TEXT AS type,
+                c.note       AS note
+            FROM controle c
+            JOIN enseignement e ON e.id = c.enseignement_id
+            WHERE e.matiere_id  = :matiere_id
+              AND c.etudiant_id = :etudiant_id
+            ORDER BY c.type
+        ");
+
+        $stmt->execute([
+            ':matiere_id'  => $matiereId,
+            ':etudiant_id' => $etudiantId,
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 }

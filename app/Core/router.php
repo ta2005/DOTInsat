@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 $routes = [
 
-    // ───────────────── HOME ─────────────────
+    // ───────────────── HOME (dispatcher) ─────────────────
     [
         'page'       => 'home',
-        'controller' => 'HomeController',
+        'controller' => 'DispatcherController',
         'method'     => 'index',
         'http'       => 'GET',
         'roles'      => [
@@ -97,18 +97,28 @@ $routes = [
         'roles'      => [ROLE_ETUDIANT]
     ],
 
-    // ───────────────── EXAMENS ETUDIANT ─────────────────
+    // ───────────────── API RECLAMATION ─────────────────
+    [
+        'page'       => 'api-get-matieres',
+        'controller' => 'ReclamationController',
+        'method'     => 'getMatieres',
+        'http'       => 'GET',
+        'roles'      => [ROLE_ETUDIANT]
+    ],
+
+    // ───────────────── ETUDIANT ─────────────────
     [
         'page'       => 'examens',
-        'controller' => 'HomeController',
+        'controller' => 'EtudiantController',
         'method'     => 'examens',
         'http'       => 'GET',
         'roles'      => [ROLE_ETUDIANT]
     ],
 
+    // ───────────────── NOTES ─────────────────
     [
         'page'       => 'calcul-moyenne',
-        'controller' => 'HomeController',
+        'controller' => 'NotesController',
         'method'     => 'calculMoyenne',
         'http'       => 'GET',
         'roles'      => [ROLE_ETUDIANT]
@@ -116,7 +126,7 @@ $routes = [
 
     [
         'page'       => 'mes-notes',
-        'controller' => 'HomeController',
+        'controller' => 'NotesController',
         'method'     => 'mesNotes',
         'http'       => 'GET',
         'roles'      => [ROLE_ETUDIANT]
@@ -161,6 +171,14 @@ $routes = [
         'controller' => 'ProfessorController',
         'method'     => 'reclamations',
         'http'       => 'GET',
+        'roles'      => [ROLE_PROFESSEUR]
+    ],
+
+    [
+        'page'       => 'prof-reclamation-action',
+        'controller' => 'ProfessorController',
+        'method'     => 'reclamationAction',
+        'http'       => 'POST',
         'roles'      => [ROLE_PROFESSEUR]
     ],
 
@@ -376,7 +394,7 @@ function dispatch(array $routes, ?PDO $pdo): void
 
         $controllerFile =
             BASE_PATH
-            . '/app/controllers/'
+            . '/app/Controllers/'
             . $route['controller']
             . '.php';
 

@@ -1,5 +1,6 @@
 <?php
 // views/pages/admin/reclamations.php
+?><div class="page-content"><?php
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
@@ -8,9 +9,11 @@ $en_attente = array_values(array_filter($reclamations, fn($r) => strtoupper($r['
 $traitees   = array_values(array_filter($reclamations, fn($r) => strtoupper($r['statut']) !== 'EN_ATTENTE'));
 
 $statut_labels = [
-    'EN_ATTENTE' => ['label' => 'En attente',       'class' => 'badge--yellow'],
-    'ACCEPTEE'   => ['label' => 'Transmise au prof', 'class' => 'badge--green'],
-    'REFUSEE'    => ['label' => 'Refusée',           'class' => 'badge--red'],
+    'EN_ATTENTE'                  => ['label' => 'En attente',           'class' => 'badge--yellow'],
+    'ACCEPTEE_PAR_LE_PROFESSEUR'  => ['label' => 'Acceptée par le prof', 'class' => 'badge--green'],
+    'ACCEPTEE_PAR_ADMINISTRATEUR' => ['label' => 'Transmise au prof',    'class' => 'badge--green'],
+    'REFUSEE_PAR_LE_PROFESSEUR'   => ['label' => 'Refusée par le prof',  'class' => 'badge--red'],
+    'REFUSEE_PAR_ADMINISTRATEUR'  => ['label' => 'Refusée',              'class' => 'badge--red'],
 ];
 ?>
 
@@ -75,7 +78,7 @@ $statut_labels = [
     <div id="panel-approuver-<?= $r['id'] ?>" class="recl-panel recl-panel--green" style="display:none;">
         <form method="POST" action="/?page=update-reclamation-status">
             <input type="hidden" name="id"     value="<?= $r['id'] ?>">
-            <input type="hidden" name="statut" value="ACCEPTEE">
+            <input type="hidden" name="statut" value="ACCEPTEE_PAR_ADMINISTRATEUR">
             <div class="panel-inner">
                 <p class="panel-confirm-text">
                     <i class="ti ti-info-circle"></i>
@@ -97,7 +100,7 @@ $statut_labels = [
     <div id="panel-refuser-<?= $r['id'] ?>" class="recl-panel recl-panel--red" style="display:none;">
         <form method="POST" action="/?page=update-reclamation-status">
             <input type="hidden" name="id"     value="<?= $r['id'] ?>">
-            <input type="hidden" name="statut" value="REFUSEE">
+            <input type="hidden" name="statut" value="REFUSEE_PAR_ADMINISTRATEUR">
             <div class="panel-inner">
                 <div class="panel-btns">
                     <button type="submit" class="form-btn-secondary form-btn-secondary--red">
@@ -165,3 +168,4 @@ function fermerPanels(id) {
     if (r) r.style.display = 'none';
 }
 </script>
+<?php ?></div><?php

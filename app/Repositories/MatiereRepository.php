@@ -2,7 +2,7 @@
 // repositories/MatiereRepository.php
 
 
-class MatiereRepository
+class MatiereRepository 
 {
     private PDO $pdo;
 

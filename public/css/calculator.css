@@ -90,24 +90,24 @@ body {
 
     margin: 0;
 
-    font-size: 38px;
+    font-size: 26px;
 
     font-weight: 800;
 
     line-height: 1.05;
 
-    letter-spacing: -2px;
+    letter-spacing: -1px;
 
     color: #ffffff;
 }
 
 .calculator-subtitle {
 
-    margin-top: 12px;
+    margin-top: 8px;
 
     color: #9a9aa0;
 
-    font-size: 16px;
+    font-size: 14px;
 
     font-weight: 400;
 }
@@ -118,17 +118,17 @@ body {
 
 .student-level {
 
-    margin-top: 30px;
+    margin-top: 18px;
 
     display: inline-flex;
 
     align-items: center;
 
-    gap: 16px;
+    gap: 12px;
 
-    padding: 14px 22px;
+    padding: 10px 16px;
 
-    border-radius: 20px;
+    border-radius: 14px;
 
     background: rgba(255,255,255,0.03);
 
@@ -139,7 +139,7 @@ body {
 
     color: #a0a0a8;
 
-    font-size: 15px;
+    font-size: 13px;
 
     font-weight: 500;
 }
@@ -148,11 +148,26 @@ body {
 
     color: #ffffff;
 
-    font-size: 28px;
+    font-size: 18px;
 
     font-weight: 800;
 
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.student-level-sep {
+
+    color: #555560;
+
+    font-weight: 400;
+
+    font-size: 16px;
 }
 
 /* =========================================================
@@ -176,11 +191,11 @@ body {
 
 .semester-card {
 
-    min-height: 650px;
+    min-height: 400px;
 
-    padding: 28px;
+    padding: 20px;
 
-    border-radius: 26px;
+    border-radius: 20px;
 
     background: rgba(255,255,255,0.03);
 
@@ -193,13 +208,13 @@ body {
 
     margin-top: 0;
 
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 
-    font-size: 24px;
+    font-size: 18px;
 
     font-weight: 800;
 
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
 
     color: #ffffff;
 }
@@ -210,16 +225,16 @@ body {
 
 .subject-row {
 
-    margin-bottom: 34px;
+    margin-bottom: 20px;
 }
 
 .subject-name {
 
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 
     color: #ffffff;
 
-    font-size: 17px;
+    font-size: 14px;
 
     font-weight: 700;
 
@@ -241,18 +256,44 @@ body {
 
     display: flex;
 
-    gap: 12px;
+    gap: 8px;
 
     flex-wrap: wrap;
 }
 
+/* Wrapper label + input */
+
+.input-field {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 5px;
+}
+
+.input-field__label {
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
+
+    color: #7d7d85;
+}
+
 .input-group input {
 
-    width: 78px;
+    width: 58px;
 
-    padding: 12px 14px;
+    padding: 8px 10px;
 
-    border-radius: 16px;
+    border-radius: 12px;
 
     border: 1px solid rgba(255,255,255,0.07);
 
@@ -260,7 +301,9 @@ body {
 
     color: #ffffff;
 
-    font-size: 14px;
+    font-size: 13px;
+
+    text-align: center;
 
     outline: none;
 
@@ -278,7 +321,7 @@ body {
 
 .input-group input::placeholder {
 
-    color: #7d7d85;
+    color: #3d3d45;
 }
 
 /* =========================================================
@@ -287,22 +330,22 @@ body {
 
 .results-card {
 
-    margin-top: 30px;
+    margin-top: 24px;
 
     background: rgba(255,255,255,0.03);
 
     border: 1px solid rgba(255,255,255,0.06);
 
-    border-radius: 24px;
+    border-radius: 20px;
 
-    padding: 28px;
+    padding: 20px;
 }
 
 .results-card h2 {
 
-    margin: 0 0 22px 0;
+    margin: 0 0 16px 0;
 
-    font-size: 28px;
+    font-size: 20px;
 
     font-weight: 800;
 
@@ -317,7 +360,7 @@ body {
 
     grid-template-columns: repeat(3, 1fr);
 
-    gap: 18px;
+    gap: 14px;
 }
 
 /* BOX */
@@ -333,11 +376,11 @@ body {
 
     border: 1px solid rgba(255,255,255,0.06);
 
-    border-radius: 20px;
+    border-radius: 16px;
 
-    padding: 22px;
+    padding: 16px;
 
-    min-height: 120px;
+    min-height: 80px;
 
     display: flex;
 
@@ -368,7 +411,7 @@ body {
 
     margin: 0;
 
-    font-size: 16px;
+    font-size: 13px;
 
     font-weight: 500;
 
@@ -379,13 +422,13 @@ body {
 
 .result-box span {
 
-    font-size: 42px;
+    font-size: 30px;
 
     font-weight: 800;
 
     color: #ffffff;
 
-    letter-spacing: -2px;
+    letter-spacing: -1px;
 
     line-height: 1;
 }

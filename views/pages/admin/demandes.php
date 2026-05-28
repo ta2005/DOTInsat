@@ -1,5 +1,6 @@
 <?php
 // views/pages/admin/demandes.php
+?><div class="page-content"><?php
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
@@ -183,3 +184,4 @@ function fermerPanels(id) {
     if (r) r.style.display = 'none';
 }
 </script>
+<?php ?></div><?php
