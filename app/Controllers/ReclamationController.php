@@ -36,6 +36,10 @@ class ReclamationController
         }
         unset($m);
 
+
+        $mesReclamations = $this->repo->getMesReclamations(
+            (int)($_SESSION['user_id'] ?? 0)
+        );
         require BASE_PATH . '/views/pages/student/reclamation.php';
     }
 

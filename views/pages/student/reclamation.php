@@ -144,6 +144,82 @@ foreach ($matieres as $m) {
 
 </form>
 
+<!-- ═══════════════════════════════════════════════════════
+     MES RÉCLAMATIONS — historique de l'étudiant
+═══════════════════════════════════════════════════════ -->
+<?php if (!empty($mesReclamations)): ?>
+<div class="form-page-header" style="margin-top:32px;">
+    <div class="form-page-icon form-page-icon--red">
+        <i class="ti ti-history"></i>
+    </div>
+    <div>
+        <h2 class="form-page-title">Mes réclamations</h2>
+        <p class="form-page-sub"><?= count($mesReclamations) ?> réclamation(s) soumise(s)</p>
+    </div>
+</div>
+
+<?php
+$statutConfig = [
+    'EN_ATTENTE'                    => ['label' => 'En attente',          'class' => 'badge--yellow'],
+    'ACCEPTEE_PAR_ADMINISTRATEUR'   => ['label' => 'Transmise au prof',   'class' => 'badge--blue'],
+    'REFUSEE_PAR_ADMINISTRATEUR'    => ['label' => 'Refusée (admin)',     'class' => 'badge--red'],
+    'ACCEPTEE_PAR_LE_PROFESSEUR'    => ['label' => 'Note modifiée',       'class' => 'badge--green'],
+    'REFUSEE_PAR_LE_PROFESSEUR'     => ['label' => 'Refusée (prof)',      'class' => 'badge--red'],
+];
+?>
+
+<?php foreach ($mesReclamations as $r): ?>
+<?php $s = $statutConfig[$r['statut']] ?? ['label' => $r['statut'], 'class' => 'badge--yellow']; ?>
+<div class="card recl-card">
+
+    <div class="recl-header">
+        <div class="recl-meta">
+            <span class="recl-student"><?= htmlspecialchars($r['matiere_nom']) ?></span>
+            <span class="recl-num"><?= htmlspecialchars($r['type_eval']) ?></span>
+        </div>
+        <span class="badge <?= $s['class'] ?>"><?= $s['label'] ?></span>
+    </div>
+
+    <div class="recl-body">
+
+        <div class="recl-info-row">
+            <span class="recl-label">Note actuelle</span>
+            <span class="recl-val"><?= $r['note_actuelle'] ?>/20</span>
+        </div>
+
+        <?php if (!empty($r['note_nouvelle'])): ?>
+        <div class="recl-info-row">
+            <span class="recl-label">Nouvelle note</span>
+            <span class="recl-val" style="color:#4ade80;font-weight:600;">
+                <?= $r['note_nouvelle'] ?>/20
+            </span>
+        </div>
+        <?php endif; ?>
+
+        <div class="recl-info-row recl-info-row--full">
+            <span class="recl-label">Motif</span>
+            <span class="recl-val"><?= htmlspecialchars($r['commentaire']) ?></span>
+        </div>
+
+        <?php if (!empty($r['raison_refus'])): ?>
+        <div class="recl-info-row recl-info-row--full">
+            <span class="recl-label">Raison du refus</span>
+            <span class="recl-val" style="color:#f87171;">
+                <?= htmlspecialchars($r['raison_refus']) ?>
+            </span>
+        </div>
+        <?php endif; ?>
+
+        <span class="recl-date"><?= $r['date_soumission'] ?></span>
+
+    </div>
+
+</div>
+<?php endforeach; ?>
+
+<?php endif; ?>
+
+
 </main>
 </div>
 

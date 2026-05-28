@@ -206,6 +206,35 @@ class ReclamationRepository extends Repository
         ], $rows);
     }
 
+
+    // -------------------------------------------------------------------------
+    // Réclamations d'un étudiant donné (pour la liste "mes réclamations")
+    // -------------------------------------------------------------------------
+    public function getMesReclamations(int $etudiantId): array
+    {
+        if (!$this->isConnected()) return [];
+
+        $stmt = $this->db->prepare("
+            SELECT
+                r.id,
+                e.nom                        AS matiere_nom,
+                c.type::TEXT                 AS type_eval,
+                c.note                       AS note_actuelle,
+                r.note_nouvelle,
+                r.message                    AS commentaire,
+                r.statut::TEXT               AS statut,
+                r.raison_refus,
+                r.date_creation              AS date_soumission
+            FROM reclamation r
+            JOIN controle     c  ON c.id  = r.controle_id
+            JOIN enseignement e  ON e.id  = c.enseignement_id
+            WHERE r.etudiant_id = :etudiant_id
+            ORDER BY r.date_creation DESC
+        ");
+
+        $stmt->execute([':etudiant_id' => $etudiantId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
     // -------------------------------------------------------------------------
     // Types de contrôle par matière pour un étudiant
     // -------------------------------------------------------------------------
