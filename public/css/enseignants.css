@@ -1,0 +1,113 @@
+/* public/css/enseignants.css
+   Complète etudiants.css — uniquement les classes spécifiques aux enseignants */
+
+/* ── Barre de recherche ── */
+.ens-search-wrap {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+.ens-search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 18px;
+    pointer-events: none;
+}
+
+.ens-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 2.75rem;
+    background: #151515;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.ens-search-input:focus {
+    border-color: #3b5a80;
+    background: #1a1a1a;
+}
+
+.ens-search-input::placeholder { color: #555; }
+
+.ens-search-clear {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.ens-search-clear:hover { color: #e0e0e0; }
+
+/* ── Bouton ajouter positionné en haut à droite de la barre résultats ── */
+.ens-btn-add-top {
+    margin-left: auto;
+}
+
+/* ── Avatar couleur différente pour les profs ── */
+.ens-avatar {
+    background: #1d2a3a !important;
+    color: #60a5fa !important;
+}
+
+/* ── Nom dans la colonne identité ── */
+.ens-name-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.ens-fullname {
+    font-weight: 600;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+}
+
+/* ── Colonne classes & matières ── */
+.ens-td-tags {
+    max-width: 380px;
+}
+
+.ens-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #161f2a;
+    border: 1px solid #1e3048;
+    border-radius: 6px;
+    padding: 3px 9px;
+    font-size: 0.78rem;
+    margin: 2px 3px 2px 0;
+    white-space: nowrap;
+}
+
+.ens-tag-classe {
+    font-weight: 700;
+    color: #60a5fa;
+}
+
+.ens-tag-sep {
+    color: #3b5a80;
+    font-size: 0.7rem;
+}
+
+.ens-tag-matieres {
+    color: #93c5fd;
+}
+
+.ens-tag--empty {
+    background: #1a1a1a;
+    border-color: #252525;
+    color: #555;
+}

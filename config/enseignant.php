@@ -4,9 +4,10 @@
 
 $prof_id = $_SESSION['user_id'] ?? null;
 
-$profile_row  = null;
-$stats_db     = [];
-$classes_rows = [];
+$profile_row    = null;
+$stats_db       = [];
+$classes_rows   = [];
+$enseignement_id = null;
 
 if ($pdo && $prof_id) {
     require_once BASE_PATH . '/app/Repositories/EnseignementRepository.php';
@@ -21,18 +22,43 @@ if ($pdo && $prof_id) {
     $profile_stmt->execute([':id' => $prof_id]);
     $profile_row = $profile_stmt->fetch(PDO::FETCH_ASSOC);
 
-    $classes_rows = $ensRepo->getNomsByProfesseur((int)$prof_id);
-    $stats_db     = $ensRepo->getStatsByProfesseur((int)$prof_id);
+    // Récupérer tous les enseignements du prof (id + nom)
+    $all_ens_stmt = $pdo->prepare("
+        SELECT id, nom
+        FROM enseignement
+        WHERE professeur_id = :prof_id
+        ORDER BY nom
+    ");
+    $all_ens_stmt->execute([':prof_id' => $prof_id]);
+    $all_enseignements = $all_ens_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Noms pour le dropdown
+    $classes_rows = array_column($all_enseignements, 'nom');
+
+    // Classe sélectionnée (GET ou première par défaut)
+    $selected_nom = $_GET['selected_class'] ?? ($classes_rows[0] ?? null);
+
+    // Trouver l'id de l'enseignement sélectionné
+    foreach ($all_enseignements as $ens) {
+        if ($ens['nom'] === $selected_nom) {
+            $enseignement_id = (int)$ens['id'];
+            break;
+        }
+    }
+
+    // Stats filtrées sur l'enseignement sélectionné
+    $stats_db = $ensRepo->getStatsByProfesseur((int)$prof_id, $enseignement_id);
 }
 
 return [
     'role'    => 'Enseignant',
     'profile' => [
-        'name'    => $profile_row
+        'name'            => $profile_row
             ? $profile_row['prenom'] . ' ' . $profile_row['nom']
             : '—',
-        'year'    => '2025-2026',
-        'classes' => $classes_rows,
+        'year'            => '2025-2026',
+        'classes'         => $classes_rows,
+        'selected_class'  => $_GET['selected_class'] ?? ($classes_rows[0] ?? '—'),
     ],
     'nav' => [
         ['label' => 'Home',         'href' => '/?page=home'],
@@ -45,14 +71,7 @@ return [
         ['big' => true, 'value' => (string)($stats_db['meilleure_note'] ?? '—'), 'label' => 'Meilleure Note'],
         ['big' => true, 'value' => (string)($stats_db['moyenne']        ?? '—'), 'label' => 'Moyenne de la Classe'],
     ],
-    'chart' => [
-        'title'  => 'Distribution Évolutive des Notes',
-        'legend' => [
-            ['label' => 'DS',      'color' => 'blue'],
-            ['label' => 'Examen',  'color' => 'red'],
-            ['label' => 'Moyenne', 'color' => 'gray'],
-        ],
-    ],
+    // chart supprimé
     'actions' => [
         ['icon' => 'ti-layout-dashboard', 'label' => 'Dashboard Examens', 'href' => '/?page=examens-prof'],
         ['icon' => 'ti-message-report',   'label' => 'Réclamations',      'href' => '/?page=prof-reclamations'],

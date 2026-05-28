@@ -35,7 +35,7 @@
 
 <!-- PROFILE CARD — Enseignant -->
 <?php elseif ($config['role'] === 'Enseignant'):
-    $activeClass = $_POST['selected_class'] ?? ($config['profile']['classes'][0] ?? '—');
+    $activeClass = $config['profile']['selected_class'] ?? '—';
 ?>
 
 <div class="row row-full">
@@ -47,11 +47,12 @@
                 <div class="prof-year"><?= htmlspecialchars($config['profile']['year']) ?></div>
             </div>
 
-            <form class="class-selector-form" method="POST" action="">
+            <form class="class-selector-form" method="GET" action="">
+                <input type="hidden" name="page" value="home">
                 <div class="select-wrapper">
                     <select id="class-select" name="selected_class" class="custom-select"
                             onchange="this.form.submit()">
-                        <option value="" disabled <?= empty($_POST['selected_class']) ? 'selected' : '' ?>>
+                        <option value="" disabled>
                             Choisir une classe
                         </option>
                         <?php foreach ($config['profile']['classes'] as $class): ?>

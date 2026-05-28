@@ -165,6 +165,71 @@ $routes = [
         'roles'      => [ROLE_ADMIN]
     ],
 
+    [
+        'page'       => 'etu_manage',
+        'controller' => 'AdminEtudiantController',
+        'method'     => 'index',
+        'http'       => 'GET',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    [
+        'page'       => 'etu_manage_save',
+        'controller' => 'AdminEtudiantController',
+        'method'     => 'store',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    [
+        'page'       => 'etu_manage_update',
+        'controller' => 'AdminEtudiantController',
+        'method'     => 'update',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    [
+        'page'       => 'etu_manage_delete',
+        'controller' => 'AdminEtudiantController',
+        'method'     => 'destroy',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+     // ───────────────── ADMIN › ENSEIGNANTS ─────────────────
+    [
+        'page'       => 'ens_manage',
+        'controller' => 'AdminEnseignantController',
+        'method'     => 'index',
+        'http'       => 'GET',
+        'roles'      => [ROLE_ADMIN]
+    ],
+ 
+    [
+        'page'       => 'ens_manage_save',
+        'controller' => 'AdminEnseignantController',
+        'method'     => 'store',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+ 
+    [
+        'page'       => 'ens_manage_update',
+        'controller' => 'AdminEnseignantController',
+        'method'     => 'update',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+ 
+    [
+        'page'       => 'ens_manage_delete',
+        'controller' => 'AdminEnseignantController',
+        'method'     => 'destroy',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
     // ───────────────── PROFESSEUR ─────────────────
     [
         'page'       => 'prof-reclamations',

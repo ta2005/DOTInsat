@@ -49,7 +49,7 @@ a:hover { cursor: url('resources/hovermouse.png'), pointer; }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 24px 0 20px;
+    padding: 24px 40px 20px;
 }
 
 .brand { text-decoration: none; display: flex; align-items: center; }
