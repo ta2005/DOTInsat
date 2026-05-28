@@ -1,0 +1,293 @@
+/* ============================================================
+   prof-builder.css — QCM Builder & Creator Specific Styles
+   ============================================================ */
+
+.qcm-wrap h2 {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+}
+
+.qcm-wrap .text-muted {
+    font-size: 14px;
+    color: var(--text-secondary, #888888);
+    display: block;
+    margin-bottom: 24px;
+}
+
+.config-card {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    padding: 22px;
+    margin-bottom: 30px;
+}
+
+.setup-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* Master Form container */
+#qcmMasterKeyForm {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 28px;
+}
+
+#qcmMasterKeyForm h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+/* Dynamic matrices grid */
+#interactiveMatrixWorkspace {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.matrix-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.matrix-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    padding-bottom: 8px;
+}
+
+.matrix-header strong {
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.matrix-header input[type="number"] {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 6px;
+    color: #ffffff;
+    outline: none;
+    font-weight: bold;
+    padding: 4px 8px;
+    width: 60px;
+}
+
+.choice-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Circle Bubble Labels */
+.bubble-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary, #888888);
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    position: relative;
+}
+
+.bubble-label input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.bubble-label:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+.bubble-label:has(input[type="radio"]:checked) {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+}
+
+.control-actions {
+    display: flex;
+    gap: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 20px;
+    margin-top: 10px;
+}
+
+/* ── Printable Bubble Sheet Design ───────────────────────── */
+
+#printableBubbleDocument {
+    display: none;
+    background: #ffffff;
+    color: #000000;
+    padding: 30px;
+    border-radius: 12px;
+    margin-top: 30px;
+    border: 1px solid #e0e0e0;
+}
+
+.doc-title-block {
+    text-align: center;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+.doc-title-block h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin: 0;
+    color: #000000;
+}
+
+.doc-title-block p {
+    font-size: 12px;
+    color: #666666;
+    margin-top: 4px;
+}
+
+.student-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px dashed #cccccc;
+    padding-bottom: 18px;
+}
+
+.student-info-grid p {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #000000;
+}
+
+.student-info-grid p strong {
+    font-weight: 700;
+}
+
+.sheet-columns-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.sheet-row-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sheet-question-num {
+    font-size: 13px;
+    font-weight: 700;
+    width: 24px;
+    color: #333333;
+}
+
+.sheet-bubbles-container {
+    display: flex;
+    gap: 10px;
+}
+
+.vector-bubble-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid #000000;
+    color: #000000;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* ── Responsive Rules ────────────────────────────────────── */
+
+@media (max-width: 900px) {
+    #interactiveMatrixWorkspace {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .setup-row {
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .student-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sheet-columns-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Explicit Print Routines ─────────────────────────────── */
+
+@media print {
+    /* Hide all elements completely by default */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Force the printable document sheet to be completely visible */
+    #printableBubbleDocument,
+    #printableBubbleDocument * {
+        visibility: visible;
+    }
+
+    #printableBubbleDocument {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: none !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    .vector-bubble-circle {
+        border-color: #000000 !important;
+        color: #000000 !important;
+        background: transparent !important;
+    }
+
+    /* Page size calibration */
+    @page {
+        size: A4;
+        margin: 1.5cm;
+    }
+}

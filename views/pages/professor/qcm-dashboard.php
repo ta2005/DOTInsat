@@ -13,7 +13,8 @@ $config = [
 require BASE_PATH . '/views/layouts/header.php';
 ?>
 
-<link rel="stylesheet" href="<?= BASE_URL ?>/css/prof.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>/css/prof-base.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>/css/prof-dashboard.css">
 
 <div class="calculator-page">
     <div class="container">

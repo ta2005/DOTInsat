@@ -17,7 +17,8 @@ $config = [
 require BASE_PATH . '/views/layouts/header.php';
 ?>
 
-<link rel="stylesheet" href="<?= BASE_URL ?>/css/prof.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>/css/prof-base.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>/css/prof-scanner.css">
 
 <div class="calculator-page">
     <div class="container">
@@ -144,8 +145,8 @@ require BASE_PATH . '/views/layouts/header.php';
                             </label>
 
                             <div class="manual-grade-row">
-                                <input type="number" id="manualGradeInput" class="manual-grade-input"
-                                    step="0.01" min="0" max="20" placeholder="Note / 20">
+                                <input type="number" id="manualGradeInput" class="manual-grade-input" step="0.01"
+                                    min="0" max="20" placeholder="Note / 20">
                                 <button type="button" id="btnSubmitManualGrade" class="btn btn-primary btn-primary--sm">
                                     Valider
                                 </button>
@@ -170,5 +171,6 @@ require BASE_PATH . '/views/layouts/header.php';
     window.initialStudentId = <?= (int) $selectedStudentId ?>;
     window.initialStudentCin = <?= (int) $selectedStudentCin ?>;
 </script>
-<script async src="https://docs.opencv.org/4.5.5/opencv.js" onload="onOpenCvReady();" onerror="onOpenCvError();"></script>
+<script async src="https://docs.opencv.org/4.5.5/opencv.js" onload="onOpenCvReady();"
+    onerror="onOpenCvError();"></script>
 <script src="<?= BASE_URL ?>/js/qcm-scanner.js"></script>

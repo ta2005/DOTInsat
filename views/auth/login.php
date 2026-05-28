@@ -11,17 +11,15 @@
     <link rel="stylesheet" href="/css/login.css">
 </head>
 <body>
-<div class="wrap">
+<div class="login-wrapper">
 
-    <header>
-        <nav class="topbar">
-            <a href="/?page=login" class="brand">
-                <img src="/resources/logo.svg" alt=".INSAT" class="brand-logo">
-            </a>
-        </nav>
+    <header class="login-header">
+        <a href="/?page=login" class="brand">
+            <img src="/resources/logo.svg" alt=".INSAT" class="brand-logo">
+        </a>
     </header>
 
-    <main style="margin-top: 15vh;">
+    <main class="login-main">
 
         <?php if (!empty($error)): ?>
         <div class="flash flash--error">

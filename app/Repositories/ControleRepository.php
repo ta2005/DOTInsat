@@ -22,7 +22,7 @@ class ControleRepository extends Repository implements IControleRepo
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $row ? (object)$row : null;
+        return $row ? (object) $row : null;
     }
 
     public function fetchAll(): array
@@ -33,15 +33,15 @@ class ControleRepository extends Repository implements IControleRepo
 
     public function delete(string $id): bool
     {
-        $examId = (int)$id;
-        
+        $examId = (int) $id;
+
         // 1. Fetch the master exam details to get teaching course ID and type
         $exam = $this->findExamById($examId);
         if (!$exam) {
             return false;
         }
 
-        $ensId = (int)$exam['enseignement_id'];
+        $ensId = (int) $exam['enseignement_id'];
         $type = $exam['type'];
 
         // 2. Fetch all controle rows (both master and student grades) for this exam
@@ -51,10 +51,10 @@ class ControleRepository extends Repository implements IControleRepo
         ");
         $stmt->execute([
             ':ens_id' => $ensId,
-            ':type'   => $type
+            ':type' => $type
         ]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $ids = array_map(fn($r) => (int)$r['id'], $rows);
+        $ids = array_map(fn($r) => (int) $r['id'], $rows);
 
         if (empty($ids)) {
             return false;
@@ -113,7 +113,7 @@ class ControleRepository extends Repository implements IControleRepo
             return false;
         }
 
-        $ensId = (int)$exam['enseignement_id'];
+        $ensId = (int) $exam['enseignement_id'];
         $type = $exam['type'];
 
         // 2. Check if a student grade row already exists for this (etudiant_id, enseignement_id, type)
@@ -126,8 +126,8 @@ class ControleRepository extends Repository implements IControleRepo
         ");
         $stmt->execute([
             ':etudiant_id' => $studentId,
-            ':ens_id'      => $ensId,
-            ':type'        => $type
+            ':ens_id' => $ensId,
+            ':type' => $type
         ]);
         $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -143,9 +143,9 @@ class ControleRepository extends Repository implements IControleRepo
                     id = :id
             ");
             $stmt->execute([
-                ':note'   => $grade,
+                ':note' => $grade,
                 ':format' => $exam['format'],
-                ':id'     => $existing['id']
+                ':id' => $existing['id']
             ]);
             return true;
         } else {
@@ -168,10 +168,10 @@ class ControleRepository extends Repository implements IControleRepo
                 )
             ");
             $stmt->execute([
-                ':note'        => $grade,
-                ':type'        => $type,
-                ':format'      => $exam['format'],
-                ':ens_id'      => $ensId,
+                ':note' => $grade,
+                ':type' => $type,
+                ':format' => $exam['format'],
+                ':ens_id' => $ensId,
                 ':etudiant_id' => $studentId
             ]);
             return $stmt->rowCount() > 0;
@@ -241,12 +241,12 @@ class ControleRepository extends Repository implements IControleRepo
         ");
 
         $stmt->execute([
-            ':type'            => $data['type'],
-            ':format'          => $data['format'],
-            ':enseignement_id' => (int)$data['enseignement_id'],
+            ':type' => $data['type'],
+            ':format' => $data['format'],
+            ':enseignement_id' => (int) $data['enseignement_id'],
         ]);
 
-        return (int)$stmt->fetchColumn();
+        return (int) $stmt->fetchColumn();
     }
 
     public function updateExamFormat(int $examId, string $format): bool
@@ -264,7 +264,7 @@ class ControleRepository extends Repository implements IControleRepo
         $stmt->execute([
             ':format' => $format,
             ':ens_id' => $exam['enseignement_id'],
-            ':type'   => $exam['type']
+            ':type' => $exam['type']
         ]);
 
         return $stmt->rowCount() > 0;
@@ -277,7 +277,7 @@ class ControleRepository extends Repository implements IControleRepo
             return false;
         }
 
-        $ensId = (int)$exam['enseignement_id'];
+        $ensId = (int) $exam['enseignement_id'];
         $type = $exam['type'];
 
         // Check if grade entry already exists for this student, course, and exam type
@@ -290,8 +290,8 @@ class ControleRepository extends Repository implements IControleRepo
         ");
         $stmt->execute([
             ':etudiant_id' => $studentId,
-            ':ens_id'      => $ensId,
-            ':type'        => $type
+            ':ens_id' => $ensId,
+            ':type' => $type
         ]);
         $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -306,10 +306,10 @@ class ControleRepository extends Repository implements IControleRepo
                     id = :id
             ");
             $stmt->execute([
-                ':note'   => $grade,
+                ':note' => $grade,
                 ':statut' => $status,
                 ':format' => $exam['format'],
-                ':id'     => $existing['id']
+                ':id' => $existing['id']
             ]);
             return true;
         } else {
@@ -331,11 +331,11 @@ class ControleRepository extends Repository implements IControleRepo
                 )
             ");
             $stmt->execute([
-                ':note'        => $grade,
-                ':type'        => $type,
-                ':statut'      => $status,
-                ':format'      => $exam['format'],
-                ':ens_id'      => $ensId,
+                ':note' => $grade,
+                ':type' => $type,
+                ':statut' => $status,
+                ':format' => $exam['format'],
+                ':ens_id' => $ensId,
                 ':etudiant_id' => $studentId
             ]);
             return $stmt->rowCount() > 0;

@@ -1,7 +1,7 @@
 // Global flag for OpenCV readiness
 window.opencvReady = false;
 
-window.onOpenCvReady = function() {
+window.onOpenCvReady = function () {
     console.log("OpenCV.js is fully loaded and ready.");
     window.opencvReady = true;
     const pillStatus = document.getElementById('pillStatus');
@@ -13,7 +13,7 @@ window.onOpenCvReady = function() {
     document.dispatchEvent(new Event('opencv-ready'));
 };
 
-window.onOpenCvError = function() {
+window.onOpenCvError = function () {
     console.error("Failed to load OpenCV.js.");
     const pillStatus = document.getElementById('pillStatus');
     if (pillStatus) {

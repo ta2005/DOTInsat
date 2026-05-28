@@ -7,13 +7,13 @@ require_once BASE_PATH . '/app/Services/QcmGradingService.php';
 
 class QcmController
 {
-    private QcmGradingService  $gradingService;
+    private QcmGradingService $gradingService;
     private ControleRepository $controleRepo;
 
     public function __construct(private ?PDO $pdo)
     {
         $this->gradingService = new QcmGradingService();
-        $this->controleRepo   = new ControleRepository($this->pdo);
+        $this->controleRepo = new ControleRepository($this->pdo);
     }
 
 
@@ -25,23 +25,56 @@ class QcmController
 
     public function dashboard(): void
     {
-        $profId  = (int)($_SESSION['user_id'] ?? 0);
+        $profId = (int) ($_SESSION['user_id'] ?? 0);
         $ensRepo = new EnseignementRepository($this->pdo);
 
-        $courses          = $ensRepo->getByProfesseur($profId);
-        $selectedCourseId = (int)($_GET['course_id'] ?? 0);
-        $exams            = [];
+        $courses = $ensRepo->getByProfesseur($profId);
+        $selectedCourseId = (int) ($_GET['course_id'] ?? 0);
+        $exams = [];
 
         if ($selectedCourseId > 0) {
             $examsRaw = $this->controleRepo->fetchExamsByCourse($selectedCourseId);
             $enrolledStudents = $this->controleRepo->fetchStudentsByCourse($selectedCourseId);
-            
+
+            // Auto-heal missing master exams if student grades exist without a parent master exam row
+            $typesFormatsWithMaster = [];
+            foreach ($examsRaw as $row) {
+                if ($row['etudiant_id'] === null) {
+                    $key = strtoupper($row['type']) . '|' . strtoupper($row['format'] ?? '');
+                    $typesFormatsWithMaster[$key] = true;
+                }
+            }
+
+            $inserted = false;
+            foreach ($examsRaw as $row) {
+                if ($row['etudiant_id'] !== null) {
+                    $key = strtoupper($row['type']) . '|' . strtoupper($row['format'] ?? '');
+                    if (!isset($typesFormatsWithMaster[$key])) {
+                        $stmt = $this->pdo->prepare("
+                            INSERT INTO controle (type, statut, format, enseignement_id, etudiant_id)
+                            VALUES (:type, 'EN_ATTENTE', :format, :ens_id, NULL)
+                        ");
+                        $stmt->execute([
+                            ':type'   => $row['type'],
+                            ':format' => $row['format'],
+                            ':ens_id' => $selectedCourseId
+                        ]);
+                        $typesFormatsWithMaster[$key] = true;
+                        $inserted = true;
+                    }
+                }
+            }
+
+            if ($inserted) {
+                $examsRaw = $this->controleRepo->fetchExamsByCourse($selectedCourseId);
+            }
+
             // 1. Collect all master exams (rows where etudiant_id IS NULL)
             $masterExams = [];
             foreach ($examsRaw as $row) {
                 if ($row['etudiant_id'] === null) {
-                    $masterExams[(int)$row['id']] = [
-                        'id' => (int)$row['id'],
+                    $masterExams[(int) $row['id']] = [
+                        'id' => (int) $row['id'],
                         'type' => strtoupper($row['type']),
                         'format' => strtoupper($row['format']),
                         'statut' => $row['statut'],
@@ -66,8 +99,8 @@ class QcmController
 
                     if ($matchedMasterId !== null) {
                         $masterExams[$matchedMasterId]['students'][] = [
-                            'id' => (int)$row['id'],
-                            'student_id' => (int)$row['etudiant_id'],
+                            'id' => (int) $row['id'],
+                            'student_id' => (int) $row['etudiant_id'],
                             'cin' => $row['student_cin'],
                             'nom' => $row['student_nom'],
                             'prenom' => $row['student_prenom'],
@@ -135,10 +168,10 @@ class QcmController
 
     public function scan(): void
     {
-        $profId = (int)($_SESSION['user_id'] ?? 0);
+        $profId = (int) ($_SESSION['user_id'] ?? 0);
         $exams = $this->controleRepo->fetchMasterExamsByProf($profId);
         foreach ($exams as &$exam) {
-            $exam['students'] = $this->controleRepo->fetchStudentsByCourse((int)$exam['enseignement_id']);
+            $exam['students'] = $this->controleRepo->fetchStudentsByCourse((int) $exam['enseignement_id']);
         }
         unset($exam);
 
@@ -157,7 +190,7 @@ class QcmController
             return;
         }
 
-        $examId = (int)$payload['exam_id'];
+        $examId = (int) $payload['exam_id'];
 
         $exam = $this->controleRepo->findExamById($examId);
         if ($exam === null) {
@@ -181,8 +214,8 @@ class QcmController
         }
 
         $this->jsonSuccess([
-            'message'     => "Clé maître sauvegardée pour l'examen #{$examId}.",
-            'file'        => "exam_{$examId}.json",
+            'message' => "Clé maître sauvegardée pour l'examen #{$examId}.",
+            'file' => "exam_{$examId}.json",
             'exam_format' => $exam['format'],
         ]);
     }
@@ -204,9 +237,9 @@ class QcmController
             return;
         }
 
-        $examId    = (int)$payload['exam_id'];
-        $studentId = (int)$payload['student_id'];
-        $answers   = $payload['student_answers'];
+        $examId = (int) $payload['exam_id'];
+        $studentId = (int) $payload['student_id'];
+        $answers = $payload['student_answers'];
 
         $finalGrade = $this->gradingService->calculateScore($examId, $answers);
 
@@ -226,10 +259,10 @@ class QcmController
 
         $this->jsonSuccess([
             'final_grade' => $finalGrade,
-            'exam_id'     => $examId,
-            'student_id'  => $studentId,
-            'db_saved'    => $saved,
-            'message'     => $saved
+            'exam_id' => $examId,
+            'student_id' => $studentId,
+            'db_saved' => $saved,
+            'message' => $saved
                 ? "Note {$finalGrade} enregistrée avec succès."
                 : "Note calculée mais non enregistrée en base.",
         ]);
@@ -238,7 +271,7 @@ class QcmController
 
     public function getTemplate(): void
     {
-        $examId = isset($_GET['exam_id']) ? (int)$_GET['exam_id'] : 0;
+        $examId = isset($_GET['exam_id']) ? (int) $_GET['exam_id'] : 0;
 
         if ($examId <= 0) {
             $this->jsonError('Paramètre exam_id manquant ou invalide.', 400);
@@ -273,7 +306,7 @@ class QcmController
         $data = [
             'type' => $type,
             'format' => $format,
-            'enseignement_id' => (int)$enseignementId,
+            'enseignement_id' => (int) $enseignementId,
         ];
 
         $examId = $this->controleRepo->createExam($data);
@@ -281,7 +314,7 @@ class QcmController
         $this->jsonSuccess([
             'exam_id' => $examId,
             'format' => $format,
-            'enseignement_id' => (int)$enseignementId,
+            'enseignement_id' => (int) $enseignementId,
             'message' => "Examen créé avec succès.",
         ]);
     }
@@ -290,7 +323,7 @@ class QcmController
     {
         $this->requirePost();
 
-        $examId = (int)($_POST['exam_id'] ?? 0);
+        $examId = (int) ($_POST['exam_id'] ?? 0);
         $format = $_POST['format'] ?? '';
 
         if ($examId <= 0 || !in_array($format, ['QCM', 'MIX', 'NON_QCM'], true)) {
@@ -310,8 +343,8 @@ class QcmController
     {
         $this->requirePost();
 
-        $studentId = (int)($_POST['student_id'] ?? 0);
-        $examId = (int)($_POST['exam_id'] ?? 0);
+        $studentId = (int) ($_POST['student_id'] ?? 0);
+        $examId = (int) ($_POST['exam_id'] ?? 0);
         $status = $_POST['statut'] ?? '';
         $noteRaw = $_POST['note'] ?? '';
 
@@ -322,7 +355,7 @@ class QcmController
 
         $grade = null;
         if ($noteRaw !== '') {
-            $grade = (float)$noteRaw;
+            $grade = (float) $noteRaw;
             if ($grade < 0 || $grade > 20) {
                 $this->jsonError('La note doit être comprise entre 0 et 20.');
                 return;
@@ -339,7 +372,7 @@ class QcmController
 
     public function deleteExam(): void
     {
-        $examId = isset($_GET['exam_id']) ? (int)$_GET['exam_id'] : 0;
+        $examId = isset($_GET['exam_id']) ? (int) $_GET['exam_id'] : 0;
 
         if ($examId <= 0) {
             $this->jsonError('Paramètre exam_id manquant ou invalide.', 400);
@@ -352,9 +385,9 @@ class QcmController
             return;
         }
 
-        $ensId = (int)$exam['enseignement_id'];
+        $ensId = (int) $exam['enseignement_id'];
 
-        $success = $this->controleRepo->delete((string)$examId);
+        $success = $this->controleRepo->delete((string) $examId);
 
         if ($success) {
             header("Location: /?page=qcm-dashboard&course_id={$ensId}");
@@ -377,7 +410,7 @@ class QcmController
 
     private function readJsonBody(): array
     {
-        $raw  = file_get_contents('php://input');
+        $raw = file_get_contents('php://input');
         $data = json_decode($raw, true);
 
         if (json_last_error() !== JSON_ERROR_NONE || !is_array($data)) {
