@@ -126,7 +126,7 @@ foreach ($matieres as $m) {
         </div>
     </div>
 
-    <!-- COMMENTAIRE -->
+    <!-- text mta3 commentaire -->
     <div class="form-section">
         <div class="form-section-label">
             <i class="ti ti-message"></i> Commentaire
@@ -134,7 +134,7 @@ foreach ($matieres as $m) {
         <textarea class="form-textarea" name="commentaire" rows="4" required></textarea>
     </div>
 
-    <!-- ACTIONS -->
+    <!-- les boutons -->
     <div class="form-actions">
         <a href="/?page=home" class="form-btn-secondary">Annuler</a>
         <button type="submit" class="form-btn-primary form-btn-primary--red">
@@ -144,9 +144,9 @@ foreach ($matieres as $m) {
 
 </form>
 
-<!-- ═══════════════════════════════════════════════════════
-     MES RÉCLAMATIONS — historique de l'étudiant
-═══════════════════════════════════════════════════════ -->
+//*
+    section mtaa "mes reclamations" illi taala t7ot fiha les reclamations illi 3mlhom l'etudiant deja, bch ychouf wach 3ml acceptation wla refus wla mazal fi en attente
+*//
 <?php if (!empty($mesReclamations)): ?>
 <div class="form-page-header" style="margin-top:32px;">
     <div class="form-page-icon form-page-icon--red">

@@ -1,15 +1,10 @@
 <?php
 declare(strict_types=1);
 
-/*
-|--------------------------------------------------------------------------
-| ROUTES
-|--------------------------------------------------------------------------
-*/
+
 
 $routes = [
 
-    // ───────────────── HOME (dispatcher) ─────────────────
     [
         'page'       => 'home',
         'controller' => 'DispatcherController',
@@ -22,8 +17,7 @@ $routes = [
         ]
     ],
 
-    // ───────────────── AUTH ─────────────────
-    [
+   [
         'page'       => 'login',
         'controller' => 'AuthController',
         'method'     => 'showLogin',
@@ -47,7 +41,7 @@ $routes = [
         'roles'      => []
     ],
 
-    // ───────────────── DEMANDES ─────────────────
+
     [
         'page'       => 'demande',
         'controller' => 'DemandeController',
@@ -72,7 +66,7 @@ $routes = [
         'roles'      => [ROLE_ETUDIANT]
     ],
 
-    // ───────────────── RECLAMATIONS ─────────────────
+  
     [
         'page'       => 'reclamation',
         'controller' => 'ReclamationController',
@@ -97,7 +91,7 @@ $routes = [
         'roles'      => [ROLE_ETUDIANT]
     ],
 
-    // ───────────────── API RECLAMATION ─────────────────
+
     [
         'page'       => 'api-get-matieres',
         'controller' => 'ReclamationController',
@@ -106,7 +100,6 @@ $routes = [
         'roles'      => [ROLE_ETUDIANT]
     ],
 
-    // ───────────────── ETUDIANT ─────────────────
     [
         'page'       => 'examens',
         'controller' => 'EtudiantController',
@@ -115,7 +108,7 @@ $routes = [
         'roles'      => [ROLE_ETUDIANT]
     ],
 
-    // ───────────────── NOTES ─────────────────
+
     [
         'page'       => 'calcul-moyenne',
         'controller' => 'NotesController',
@@ -132,7 +125,6 @@ $routes = [
         'roles'      => [ROLE_ETUDIANT]
     ],
 
-    // ───────────────── ADMIN ─────────────────
     [
         'page'       => 'demandes',
         'controller' => 'AdminController',
@@ -197,7 +189,6 @@ $routes = [
         'roles'      => [ROLE_ADMIN]
     ],
 
-     // ───────────────── ADMIN › ENSEIGNANTS ─────────────────
     [
         'page'       => 'ens_manage',
         'controller' => 'AdminEnseignantController',
@@ -230,7 +221,7 @@ $routes = [
         'roles'      => [ROLE_ADMIN]
     ],
 
-    // ───────────────── PROFESSEUR ─────────────────
+ 
     [
         'page'       => 'prof-reclamations',
         'controller' => 'ProfessorController',
@@ -287,7 +278,7 @@ $routes = [
         'roles'      => [ROLE_PROFESSEUR]
     ],
 
-    // ───────────────── API QCM ─────────────────
+  
     [
         'page'       => 'api-save-template',
         'controller' => 'QcmController',
@@ -336,7 +327,7 @@ $routes = [
         'roles'      => [ROLE_PROFESSEUR],
     ],
 
-    // ───────────────── FORUM ─────────────────
+
     [
         'page'       => 'forum',
         'controller' => 'ForumController',
@@ -362,12 +353,7 @@ $routes = [
     ],
 ];
 
-/*
-|--------------------------------------------------------------------------
-| AUTH GUARD
-|--------------------------------------------------------------------------
-*/
-
+//hedhi guard ta3 authentication, tchecki ken l'utilisateur ma3andouch session w ma3andouch cookies sahin, yredirectioni l login
 function auth_guard(?PDO $pdo): void
 {
     $page = $_GET['page'] ?? 'home';
@@ -418,12 +404,7 @@ function auth_guard(?PDO $pdo): void
     ]);
 }
 
-/*
-|--------------------------------------------------------------------------
-| ROLE GUARD
-|--------------------------------------------------------------------------
-*/
-
+// hedhi guard ta3 authorization, tchecki ken l'utilisateur 3andou role shah bach ykhdem l page
 function role_guard(array $route): void
 {
     if (empty($route['roles'])) {
@@ -437,11 +418,7 @@ function role_guard(array $route): void
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| DISPATCH
-|--------------------------------------------------------------------------
-*/
+// hedhi hiya fonction ta3 dispatch, tchecki l url w tmatch
 
 function dispatch(array $routes, ?PDO $pdo): void
 {
@@ -496,11 +473,7 @@ function dispatch(array $routes, ?PDO $pdo): void
     renderError(404);
 }
 
-/*
-|--------------------------------------------------------------------------
-| ERROR HANDLER
-|--------------------------------------------------------------------------
-*/
+
 
 function renderError(int $code): void
 {

@@ -6,7 +6,7 @@
 
 <div class="etu-page">
 
-    <!-- ══ FLASH ══════════════════════════════════════════════════════════ -->
+    <!-- flash messages -->
     <?php if ($flash): ?>
     <div class="flash flash--<?= $flash['type'] ?>">
         <i class="ti <?= $flash['type'] === 'success' ? 'ti-circle-check' : 'ti-circle-x' ?>"></i>
@@ -14,7 +14,7 @@
     </div>
     <?php endif; ?>
 
-    <!-- ══ EN-TÊTE PAGE ═══════════════════════════════════════════════════ -->
+    <!-- header -->
     <div class="etu-header">
         <div class="etu-header-icon">
             <i class="ti ti-users-group"></i>
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    <!-- ══ FILTRE ══════════════════════════════════════════════════════════ -->
+    <!-- etudiant filter -->
     <div class="etu-filter-card">
 
         <form method="GET" action="/" class="etu-filter-form" id="filterForm">
@@ -61,7 +61,7 @@
                 </div>
             </div>
 
-            <!-- Classe -->
+            <!-- classe -->
             <div class="etu-filter-group">
                 <label class="etu-filter-label" for="sel-classe">
                     <i class="ti ti-door"></i>
@@ -101,7 +101,7 @@
 
     </div>
 
-    <!-- ══ LISTE ÉTUDIANTS ════════════════════════════════════════════════ -->
+    <!-- liste etudiants -->
     <?php if ($filiere !== '' && $classe !== ''): ?>
 
     <div class="etu-list-header">
@@ -117,7 +117,7 @@
 
     </div>
 
-    <!-- TABLE -->
+    <!-- table -->
     <?php if (!empty($etudiants)): ?>
 
     <div class="etu-table-wrap">
@@ -194,7 +194,7 @@
         </table>
     </div>
 
-    <!-- MODALS EDIT + DELETE par étudiant -->
+    <!-- fassakh w badel -->
     <?php foreach ($etudiants as $e): ?>
 
     <!-- ─── MODAL MODIFIER ─────────────────────────────────────────── -->
@@ -204,7 +204,7 @@
         onclick="fermerModalBackdrop(event, 'modal-edit-<?= $e['id'] ?>')"
     >
         <div class="etu-modal">
-
+            
             <div class="etu-modal-header">
                 <span class="etu-modal-title">
                     <i class="ti ti-pencil"></i>
@@ -218,7 +218,7 @@
                     <i class="ti ti-x"></i>
                 </button>
             </div>
-
+            // form modifier
             <form
                 method="POST"
                 action="/?page=etu_manage_update"
@@ -251,7 +251,7 @@
                             required
                         >
                     </div>
-
+                    
                     <div class="etu-form-group">
                         <label class="etu-form-label">Nom <span class="req">*</span></label>
                         <input
@@ -340,7 +340,7 @@
         </div>
     </div>
 
-    <!-- ─── MODAL SUPPRIMER ────────────────────────────────────────── -->
+    <!-- tfasakh -->
     <div
         id="modal-delete-<?= $e['id'] ?>"
         class="etu-modal-backdrop"
@@ -415,7 +415,7 @@
 
     <?php endif; ?>
 
-    <!-- ══ BOUTON AJOUTER ═════════════════════════════════════════════════ -->
+    <!-- tzid-->
     <button
         type="button"
         class="etu-btn-add"
@@ -426,7 +426,7 @@
         Ajouter un étudiant
     </button>
 
-    <!-- ══ MODAL AJOUTER ══════════════════════════════════════════════════ -->
+    <!-- ajouter modal -->
     <div
         id="modal-ajouter"
         class="etu-modal-backdrop"
@@ -578,7 +578,7 @@
 
     <?php else: ?>
 
-    <!-- ══ ÉTAT INITIAL (aucun filtre) ════════════════════════════════════ -->
+    
     <div class="etu-welcome">
         <div class="etu-welcome-icon">
             <i class="ti ti-filter"></i>
@@ -592,7 +592,7 @@
 
 </div>
 
-<!-- Données PHP → JS (injection JSON uniquement, pas de logique) -->
+<!-- classes by filiere mtaa  -->
 <script>
 const CLASSES_BY_FILIERE = <?= json_encode($classesByFiliere, JSON_UNESCAPED_UNICODE) ?>;
 </script>

@@ -1,5 +1,5 @@
 <?php
-// views/pages/student/examens/calculator.php
+
 
 require_once BASE_PATH . '/app/Repositories/MatiereRepository.php';
 
@@ -20,9 +20,6 @@ $matiereRepo = new MatiereRepository($pdo);
 $matieresS1  = $matiereRepo->getMatieres($filiere, $niveau, 1);
 $matieresS2  = $matiereRepo->getMatieres($filiere, $niveau, 2);
 
-// =========================================================
-// LECTURE COOKIES — notes sauvegardées
-// =========================================================
 
 $notesEnregistrees = [];
 
@@ -35,10 +32,7 @@ if (!empty($_COOKIE['insat_notes'])) {
         $notesEnregistrees = $decoded;
     }
 }
-
-// =========================================================
-// FONCTIONS DE CALCUL
-// =========================================================
+=
 
 function getNoteFromCookie(string $name, array $notes): ?float
 {
@@ -113,9 +107,6 @@ function calculerMoyenneSemestre(array $matieres, array $notes, object $repo): ?
     return $totalCoeff === 0 ? null : $total / $totalCoeff;
 }
 
-// =========================================================
-// CALCUL DES MOYENNES
-// =========================================================
 
 $moyenneS1      = calculerMoyenneSemestre($matieresS1, $notesEnregistrees, $matiereRepo);
 $moyenneS2      = calculerMoyenneSemestre($matieresS2, $notesEnregistrees, $matiereRepo);
@@ -161,15 +152,10 @@ $afficherMoyenne = fn(?float $m) => $m !== null ? number_format($m, 2) : '--.--'
 
 <body>
 
-<!-- ===================================================== -->
-<!-- HEADER -->
-<!-- ===================================================== -->
 
 <?php require BASE_PATH . '/views/layouts/header.php'; ?>
 
-<!-- ===================================================== -->
-<!-- PAGE -->
-<!-- ===================================================== -->
+
 
 <div class="calculator-page">
 
@@ -177,9 +163,7 @@ $afficherMoyenne = fn(?float $m) => $m !== null ? number_format($m, 2) : '--.--'
 
         <div class="calculator-wrapper">
 
-            <!-- ===================================================== -->
-            <!-- HEADER -->
-            <!-- ===================================================== -->
+           
 
             <div class="calculator-header">
 
@@ -207,17 +191,17 @@ $afficherMoyenne = fn(?float $m) => $m !== null ? number_format($m, 2) : '--.--'
 
             </div>
 
-            <!-- ===================================================== -->
-            <!-- FORM -->
-            <!-- ===================================================== -->
+
+            <!-- form -->
+          
 
             <form method="POST">
 
                 <div class="semesters-grid">
 
-                    <!-- ===================================================== -->
-                    <!-- SEMESTRE 1 -->
-                    <!-- ===================================================== -->
+                   
+                    <!-- sem1 -->
+                    
 
                     <div class="semester-card">
 
@@ -296,9 +280,9 @@ $afficherMoyenne = fn(?float $m) => $m !== null ? number_format($m, 2) : '--.--'
 
                     </div>
 
-                    <!-- ===================================================== -->
-                    <!-- SEMESTRE 2 -->
-                    <!-- ===================================================== -->
+                  
+                    <!-- semestre 2 -->
+                    
 
                     <div class="semester-card">
 
@@ -341,7 +325,9 @@ $afficherMoyenne = fn(?float $m) => $m !== null ? number_format($m, 2) : '--.--'
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ($aUnTP): ?>
+                                <?php
+                                
+                                 if ($aUnTP): ?>
                                     <div class="input-field">
                                         <span class="input-field__label">TP</span>
                                         <input
@@ -379,9 +365,8 @@ $afficherMoyenne = fn(?float $m) => $m !== null ? number_format($m, 2) : '--.--'
 
                 </div>
 
-                <!-- ===================================================== -->
-                <!-- RESULTATS -->
-                <!-- ===================================================== -->
+                <!-- results -->
+          
 
                 <div class="results-card">
 
@@ -422,12 +407,7 @@ $afficherMoyenne = fn(?float $m) => $m !== null ? number_format($m, 2) : '--.--'
 
 </div>
 
-<!-- =========================================================
-     SCRIPT — sauvegarde cookie + recalcul dynamique côté client
-     Le calcul principal est fait en PHP au chargement.
-     Le JS recalcule en temps réel pendant la saisie
-     et sauvegarde dans le cookie insat_notes.
-========================================================= -->
+
 <script src="/js/calculator.js"></script>
 
 </body>

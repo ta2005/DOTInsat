@@ -1,11 +1,9 @@
 <?php
-// views/pages/student/notes.php
+
 
 require_once BASE_PATH . '/app/Repositories/NotesRepository.php';
 
-// =========================================================
-// DONNÉES ÉTUDIANT
-// =========================================================
+
 
 $etudiantId = $_SESSION['user_id'] ?? null;
 
@@ -20,10 +18,8 @@ $filiere = $mF[1] ?? 'GL';
 preg_match('/^[A-Z]+(\d)/', $filiereRaw, $mN);
 $niveau = isset($mN[1]) ? (int)$mN[1] : 2;
 
-// =========================================================
-// RÉCUPÉRATION DES NOTES
-// =========================================================
 
+// taala hne bch yjib les notes mta3 l'etudiant 7asb ll id mta3ou w filiere w niveau, w bch yjibha mratbin 7asb les semestres (semestre 1 w semestre 2)
 $notesRepo = new NotesRepository($pdo);
 
 $semestres = [
@@ -31,9 +27,7 @@ $semestres = [
     2 => $notesRepo->getNotesBySemestre($etudiantId, $filiere, $niveau, 2),
 ];
 
-// =========================================================
-// CALCUL MOYENNE MATIÈRE
-// =========================================================
+// ll hessba
 
 function calculerMoyenneMatiere(array $notes): ?float
 {
@@ -60,9 +54,7 @@ function calculerMoyenneMatiere(array $notes): ?float
     return null;
 }
 
-// =========================================================
-// CALCUL MOYENNES SEMESTRES
-// =========================================================
+// moyenne
 
 function calculerMoyenneSemestre(array $matieres): ?float
 {
@@ -92,9 +84,7 @@ if ($moyenneS1 !== null && $moyenneS2 !== null) {
     $moyenneAnnuelle = null;
 }
 
-// =========================================================
-// HELPERS
-// =========================================================
+
 
 $fmt = fn(?float $n) => $n !== null ? number_format($n, 2) : '--.--';
 
@@ -128,15 +118,10 @@ $labelStatut = [
 
 <body>
 
-<!-- ===================================================== -->
-<!-- HEADER -->
-<!-- ===================================================== -->
+// header global
 
 <?php require BASE_PATH . '/views/layouts/header.php'; ?>
 
-<!-- ===================================================== -->
-<!-- PAGE -->
-<!-- ===================================================== -->
 
 <div class="calculator-page">
 
@@ -144,9 +129,7 @@ $labelStatut = [
 
         <div class="calculator-wrapper">
 
-            <!-- ===================================================== -->
-            <!-- HEADER -->
-            <!-- ===================================================== -->
+         
 
             <div class="calculator-header">
 
@@ -172,17 +155,10 @@ $labelStatut = [
 
             </div>
 
-            <!-- ===================================================== -->
-            <!-- SEMESTRES -->
-            <!-- ===================================================== -->
-
+                < --semestres grid, fih les 2 semestres w fiha les matieres w les notes mta3hom -- >
             <div class="semesters-grid">
 
-                <!-- ===================================================== -->
-                <!-- SEMESTRE 1 -->
-                <!-- ===================================================== -->
-
-                <div class="semester-card">
+              
 
                     <h2>Semestre 1</h2>
 
@@ -261,9 +237,8 @@ $labelStatut = [
 
                 </div>
 
-                <!-- ===================================================== -->
-                <!-- SEMESTRE 2 -->
-                <!-- ===================================================== -->
+                <!-- semestre 2 -->
+            
 
                 <div class="semester-card">
 
@@ -346,9 +321,9 @@ $labelStatut = [
 
             </div>
 
-            <!-- ===================================================== -->
-            <!-- RÉSULTATS -->
-            <!-- ===================================================== -->
+         
+            <!-- Resultt -->
+          *
 
             <div class="results-card">
 

@@ -1,5 +1,5 @@
 <?php
-// views/pages/admin/reclamations.php
+// Récupérer les réclamations depuis le contrôleur
 ?><div class="page-content"><?php
 
 $flash = $_SESSION['flash'] ?? null;
@@ -7,7 +7,7 @@ unset($_SESSION['flash']);
 
 $en_attente = array_values(array_filter($reclamations, fn($r) => strtoupper($r['statut']) === 'EN_ATTENTE'));
 $traitees   = array_values(array_filter($reclamations, fn($r) => strtoupper($r['statut']) !== 'EN_ATTENTE'));
-
+//h
 $statut_labels = [
     'EN_ATTENTE'                  => ['label' => 'En attente',           'class' => 'badge--yellow'],
     'ACCEPTEE_PAR_LE_PROFESSEUR'  => ['label' => 'Acceptée par le prof', 'class' => 'badge--green'],
@@ -17,7 +17,7 @@ $statut_labels = [
 ];
 ?>
 
-<!-- FLASH -->
+<!-- flash messages -->
 <?php if ($flash): ?>
 <div class="flash flash--<?= $flash['type'] ?>">
     <i class="ti <?= $flash['type'] === 'success' ? 'ti-circle-check' : 'ti-circle-x' ?>"></i>
@@ -25,7 +25,7 @@ $statut_labels = [
 </div>
 <?php endif; ?>
 
-<!-- EN-TÊTE -->
+<!-- header -->
 <div class="form-page-header">
     <div class="form-page-icon">
         <i class="ti ti-message-report"></i>
@@ -36,7 +36,7 @@ $statut_labels = [
     </div>
 </div>
 
-<!-- ── RÉCLAMATIONS EN ATTENTE ──────────────────────────────────── -->
+<!-- reclamations en attente -->
 <?php foreach ($en_attente as $r): ?>
 <div class="card recl-card" id="recl-<?= $r['id'] ?>">
     <div class="recl-header">
@@ -74,7 +74,7 @@ $statut_labels = [
         </button>
     </div>
 
-    <!-- PANEL APPROUVER -->
+    <!-- approuver -->
     <div id="panel-approuver-<?= $r['id'] ?>" class="recl-panel recl-panel--green" style="display:none;">
         <form method="POST" action="/?page=update-reclamation-status">
             <input type="hidden" name="id"     value="<?= $r['id'] ?>">
@@ -96,7 +96,7 @@ $statut_labels = [
         </form>
     </div>
 
-    <!-- PANEL REFUSER -->
+    <!-- refuser -->
     <div id="panel-refuser-<?= $r['id'] ?>" class="recl-panel recl-panel--red" style="display:none;">
         <form method="POST" action="/?page=update-reclamation-status">
             <input type="hidden" name="id"     value="<?= $r['id'] ?>">
@@ -123,7 +123,7 @@ $statut_labels = [
 </div>
 <?php endif; ?>
 
-<!-- ── HISTORIQUE ──────────────────────────────────────────────── -->
+<!-- history of reclamations traitées -->
 <?php if (!empty($traitees)): ?>
 <div class="recl-section-title recl-section-title--muted" style="margin-top:32px;">
     <i class="ti ti-archive"></i> Réclamations traitées
