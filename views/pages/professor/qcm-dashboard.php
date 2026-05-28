@@ -283,7 +283,23 @@ require BASE_PATH . '/views/layouts/header.php';
                                                                                                         <?php endif; ?>
                                                                                                     </td>
                                                                                                      <td style="display:flex; gap:6px; align-items:center;">
-                                                                                                         <button class="btn btn-secondary btn-sm" onclick="location.href='?page=qcm-scan&exam_id=<?= (int)$exam['id'] ?>&student_id=<?= (int)$s['student_id'] ?>'">Corriger</button>
+                                                                                                         <?php if ($s['statut'] === 'CORRIGE' || $s['statut'] === 'VERIFIE'): ?>
+                                                                                                             <button class="btn btn-secondary btn-sm" disabled style="opacity: 0.5; cursor: not-allowed;">Corriger</button>
+                                                                                                         <?php elseif ($exam['format'] === 'NON_QCM'): ?>
+                                                                                                             <button class="btn btn-secondary btn-sm"
+                                                                                                                     data-exam-id="<?= (int)$exam['id'] ?>"
+                                                                                                                     data-student-id="<?= (int)$s['student_id'] ?>"
+                                                                                                                     data-cin="<?= htmlspecialchars((string)$s['cin'], ENT_QUOTES, 'UTF-8') ?>"
+                                                                                                                     data-fullname="<?= htmlspecialchars($s['prenom'] . ' ' . $s['nom'], ENT_QUOTES, 'UTF-8') ?>"
+                                                                                                                     data-email="<?= htmlspecialchars($s['email'], ENT_QUOTES, 'UTF-8') ?>"
+                                                                                                                     data-note="<?= $s['note'] !== null ? htmlspecialchars((string)$s['note'], ENT_QUOTES, 'UTF-8') : '' ?>"
+                                                                                                                     data-statut="<?= htmlspecialchars($s['statut'], ENT_QUOTES, 'UTF-8') ?>"
+                                                                                                                     onclick="openStudentModifyModal(this)">
+                                                                                                                 Corriger
+                                                                                                             </button>
+                                                                                                         <?php else: ?>
+                                                                                                             <button class="btn btn-secondary btn-sm" onclick="location.href='?page=qcm-scan&exam_id=<?= (int)$exam['id'] ?>&student_id=<?= (int)$s['student_id'] ?>&student_cin=<?= htmlspecialchars((string)$s['cin'], ENT_QUOTES, 'UTF-8') ?>'">Corriger</button>
+                                                                                                         <?php endif; ?>
                                                                                                          <button class="btn btn-secondary btn-sm"
                                                                                                                  data-exam-id="<?= (int)$exam['id'] ?>"
                                                                                                                  data-student-id="<?= (int)$s['student_id'] ?>"

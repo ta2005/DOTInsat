@@ -300,4 +300,19 @@ class ControleRepository extends Repository implements IControleRepo
             return $stmt->rowCount() > 0;
         }
     }
+
+    public function fetchMasterExamsByProf(int $profId): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT DISTINCT c.id, c.type, c.format, c.enseignement_id, ens.nom as course_name
+            FROM controle c
+            JOIN enseignement ens ON c.enseignement_id = ens.id
+            WHERE ens.professeur_id = :prof_id 
+              AND c.etudiant_id IS NULL 
+              AND c.format IN ('QCM', 'MIX')
+            ORDER BY ens.nom ASC, c.type ASC, c.id ASC
+        ");
+        $stmt->execute([':prof_id' => $profId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

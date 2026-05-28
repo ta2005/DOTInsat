@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnInitialize = document.getElementById('btnInitializeWorkspace');
     const masterForm = document.getElementById('qcmMasterKeyForm');
     const matrixWorkspace = document.getElementById('interactiveMatrixWorkspace');
-    
+
     // Printable Vector Layout DOM Anchors
     const printableDocument = document.getElementById('printableBubbleDocument');
     const documentGridTarget = document.getElementById('documentGridInversionTarget');
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let q = 1; q <= totalQ; q++) {
             const card = document.createElement('div');
             card.className = 'matrix-item';
-            
+
             let choicesUiPayload = '';
             for (let c = 0; c < totalC; c++) {
                 const characterKey = choiceDictionary[c];
@@ -66,11 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Compile the Empty Vector Printable Document Layout Grid View
         lblDocumentExamRef.innerText = `CTRL_REF_ID_${examId}`;
         documentGridTarget.innerHTML = '';
-        
+
         for (let q = 1; q <= totalQ; q++) {
             const rowLine = document.createElement('div');
             rowLine.className = 'sheet-row-line';
-            
+
             let dynamicBubblesVector = '';
             for (let c = 0; c < totalC; c++) {
                 dynamicBubblesVector += `<div class="vector-bubble-circle">${choiceDictionary[c]}</div>`;
@@ -96,11 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Intercept Data Submission for Server Storage Write Operations
     masterForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const examId = document.getElementById('controleId').value;
         const totalQ = parseInt(document.getElementById('totalQuestions').value);
         const totalC = parseInt(document.getElementById('choicesPerQuestion').value);
-        
+
         const keyMapPayload = {
             exam_id: parseInt(examId),
             total_questions: totalQ,
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let q = 1; q <= totalQ; q++) {
             const correctChecked = masterForm.querySelector(`input[name="matrix_correct[q${q}]"]:checked`);
             const pointWeightValue = masterForm.querySelector(`input[name="matrix_weight[q${q}]"]`);
-            
+
             keyMapPayload.grading_matrix[`q${q}`] = {
                 correct_choice: correctChecked.value,
                 weight: parseFloat(pointWeightValue.value)
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('/api/qcm/save-template', {
+            const response = await fetch('/?page=api-save-template', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(keyMapPayload)

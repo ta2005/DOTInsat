@@ -1,0 +1,55 @@
+{
+    "exam_id": 27,
+    "total_questions": 12,
+    "choices_per_question": 2,
+    "grading_matrix": {
+        "q1": {
+            "correct_choice": "A",
+            "weight": 1
+        },
+        "q2": {
+            "correct_choice": "A",
+            "weight": 1
+        },
+        "q3": {
+            "correct_choice": "A",
+            "weight": 1
+        },
+        "q4": {
+            "correct_choice": "A",
+            "weight": 1
+        },
+        "q5": {
+            "correct_choice": "A",
+            "weight": 1
+        },
+        "q6": {
+            "correct_choice": "A",
+            "weight": 1
+        },
+        "q7": {
+            "correct_choice": "A",
+            "weight": 1
+        },
+        "q8": {
+            "correct_choice": "A",
+            "weight": 1
+        },
+        "q9": {
+            "correct_choice": "A",
+            "weight": 1
+        },
+        "q10": {
+            "correct_choice": "A",
+            "weight": 1
+        },
+        "q11": {
+            "correct_choice": "A",
+            "weight": 1
+        },
+        "q12": {
+            "correct_choice": "A",
+            "weight": 1
+        }
+    }
+}

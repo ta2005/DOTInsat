@@ -131,6 +131,13 @@ class QcmController
 
     public function scan(): void
     {
+        $profId = (int)($_SESSION['user_id'] ?? 0);
+        $exams = $this->controleRepo->fetchMasterExamsByProf($profId);
+        foreach ($exams as &$exam) {
+            $exam['students'] = $this->controleRepo->fetchStudentsByCourse((int)$exam['enseignement_id']);
+        }
+        unset($exam);
+
         require BASE_PATH . '/views/pages/professor/qcm-scan.php';
     }
 
@@ -237,13 +244,8 @@ class QcmController
         $filePath = $this->gradingService->keyFilePath($examId);
 
         if (!file_exists($filePath)) {
-            $files = glob(dirname($filePath) . '/exam_*.json');
-            if (!empty($files)) {
-                $filePath = $files[0];
-            } else {
-                $this->jsonError("Modèle introuvable pour l'examen #{$examId}.", 404);
-                return;
-            }
+            $this->jsonError("Modèle de correction introuvable pour l'examen #{$examId}. Veuillez d'abord configurer les réponses.", 404);
+            return;
         }
 
         $data = json_decode(file_get_contents($filePath), true);

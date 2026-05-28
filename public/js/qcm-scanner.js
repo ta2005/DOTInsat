@@ -4,16 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('fileFallbackInput');
     const canvas = document.getElementById('processingCanvas');
     const ctx = canvas.getContext('2d');
-    
-    // UI Logging elements
+
     const logStream = document.getElementById('logStream');
     const lblStudent = document.getElementById('lblSessionStudent');
     const pillStatus = document.getElementById('pillStatus');
     const lblScore = document.getElementById('lblCalculatedScore');
 
-    const alphabetOptions = ['A', 'B', 'C', 'D', 'E'];
+    const alphabetOptions = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 
-    // Drag and drop event listeners
+    // Drag and drop setup
     ['dragenter', 'dragover'].forEach(name => {
         dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); }, false);
     });
@@ -43,20 +42,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function processIncomingImageFile(file) {
-        writeLog(`Loading selected image file: ${file.name}`);
+        writeLog(`Loading image file: ${file.name}`);
         const reader = new FileReader();
-        
+
         reader.onload = (event) => {
             const img = new Image();
             img.onload = () => {
-                // Initialize canvas dimensions matching source file proportions
                 canvas.width = img.width;
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
                 canvas.style.display = 'block';
-                writeLog(`Image dimensions matched: ${img.width}x${img.height}px.`);
-                
-                // Execute OMR Scan Engine
                 executeOpticalBubbleAnalysis(img);
             };
             img.src = event.target.result;
@@ -64,373 +59,243 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsDataURL(file);
     }
 
-    /**
-     * Optical Mark Recognition (OMR) Scan Machine
-     * Analyzes relative layout matrices to isolate selected bubbles.
-     */
     async function executeOpticalBubbleAnalysis(imgSource) {
-        pillStatus.innerText = "Analyzing Pixels...";
-        pillStatus.className = "status-pill";
-        writeLog("Extracting operational tracking data variables...");
+        pillStatus.innerText = "Processing Structure...";
+        pillStatus.className = "status-badge status-en-attente";
 
-        const mockDetectedExamId = parseInt(document.getElementById('scanExamId').value) || 14; 
-        const mockDetectedStudentId = parseInt(document.getElementById('scanStudentId').value) || 1002; 
-        
+        if (typeof cv === 'undefined' || !window.opencvReady) {
+            writeLog("Waiting for OpenCV.js framework instantiation...");
+            document.addEventListener('opencv-ready', () => { executeOpticalBubbleAnalysis(imgSource); }, { once: true });
+            return;
+        }
+
+        const mockDetectedExamId = parseInt(document.getElementById('scanExamId').value) || 14;
+        const realStudentIdEl = document.getElementById('scanRealStudentId');
+        const mockDetectedStudentId = (realStudentIdEl && realStudentIdEl.value) ? parseInt(realStudentIdEl.value) : (parseInt(document.getElementById('scanStudentId').value) || 1002);
+
+        // Runtime variables overwritten dynamically by database template specs
         let mockTotalQuestions = 10;
-        let mockChoicesCount = 2; // A, B
+        let mockChoicesCount = 4;
+        let cols = 3;
 
-        // First, fetch template context to get exact question count and choices per question
         try {
-            writeLog("Fetching template configurations to calibrate grid dimensions...");
             const response = await fetch(`/api/qcm/get-template?exam_id=${mockDetectedExamId}`);
             const resParsed = await response.json();
             if (resParsed.success && resParsed.data) {
                 mockTotalQuestions = resParsed.data.total_questions || 10;
-                mockChoicesCount = resParsed.data.choices_per_question || 2;
-                writeLog(`Grid calibration active: ${mockTotalQuestions} questions, ${mockChoicesCount} choices per question.`);
+                mockChoicesCount = resParsed.data.choices_per_question || 4;
+                cols = resParsed.data.columns_count || 3;
+                writeLog(`Template verified: ${mockTotalQuestions} Questions | ${mockChoicesCount} Choices | ${cols} Grid Columns`);
             }
         } catch (e) {
-            writeLog("Warning: Could not fetch template config. Calibrating with standard defaults.");
+            writeLog("Warning: Using local layout fallback variables.");
         }
 
-        lblStudent.innerText = `Etudiant ID: ${mockDetectedStudentId} (Exam Context #${mockDetectedExamId})`;
-        writeLog(`Targeting Configuration File Blueprint: exam_${mockDetectedExamId}.json`);
+        lblStudent.innerText = `Student ID: ${mockDetectedStudentId} (Exam Context #${mockDetectedExamId})`;
 
-        const compiledStudentAnswers = {};
-        writeLog("Executing real Optical Mark Recognition (OMR) pixel scanner...");
+        let src = cv.imread(canvas);
+        let gray = new cv.Mat();
+        let thresh = new cv.Mat();
 
-        const W = canvas.width;
-        const H = canvas.height;
-        const imgData = ctx.getImageData(0, 0, W, H);
-        const pixels = imgData.data;
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+        // Adaptive thresholding handles changes in lighting and shadows across the sheet
+        cv.adaptiveThreshold(gray, thresh, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 21, 5);
 
-        // Exclude edges (2% margin) to avoid scan borders
-        const padX = Math.floor(W * 0.02);
-        const padY = Math.floor(H * 0.02);
+        let contours = new cv.MatVector();
+        let hierarchy = new cv.Mat();
+        // RETR_CCOMP provides a 2-level structural topology map (Outer Ring vs Inner Content)
+        cv.findContours(thresh, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
 
-        // Precompute binary isDark array
-        const isDark = new Uint8Array(W * H);
-        for (let i = 0; i < W * H; i++) {
-            const idx = i * 4;
-            if (pixels[idx] < 180 && pixels[idx+1] < 180 && pixels[idx+2] < 180) {
-                isDark[i] = 1;
-            }
-        }
+        let validBubbles = [];
+        const hierarchyData = hierarchy.data32S;
 
-        // 1. Horizontal projection (find row bands)
-        const rowDarkness = new Int32Array(H);
-        for (let y = padY; y < H - padY; y++) {
-            let count = 0;
-            for (let x = padX; x < W - padX; x++) {
-                if (isDark[y * W + x]) {
-                    count++;
-                }
-            }
-            rowDarkness[y] = count;
-        }
+        for (let i = 0; i < contours.size(); ++i) {
+            let hIdx = i * 4;
+            let nextElement = hierarchyData[hIdx];
+            let previousElement = hierarchyData[hIdx + 1];
+            let firstChild = hierarchyData[hIdx + 2];
+            let parentElement = hierarchyData[hIdx + 3];
 
-        const rowThreshold = Math.max(5, W * 0.005);
-        const rawIntervals = [];
-        let inInterval = false;
-        let startY = 0;
-        for (let y = padY; y < H - padY; y++) {
-            const isActive = rowDarkness[y] > rowThreshold;
-            if (isActive && !inInterval) {
-                inInterval = true;
-                startY = y;
-            } else if (!isActive && inInterval) {
-                inInterval = false;
-                rawIntervals.push({ start: startY, end: y - 1 });
-            }
-        }
-        if (inInterval) {
-            rawIntervals.push({ start: startY, end: H - padY - 1 });
-        }
+            let rect = cv.boundingRect(contours.get(i));
+            let aspectRatio = rect.width / rect.height;
 
-        const filteredIntervals = rawIntervals.filter(interval => (interval.end - interval.start + 1) >= 5);
+            // 1. DIMENSION CHECK: Filter out huge blocks (titles, headers) or speckle noise
+            if (rect.width >= 16 && rect.width <= 70 && rect.height >= 16 && rect.height <= 70) {
 
-        const cols = 3;
-        const numRows = Math.ceil(mockTotalQuestions / cols);
-        
-        // Take the bottom-most numRows intervals
-        filteredIntervals.sort((a, b) => b.start - a.start);
-        const detectedRowIntervals = filteredIntervals.slice(0, numRows);
-        detectedRowIntervals.sort((a, b) => a.start - b.start);
+                // 2. STRUCTURAL FILTERING (The Anti-Square Savior):
+                // Valid empty bubbles have a child contour inside (the inner ring/letter).
+                // Solid completely filled bubbles lose their child contour but are highly circular.
+                let hasChild = firstChild !== -1;
+                let isInsideParent = parentElement !== -1;
 
-        let rowIntervals = [];
-        let colIntervals = [];
-        let fallbackMode = false;
+                if ((aspectRatio >= 0.65 && aspectRatio <= 1.45) && (!isInsideParent || hasChild)) {
+                    // Check area fill density to differentiate actual bubbles from textual stray marks
+                    let roi = thresh.roi(rect);
+                    let nonZero = cv.countNonZero(roi);
+                    let density = nonZero / (rect.width * rect.height);
+                    roi.delete();
 
-        // 2. Vertical projection (find column bands within rows)
-        if (detectedRowIntervals.length === numRows) {
-            rowIntervals = detectedRowIntervals;
-            
-            const colDarkness = new Int32Array(W);
-            for (let x = padX; x < W - padX; x++) {
-                let count = 0;
-                for (const row of rowIntervals) {
-                    for (let y = row.start; y <= row.end; y++) {
-                        if (isDark[y * W + x]) {
-                            count++;
-                        }
-                    }
-                }
-                colDarkness[x] = count;
-            }
-
-            // Smooth colDarkness using a moving average window to bridge gaps between labels and bubbles
-            const smoothWindow = 35;
-            const smoothedColDarkness = new Float32Array(W);
-            for (let x = padX; x < W - padX; x++) {
-                let sum = 0;
-                let count = 0;
-                for (let wx = x - Math.floor(smoothWindow/2); wx <= x + Math.floor(smoothWindow/2); wx++) {
-                    if (wx >= padX && wx < W - padX) {
-                        sum += colDarkness[wx];
-                        count++;
-                    }
-                }
-                smoothedColDarkness[x] = sum / count;
-            }
-
-            const colThreshold = Math.max(2, H * 0.002);
-            const rawColIntervals = [];
-            let inColInterval = false;
-            let startX = 0;
-            for (let x = padX; x < W - padX; x++) {
-                const isActive = smoothedColDarkness[x] > colThreshold;
-                if (isActive && !inColInterval) {
-                    inColInterval = true;
-                    startX = x;
-                } else if (!isActive && inColInterval) {
-                    inColInterval = false;
-                    rawColIntervals.push({ start: startX, end: x - 1 });
-                }
-            }
-            if (inColInterval) {
-                rawColIntervals.push({ start: startX, end: W - padX - 1 });
-            }
-
-            const filteredColIntervals = rawColIntervals.filter(col => (col.end - col.start + 1) >= 20);
-            filteredColIntervals.sort((a, b) => (b.end - b.start) - (a.end - a.start));
-            
-            const detectedColIntervals = filteredColIntervals.slice(0, cols);
-            detectedColIntervals.sort((a, b) => a.start - b.start);
-
-            if (detectedColIntervals.length === cols) {
-                colIntervals = detectedColIntervals;
-            } else {
-                fallbackMode = true;
-            }
-        } else {
-            fallbackMode = true;
-        }
-
-        if (fallbackMode) {
-            writeLog(`Warning: Grid calibration could not resolve all bands. Falling back to uniform grid calculation.`);
-            let minX = W, minY = H, maxX = 0, maxY = 0;
-            let foundAny = false;
-            for (let y = padY; y < H - padY; y++) {
-                for (let x = padX; x < W - padX; x++) {
-                    if (isDark[y * W + x]) {
-                        if (x < minX) minX = x;
-                        if (y < minY) minY = y;
-                        if (x > maxX) maxX = x;
-                        if (y > maxY) maxY = y;
-                        foundAny = true;
+                    // Text letters like "U" or "a" show extremely low baseline densities (<15%) when inverted
+                    if (density > 0.18) {
+                        validBubbles.push({ rect, density });
                     }
                 }
             }
-            if (!foundAny) {
-                writeLog("Error: Could not locate active sheet border lines. Ensure image is high-contrast.");
-                pillStatus.innerText = "Scan Failed";
-                return;
-            }
-            minX = Math.max(0, minX - 10);
-            minY = Math.max(0, minY - 10);
-            maxX = Math.min(W - 1, maxX + 10);
-            maxY = Math.min(H - 1, maxY + 10);
+        }
 
-            const contentW = maxX - minX;
-            const contentH = maxY - minY;
+        writeLog(`Filtered out textual noise elements. Valid structural bubble candidates remaining: ${validBubbles.length}`);
 
-            // Highlight content box in green
-            ctx.strokeStyle = '#28a745';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(minX, minY, contentW, contentH);
+        if (validBubbles.length < (mockTotalQuestions * 2)) {
+            writeLog("Error: Structural signature tracking lost. Target bubbles missing.");
+            pillStatus.innerText = "Scan Failed";
+            gray.delete(); thresh.delete(); contours.delete(); hierarchy.delete(); src.delete();
+            return;
+        }
 
-            const colW = contentW / cols;
-            const rowH = contentH / numRows;
+        // ---------------------------------------------------------
+        // CLUSTER-BASED ADAPTIVE GRID ALIGNMENT
+        // ---------------------------------------------------------
+        // Cluster rows naturally by physical proximity (Y-coordinates)
+        validBubbles.sort((a, b) => a.rect.y - b.rect.y);
+        let horizontalRows = [];
 
-            rowIntervals = [];
-            for (let r = 0; r < numRows; r++) {
-                rowIntervals.push({
-                    start: Math.floor(minY + r * rowH),
-                    end: Math.ceil(minY + (r + 1) * rowH)
-                });
-            }
-            colIntervals = [];
-            for (let c = 0; c < cols; c++) {
-                colIntervals.push({
-                    start: Math.floor(minX + c * colW),
-                    end: Math.ceil(minX + (c + 1) * colW)
-                });
-            }
-        } else {
-            writeLog(`Active OMR grid boundaries resolved: ${rowIntervals.length} row bands, ${colIntervals.length} column bands.`);
-            // Highlight detected grid boundaries in green
-            ctx.strokeStyle = '#28a745';
-            ctx.lineWidth = 2;
-            for (const r of rowIntervals) {
-                for (const c of colIntervals) {
-                    ctx.strokeRect(c.start, r.start, c.end - c.start, r.end - r.start);
+        for (let bubble of validBubbles) {
+            let assigned = false;
+            for (let row of horizontalRows) {
+                if (Math.abs(row[0].rect.y - bubble.rect.y) < (bubble.rect.height * 0.60)) {
+                    row.push(bubble);
+                    assigned = true;
+                    break;
                 }
+            }
+            if (!assigned) {
+                horizontalRows.push([bubble]);
             }
         }
 
-        // 3. Scan each question cell inside grid intervals
+        // Clean up incomplete structural rows (stray artifacts or text lines captured accidentally)
+        let expectedBubblesPerRow = cols * mockChoicesCount;
+        horizontalRows = horizontalRows.filter(row => row.length >= (expectedBubblesPerRow * 0.75));
+
+        // Sort individual rows from left to right
+        horizontalRows.forEach(row => row.sort((a, b) => a.rect.x - b.rect.x));
+
+        let compiledStudentAnswers = {};
+
+        // Loop over the expected text question blocks
         for (let q = 1; q <= mockTotalQuestions; q++) {
-            const colIdx = (q - 1) % cols;
-            const rowIdx = Math.floor((q - 1) / cols);
+            let colIdx = (q - 1) % cols;
+            let rowIdx = Math.floor((q - 1) / cols);
 
-            const rowInterval = rowIntervals[rowIdx];
-            const colInterval = colIntervals[colIdx];
+            let targetRow = horizontalRows[rowIdx];
+            if (!targetRow) {
+                compiledStudentAnswers[`q${q}`] = "";
+                continue;
+            }
 
-            const cellX1 = colInterval.start;
-            const cellX2 = colInterval.end;
-            const cellY1 = rowInterval.start;
-            const cellY2 = rowInterval.end;
+            // Isolate choices belonging explicitly to this column grouping
+            let totalRowItems = targetRow.length;
+            let approxItemsPerCol = Math.ceil(totalRowItems / cols);
 
-            const cellW = cellX2 - cellX1;
-            const cellH = cellY2 - cellY1;
+            let colStartIdx = colIdx * approxItemsPerCol;
+            let colEndIdx = Math.min(totalRowItems, colStartIdx + approxItemsPerCol);
+            let questionChoices = targetRow.slice(colStartIdx, colEndIdx);
 
-            // Draw cell boundary debug line
-            ctx.strokeStyle = 'rgba(0, 123, 255, 0.2)';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(cellX1, cellY1, cellW, cellH);
+            // Re-verify sorting internally left-to-right
+            questionChoices.sort((a, b) => a.rect.x - b.rect.x);
 
-            // Calculate start ratio of bubbles relative to question text label width
-            // Derived from CSS: label width = 45px, bubble = 26px, gap = 18px
-            const totalContentWidth = 45 + mockChoicesCount * 26 + (mockChoicesCount - 1) * 18;
-            const startRatio = 45 / totalContentWidth;
-
-            const bubbleRegionX1 = cellX1 + cellW * startRatio;
-            const bubbleRegionW = cellW * (1 - startRatio);
-            const segmentW = bubbleRegionW / mockChoicesCount;
-
-            const choiceResults = [];
-
+            // Map physical bubbles to option selections
+            let choiceEvaluations = [];
             for (let c = 0; c < mockChoicesCount; c++) {
-                const choiceX1 = bubbleRegionX1 + c * segmentW;
-                const choiceX2 = choiceX1 + segmentW;
+                let targetBubble = questionChoices[c];
+                let currentLetter = alphabetOptions[c];
 
-                // Focus scanning bounds slightly inside the bubble region to avoid border artifacts
-                const scanX1 = choiceX1 + segmentW * 0.15;
-                const scanX2 = choiceX2 - segmentW * 0.15;
-                const scanY1 = cellY1 + cellH * 0.15;
-                const scanY2 = cellY2 - cellH * 0.15;
-
-                const scanW = scanX2 - scanX1;
-                const scanH = scanY2 - scanY1;
-                const totalScanPixels = Math.max(1, scanW * scanH);
-
-                let darkPixelCount = 0;
-                for (let sy = Math.floor(scanY1); sy < Math.ceil(scanY2); sy++) {
-                    for (let sx = Math.floor(scanX1); sx < Math.ceil(scanX2); sx++) {
-                        if (sx >= 0 && sx < W && sy >= 0 && sy < H) {
-                            if (isDark[sy * W + sx]) {
-                                darkPixelCount++;
-                            }
-                        }
-                    }
+                if (!targetBubble) {
+                    choiceEvaluations.push({ choice: currentLetter, density: 0, rect: null });
+                    continue;
                 }
 
-                const darkRatio = darkPixelCount / totalScanPixels;
-                choiceResults.push({
-                    choice: alphabetOptions[c],
-                    darkRatio: darkRatio,
-                    scanX1: scanX1,
-                    scanY1: scanY1,
-                    scanW: scanW,
-                    scanH: scanH
+                // Sample density using a tighter, centered region of interest
+                let innerW = Math.round(targetBubble.rect.width * 0.65);
+                let innerH = Math.round(targetBubble.rect.height * 0.65);
+                let innerX = targetBubble.rect.x + Math.round((targetBubble.rect.width - innerW) / 2);
+                let innerY = targetBubble.rect.y + Math.round((targetBubble.rect.height - innerH) / 2);
+
+                let cropRect = new cv.Rect(innerX, innerY, innerW, innerH);
+                let roi = thresh.roi(cropRect);
+                let fillDensity = cv.countNonZero(roi) / (innerW * innerH);
+                roi.delete();
+
+                choiceEvaluations.push({
+                    choice: currentLetter,
+                    density: fillDensity,
+                    rect: targetBubble.rect
                 });
-
-                // Visualize scanning bucket
-                ctx.strokeStyle = 'rgba(255, 193, 7, 0.3)';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(scanX1, scanY1, scanW, scanH);
             }
 
-            // Determine the selected choice by finding the one with maximum darkRatio
-            let bestChoice = choiceResults[0];
-            for (let c = 1; c < mockChoicesCount; c++) {
-                if (choiceResults[c].darkRatio > bestChoice.darkRatio) {
-                    bestChoice = choiceResults[c];
+            // Determine filled option
+            choiceEvaluations.sort((a, b) => b.density - a.density);
+            let topChoice = choiceEvaluations[0];
+            let runnerUp = choiceEvaluations[1];
+
+            let pickedAnswer = "";
+            // If the density is >0.55, the bubble is solidly blacked out
+            if (topChoice.density > 0.55 && topChoice.rect !== null) {
+                // Handle manual student corrections / cross-outs safely
+                if (runnerUp && runnerUp.density > 0.48 && (topChoice.density - runnerUp.density) < 0.15) {
+                    pickedAnswer = "";
+                    writeLog(`Q${q}: Correction markup anomaly flagged. Choice discarded.`);
+                } else {
+                    pickedAnswer = topChoice.choice;
                 }
+            } else {
+                writeLog(`Q${q}: Blank/Unanswered.`);
             }
 
-            const selectedChoice = bestChoice.choice;
-            compiledStudentAnswers[`q${q}`] = selectedChoice;
+            compiledStudentAnswers[`q${q}`] = pickedAnswer;
 
-            // Draw visual confirmation around chosen bubble
-            ctx.strokeStyle = '#28a745';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(bestChoice.scanX1, bestChoice.scanY1, bestChoice.scanW, bestChoice.scanH);
-
-            // Print overlay text showing detected choice
-            ctx.fillStyle = '#28a745';
-            ctx.font = 'bold 12px monospace';
-            ctx.fillText(selectedChoice, bestChoice.scanX1 + bestChoice.scanW / 2 - 4, bestChoice.scanY1 - 2);
+            // Draw bounding validation boxes to our debug canvas element layer
+            if (pickedAnswer && topChoice.rect) {
+                let p1 = new cv.Point(topChoice.rect.x, topChoice.rect.y);
+                let p2 = new cv.Point(topChoice.rect.x + topChoice.rect.width, topChoice.rect.y + topChoice.rect.height);
+                cv.rectangle(src, p1, p2, new cv.Scalar(40, 167, 69, 255), 2); // Production Green
+            }
         }
 
-        writeLog("OMR Scanner successfully calculated answers from circle density profiles!");
+        cv.imshow(canvas, src);
 
-        writeLog(`Successfully isolated student answers matrix. Dispatching to controller network pipe...`);
+        gray.delete(); thresh.delete(); contours.delete(); hierarchy.delete(); src.delete();
+        writeLog("Optical OMR structural alignment parsing cycle executed successfully.");
+
         await dispatchGradesToControllerPipeline(mockDetectedExamId, mockDetectedStudentId, compiledStudentAnswers);
     }
 
-    /**
-     * Sends the compiled results matrix to the backend API endpoint
-     */
-    async function dispatchGradesToControllerPipeline(examId, studentId, studentAnswers) {
-        try {
-            const endpointUrl = '/api/qcm/process-scan';
-            const payload = {
-                exam_id: examId,
-                student_id: studentId,
-                student_answers: studentAnswers
-            };
+    async function dispatchGradesToControllerPipeline(examId, studentId, answers) {
+        writeLog(`Transmitting payload details to core engine: ${JSON.stringify(answers)}`);
+        pillStatus.innerText = "Syncing Grades...";
 
-            const response = await fetch(endpointUrl, {
+        try {
+            const response = await fetch('/api/qcm/submit-grade', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({
+                    exam_id: examId,
+                    student_id: studentId,
+                    answers: answers
+                })
             });
-
-            const responseText = await response.text();
-            let result;
-            
-            try {
-                result = JSON.parse(responseText);
-            } catch (e) {
-                writeLog(`Fatal Backend Parse Error: Encountered invalid structural response output markup.`);
-                console.error("Raw markup dump error context:", responseText);
-                return;
-            }
-
-            if (result.success) {
-                pillStatus.innerText = "Synced successfully";
-                pillStatus.className = "status-pill success";
-                lblScore.innerText = parseFloat(result.data.final_grade).toFixed(2);
-                writeLog(`[Success] Grade calculation verified! Score written: ${result.data.final_grade} pts.`);
+            const res = await response.json();
+            if (res.success) {
+                pillStatus.innerText = "Scan Verified";
+                pillStatus.className = "status-badge status-verifie";
+                if (lblScore) lblScore.innerText = `${res.score} / ${res.total_possible}`;
             } else {
-                pillStatus.innerText = "Sync Failed";
-                writeLog(`[Error] Request rejected by endpoint matrix: ${result.message}`);
+                pillStatus.innerText = "Submission Rejected";
+                pillStatus.className = "status-badge status-conteste";
             }
-
         } catch (err) {
-            writeLog(`[Critical Error] Failed to complete async network transport channel.`);
-            console.error(err);
+            writeLog(`API synchronization failure encountered: ${err.message}`);
+            pillStatus.innerText = "Sync Error";
         }
     }
 });

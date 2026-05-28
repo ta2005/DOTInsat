@@ -1,6 +1,8 @@
 <?php
 // views/pages/professor/qcm-create.php
 
+$examId = isset($_GET['exam_id']) ? (int)$_GET['exam_id'] : '';
+
 $config = [
     'nav' => [
         ['href' => '/?page=home',              'label' => 'Accueil'],
@@ -42,6 +44,7 @@ require BASE_PATH . '/views/layouts/header.php';
                     id="controleId"
                     min="1"
                     placeholder="Ex : 14"
+                    value="<?= $examId ?>"
                     required
                 >
 
