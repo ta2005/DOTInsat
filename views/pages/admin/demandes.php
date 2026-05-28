@@ -166,22 +166,5 @@ $label = $type_labels[$d['type']] ?? $d['type'];
 <?php endforeach; ?>
 <?php endif; ?>
 
-<script>
-function ouvrirApprouver(id) {
-    fermerPanels(id);
-    const p = document.getElementById('panel-approuver-' + id);
-    if (p) { p.style.display = 'block'; p.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
-}
-function ouvrirRefuser(id) {
-    fermerPanels(id);
-    const p = document.getElementById('panel-refuser-' + id);
-    if (p) { p.style.display = 'block'; p.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
-}
-function fermerPanels(id) {
-    const a = document.getElementById('panel-approuver-' + id);
-    const r = document.getElementById('panel-refuser-'   + id);
-    if (a) a.style.display = 'none';
-    if (r) r.style.display = 'none';
-}
-</script>
+<script src="/js/admin-panels.js"></script>
 <?php ?></div><?php

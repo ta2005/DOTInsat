@@ -99,6 +99,33 @@
     opacity: 1;
 }
 
+/* Action card links wrapper */
+.semester-card-link {
+    text-decoration: none;
+}
+
+/* Icon wrapper inside action cards */
+.semester-card-icon {
+    font-size: 42px;
+    color: #ffffff;
+    opacity: 0.7;
+}
+
+/* Action card title */
+.card-label {
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+
+/* Action card description */
+.card-desc {
+    font-size: 14px;
+    color: #9a9aa0;
+    margin-top: 6px;
+}
+
 /* Base Form elements */
 .input-wrapper {
     display: flex;
