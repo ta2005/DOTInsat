@@ -1,12 +1,11 @@
 <?php
-// Point d'entrée unique : public/
+// point d'entrée public/
 define('BASE_URL', '');
 
-
-// Durée du cookie "Se souvenir de moi" : 30 jours
+// duree de vie de cookies
 define('REMEMBER_ME_DURATION', 60 * 60 * 24 * 30);
 
-// Nom des cookies
+// dotinsat_remember :hedha bch naamlou verification (double check)
 define('COOKIE_REMEMBER_TOKEN', 'dotinsat_remember');
 define('COOKIE_REMEMBER_USER',  'dotinsat_user_id');
 
@@ -15,5 +14,5 @@ define('ROLE_ETUDIANT',     'etudiant');
 define('ROLE_PROFESSEUR',   'professeur');
 define('ROLE_ADMIN',        'admin');
 
-// Routes publiques (pas de redirection vers login)
+// lista mtaa les pages illi andou ll hak yhelhom menghir sans connection
 define('PUBLIC_PAGES', ['login', 'do-login']);

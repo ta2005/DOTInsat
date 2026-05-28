@@ -1,25 +1,34 @@
 <?php 
-// boutonet , graphe stat mtaa ll prof 
+// boutonet / boutonet ll stat
 ?>
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/forms.css">
-    <link rel="stylesheet" href="/css/notifications.css">
+
 </head>
-<!-- STAT CARDS -->
+
+<!-- boutonet ll stats -->
 <?php
+// bch nverifyi ken andou stat mtaa big 
 $hasBigStats  = !empty($config['stats']) && !empty($config['stats'][0]['big']);
+// bch nverifyi ken andou role mtaa admin bch napplyi style mtaa les actions ken houwa admin w ykoun 6 actions sinon 4
 $isAdmin      = ($config['role'] ?? '') === 'Administrateur';
+// bch napplyi style mtaa les actions ken houwa admin w ykoun 6 actions sinon 4
 $rowClass     = $hasBigStats ? 'row-stats-big' : 'row-actions';
 ?>
+
 <div class="row <?= $rowClass ?>">
     <?php foreach ($config['stats'] as $stat):
+
+        // bch nverifi ken andou stat mtaa big 
         $hasBig   = !empty($stat['big']);
+        // bch nverifi ken andou label w houwa mouch stat mtaa big bch napplyi style mtaa les stat ken houwa mouch big w andou label
         $hasLabel = array_key_exists('label', $stat) && !$hasBig;
     ?>
+    <!-- lehne fi kol cas nchouf ken aandou value /total/ icone/label -->
     <div class="card stat-card <?= $hasBig ? 'stat-card--big' : '' ?>">
-
+        <!-- ken houwa big napplyi style hedha -->
         <?php if ($hasBig): ?>
             <div class="stat-num-big">
                 <?= htmlspecialchars($stat['value'] ?? '') ?>
@@ -28,7 +37,9 @@ $rowClass     = $hasBigStats ? 'row-stats-big' : 'row-actions';
                 <?php endif; ?>
             </div>
             <div class="stat-label-bottom"><?= htmlspecialchars($stat['label'] ?? '') ?></div>
-
+        
+        
+        <!-- ken houwa mouch big w andou label napplyi style hedha -->
         <?php elseif ($hasLabel): ?>
             <div class="stat-label"><?= htmlspecialchars($stat['label']) ?></div>
             <div class="stat-num">
@@ -40,7 +51,9 @@ $rowClass     = $hasBigStats ? 'row-stats-big' : 'row-actions';
                     <span class="total-divider">/<?= htmlspecialchars($stat['total']) ?></span>
                 <?php endif; ?>
             </div>
-
+        
+        
+        <!-- ken houwa mouch big w ma aandouch label napplyi style hedha -->
         <?php else: ?>
             <div class="stat-sub"><?= htmlspecialchars($stat['sub'] ?? '') ?></div>
             <div class="stat-val <?= htmlspecialchars($stat['color'] ?? '') ?>">
@@ -55,32 +68,10 @@ $rowClass     = $hasBigStats ? 'row-stats-big' : 'row-actions';
     <?php endforeach; ?>
 </div>
 
-<!-- GRAPHE (uniquement si défini dans $config) -->
-<?php if (!empty($config['chart'])): ?>
-<div class="row row-full">
-    <div class="card chart-placeholder-card">
-        <div class="chart-header">
-            <h3><?= htmlspecialchars($config['chart']['title']) ?></h3>
-            <?php if (!empty($config['chart']['legend'])): ?>
-            <div class="chart-legend-mock">
-                <?php foreach ($config['chart']['legend'] as $item): ?>
-                    <span class="legend-item">
-                        <span class="color-indicator <?= htmlspecialchars($item['color']) ?>"></span>
-                        <?= htmlspecialchars($item['label']) ?>
-                    </span>
-                <?php endforeach; ?>
-            </div>
-            <?php endif; ?>
-        </div>
-        <div class="chart-body-area">
-            <p class="placeholder-text">[ Espace réservé pour l'affichage du graphe ]</p>
-        </div>
-    </div>
-</div>
-<?php endif; ?>
 
-<!-- ACTION BUTTONS -->
+<!-- bouton illi fehom actions -->
 <?php if (!empty($config['actions'])): ?>
+<!-- nchouf ll cas mtaa admin wala le -->
 <div class="row <?= $isAdmin ? 'row-actions-6' : 'row-actions' ?>">
     <?php foreach ($config['actions'] as $action): ?>
     <a href="<?= htmlspecialchars($action['href'] ?? '#') ?>" class="action-card">
@@ -90,19 +81,3 @@ $rowClass     = $hasBigStats ? 'row-stats-big' : 'row-actions';
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
-
-<!-- NOTIFICATION -->
-<a href="notifications.php" class="notif-row">
-    <div class="notif-left">
-        <div class="notif-icon">
-            <i class="ti ti-bell" aria-hidden="true"></i>
-        </div>
-        <div>
-            <div class="notif-text">Notification</div>
-            <div class="notif-sub">Aucune nouvelle notification</div>
-        </div>
-    </div>
-    <div class="notif-arrow">
-        <i class="ti ti-chevron-right" aria-hidden="true"></i>
-    </div>
-</a>

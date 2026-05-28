@@ -1,8 +1,8 @@
-<!-- components/hero.php — Hero + Profil (générique par rôle) -->
+<!-- profile + role -->
 <head>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/forms.css">
-    <link rel="stylesheet" href="/css/notifications.css">
+  
 </head>
 <!-- HERO SECTION -->
 <section class="hero">
@@ -20,7 +20,7 @@
     </div>
 </section>
 
-<!-- PROFILE CARD — Étudiant -->
+<!-- profil etudiant -->
 <?php if ($config['role'] === 'Étudiant'): ?>
 
 <div class="row row-full">
@@ -33,7 +33,7 @@
     </div>
 </div>
 
-<!-- PROFILE CARD — Enseignant -->
+<!-- profil enseignant -->
 <?php elseif ($config['role'] === 'Enseignant'):
     $activeClass = $config['profile']['selected_class'] ?? '—';
 ?>
@@ -46,7 +46,7 @@
                 <div class="profile-name"><?= htmlspecialchars($config['profile']['name']) ?></div>
                 <div class="prof-year"><?= htmlspecialchars($config['profile']['year']) ?></div>
             </div>
-
+            <!-- class selector form : bch ykoun fiha select li fih les classes illi y3alim fihom lenseignant w ken ybadel classe ysubmiti le formulaire w yredireciti lel page home m3a class selectionnée fel query string -->
             <form class="class-selector-form" method="GET" action="">
                 <input type="hidden" name="page" value="home">
                 <div class="select-wrapper">

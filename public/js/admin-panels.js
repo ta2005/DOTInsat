@@ -1,3 +1,6 @@
+
+//gestion reclamation admin 
+
 function ouvrirApprouver(id) {
     fermerPanels(id);
     const p = document.getElementById('panel-approuver-' + id);

@@ -29,6 +29,7 @@ return [
     'actions' => [
         ['icon' => 'ti-users',          'label' => 'Gestion Enseignants', 'href' => '/?page=ens_manage'],
         ['icon' => 'ti-school',         'label' => 'Gestion Étudiants',   'href' => '/?page=etu_manage'],
+        ['icon' => 'ti-message-report', 'label' => 'Réclamations',        'href' => '/?page=reclamations'],
         ['icon' => 'ti-clipboard-list', 'label' => 'Demandes',            'href' => '/?page=demandes'],
         ['icon' => 'ti-news',           'label' => 'Blog',                'href' => '/?page=forum'],
     ],

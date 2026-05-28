@@ -331,4 +331,21 @@ class ReclamationRepository extends Repository
             WHERE id = :id
         ")->execute([':raison' => $raison, ':id' => $id]);
     }
+
+
+    public function getStatutLabels(): array
+{
+    if (!$this->isConnected()) return [];
+
+    $stmt = $this->db->query("
+        SELECT statut::TEXT AS statut, label, classe
+        FROM statut_reclamation_label
+        ORDER BY statut
+    ");
+
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Indexé par statut pour un accès direct : $labels['EN_ATTENTE']
+    return array_column($rows, null, 'statut');
+}
 }
