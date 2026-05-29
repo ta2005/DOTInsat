@@ -351,6 +351,82 @@ $routes = [
             ROLE_ADMIN
         ]
     ],
+
+    [
+        'page'       => 'groupe_manage',
+        'controller' => 'AdminGroupeController',
+        'method'     => 'index',
+        'http'       => 'GET',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    [
+        'page'       => 'groupe_create',
+        'controller' => 'AdminGroupeController',
+        'method'     => 'create',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    [
+        'page'       => 'groupe_add_member',
+        'controller' => 'AdminGroupeController',
+        'method'     => 'addMember',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    [
+        'page'       => 'groupe_remove_member',
+        'controller' => 'AdminGroupeController',
+        'method'     => 'removeMember',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    [
+        'page'       => 'groupe_delete',
+        'controller' => 'AdminGroupeController',
+        'method'     => 'destroy',
+        'http'       => 'POST',
+        'roles'      => [ROLE_ADMIN]
+    ],
+
+    [
+        'page'       => 'join-group',
+        'controller' => 'ForumController',
+        'method'     => 'joinGroup',
+        'http'       => 'POST',
+        'roles'      => [
+            ROLE_ETUDIANT,
+            ROLE_PROFESSEUR,
+            ROLE_ADMIN
+        ]
+    ],
+
+    [
+        'page'       => 'leave-group',
+        'controller' => 'ForumController',
+        'method'     => 'leaveGroup',
+        'http'       => 'POST',
+        'roles'      => [
+            ROLE_ETUDIANT,
+            ROLE_PROFESSEUR,
+            ROLE_ADMIN
+        ]
+    ],
+
+    [
+        'page'       => 'delete-post',
+        'controller' => 'ForumController',
+        'method'     => 'deletePost',
+        'http'       => 'POST',
+        'roles'      => [
+            ROLE_ETUDIANT,
+            ROLE_PROFESSEUR,
+            ROLE_ADMIN
+        ]
+    ],
 ];
 
 //hedhi guard ta3 authentication, tchecki ken l'utilisateur ma3andouch session w ma3andouch cookies sahin, yredirectioni l login

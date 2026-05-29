@@ -18,6 +18,7 @@ return [
         ['label' => 'Blog',                'href' => '/?page=forum'],
         ['label' => 'Gestion Enseignants', 'href' => '/?page=ens_manage'],
         ['label' => 'Gestion Étudiants',   'href' => '/?page=etu_manage'],
+        ['label' => 'Gestion Groupes',     'href' => '/?page=groupe_manage'],
         ['label' => 'Demandes',            'href' => '/?page=demandes'],
         ['label' => 'Réclamations',        'href' => '/?page=reclamations'],
     ],
@@ -30,6 +31,7 @@ return [
     'actions' => [
         ['icon' => 'ti-users',          'label' => 'Gestion Enseignants', 'href' => '/?page=ens_manage'],
         ['icon' => 'ti-school',         'label' => 'Gestion Étudiants',   'href' => '/?page=etu_manage'],
+        ['icon' => 'ti-users-group',    'label' => 'Gestion Groupes',     'href' => '/?page=groupe_manage'],
         ['icon' => 'ti-message-report', 'label' => 'Réclamations',        'href' => '/?page=reclamations'],
         ['icon' => 'ti-clipboard-list', 'label' => 'Demandes',            'href' => '/?page=demandes'],
         ['icon' => 'ti-news',           'label' => 'Blog',                'href' => '/?page=forum'],
