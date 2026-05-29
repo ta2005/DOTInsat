@@ -16,7 +16,7 @@ unset($_SESSION['flash']);
 </div>
 <?php endif; ?>
 
-<!-- EN-TÊTE PAGE -->
+<!-- header -->
 <div class="form-page-header">
     <div class="form-page-icon">
         <i class="ti ti-file-description" aria-hidden="true"></i>
@@ -29,7 +29,7 @@ unset($_SESSION['flash']);
 
 <form class="card form-card" method="POST" action="/?page=save-demande">
 
-    <!-- TYPE DE DEMANDE -->
+    <!-- type demande -->
     <div class="form-section">
         <div class="form-section-label">
             <i class="ti ti-list-details"></i> Type de demande
@@ -56,7 +56,7 @@ unset($_SESSION['flash']);
         </div>
     </div>
 
-    <!-- COMMENTAIRE -->
+    <!-- commentaire -->
     <div class="form-section">
         <div class="form-section-label">
             <i class="ti ti-message"></i> Commentaire
@@ -69,7 +69,7 @@ unset($_SESSION['flash']);
         </div>
     </div>
 
-    <!-- ACTIONS -->
+    <!-- Aaction -->
     <div class="form-actions">
         <a href="/?page=home" class="form-btn-secondary">
             <i class="ti ti-arrow-left"></i> Annuler
@@ -81,11 +81,9 @@ unset($_SESSION['flash']);
 
 </form>
 
-<!-- ═══════════════════════════════════════════════════════
-     MES DEMANDES — historique de l'étudiant
-═══════════════════════════════════════════════════════ -->
+<!-- Historique des demandes ->
 <?php
-$statutConfig = [
+$statutConfig = [s
     'EN_ATTENTE' => ['label' => 'En attente', 'class' => 'badge--yellow'],
     'ACCEPTEE'   => ['label' => 'Acceptée',   'class' => 'badge--green'],
     'REFUSEE'    => ['label' => 'Refusée',    'class' => 'badge--red'],

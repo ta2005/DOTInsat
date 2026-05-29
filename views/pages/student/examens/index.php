@@ -5,7 +5,7 @@ $config = require BASE_PATH . '/config/etudiant.php';
 require BASE_PATH . '/views/layouts/header.php';
 
 ?>
-
+<!-- Page des examens -->
 <div class="wrap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <div class="form-page-header">
@@ -19,7 +19,7 @@ require BASE_PATH . '/views/layouts/header.php';
     </div>
 
     <div class="row row-actions">
-
+        <!-- actions rapides -->
         <a href="/?page=calcul-moyenne" class="action-card">
             <i class="ti ti-calculator" aria-hidden="true"></i>
             <span class="action-label">Calculer moyenne</span>

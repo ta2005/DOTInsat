@@ -19,7 +19,9 @@
 
     <main class="login-main">
 
-        <?php if (!empty($error)): ?>
+        <?php 
+        // ken fama error mta3 login 
+        if (!empty($error)): ?>
         <div class="flash flash--error">
             <i class="ti ti-circle-x"></i>
             <?= htmlspecialchars($error) ?>
@@ -36,6 +38,9 @@
             </div>
         </div>
 
+
+        
+        <!-- methode post bch yekhou les donne yaayet ll page de traitement mtaa login -->
         <form class="card form-card login-form" method="POST" action="/?page=do-login">
 
             <div class="form-section">
@@ -56,7 +61,7 @@
                     <div class="password-wrapper">
                         <input class="form-input password-input" type="password"
                                id="password" name="password"
-                               placeholder="••••••••" required>
+                               placeholder="....." required>
                         <button type="button" class="password-toggle" onclick="togglePassword()">
                             <i class="ti ti-eye" id="eye-icon"></i>
                         </button>

@@ -9,6 +9,7 @@ return [
     'role' => 'Administrateur',
     'profile' => [
         'name'  => $profile_row ? $profile_row['prenom'] . ' ' . $profile_row['nom'] : 'Administrateur',
+        // ken aandouch title nhotou administrateur
         'title' => $profile_row['titre'] ?? 'Administrateur',
         'year'  => '2025-2026',
     ],
@@ -25,7 +26,7 @@ return [
         ['big' => true, 'value' => (string)($stats['demandes_attente'] ?? 0),       'label' => 'Demandes non traitées'],
         ['big' => true, 'value' => ($stats['taux_reussite']            ?? 0) . '%', 'label' => 'Taux de réussite global'],
     ],
-    'chart'   => null,
+   
     'actions' => [
         ['icon' => 'ti-users',          'label' => 'Gestion Enseignants', 'href' => '/?page=ens_manage'],
         ['icon' => 'ti-school',         'label' => 'Gestion Étudiants',   'href' => '/?page=etu_manage'],

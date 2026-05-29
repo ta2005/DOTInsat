@@ -13,7 +13,7 @@ class AdminRepository extends Repository
         $reclamations_attente = (int)$this->db->query("SELECT COUNT(*) FROM reclamation WHERE statut = 'EN_ATTENTE'")->fetchColumn();
         $nb_profs             = (int)$this->db->query("SELECT COUNT(*) FROM professeur")->fetchColumn();
         $nb_etudiants         = (int)$this->db->query("SELECT COUNT(*) FROM etudiant")->fetchColumn();
-
+        //taux illi nejhou
         $taux = $this->db->query("
             SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE note >= 10) / NULLIF(COUNT(*),0), 0)
             FROM controle
@@ -37,5 +37,6 @@ class AdminRepository extends Repository
         WHERE u.id = :id
     ");
     $stmt->execute([':id' => $userId]);
+    // retouurner tableau associative
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;}
 }

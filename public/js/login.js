@@ -1,3 +1,6 @@
+
+//fonction pour afficher ou cacher le mot de passe
+
 function togglePassword() {
     const input = document.getElementById('password');
     const icon  = document.getElementById('eye-icon');
