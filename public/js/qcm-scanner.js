@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// public/js/qcm-scanner.js — Ultra-Accuracy OMR Production Build (Global Matrix Anchor Fix)
+// public/js/qcm-scanner.js — OMR
 document.addEventListener('DOMContentLoaded', () => {
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileFallbackInput');
@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ══════════════════════════════════════════════════════════
-    //  CORE HIGH-ACCURACY OMR ENGINE
+    //  CORE OMR ENGINE
     // ══════════════════════════════════════════════════════════
     async function executeOpticalBubbleAnalysis(imgSource) {
         pillStatus.innerText = 'Processing Structure…';
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let blurred = new cv.Mat();
         let thresh = new cv.Mat();
 
-        // High-fidelity isolation filtering
+        // isolation filtering
         cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
         cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
         cv.adaptiveThreshold(blurred, thresh, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 25, 7);

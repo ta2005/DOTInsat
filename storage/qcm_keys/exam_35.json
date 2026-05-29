@@ -1,7 +1,7 @@
 {
-    "exam_id": 27,
-    "total_questions": 12,
-    "choices_per_question": 2,
+    "exam_id": 35,
+    "total_questions": 10,
+    "choices_per_question": 4,
     "grading_matrix": {
         "q1": {
             "correct_choice": "A",
@@ -40,14 +40,6 @@
             "weight": 1
         },
         "q10": {
-            "correct_choice": "A",
-            "weight": 1
-        },
-        "q11": {
-            "correct_choice": "A",
-            "weight": 1
-        },
-        "q12": {
             "correct_choice": "A",
             "weight": 1
         }
