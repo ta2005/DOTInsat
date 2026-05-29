@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pillStatus = document.getElementById('pillStatus');
     const lblScore = document.getElementById('lblCalculatedScore');
 
-    const alphabetOptions = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+    const alphabetOptions = ['A', 'B', 'C', 'D', 'E'];
 
     // ── Drag & Drop Handlers ───────────────────────────────────
     ['dragenter', 'dragover'].forEach(name =>
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let totalGridW = maxGridX - minGridX;
         let columnBlockWidth = totalGridW / cols;
 
-        // ── Step 3: CRITICAL FIX - Build Global Column Anchors ──
+        // ── Step 3: Build Global Column Anchors ──
         // This calculates the horizontal positions using all bubbles on the page at once
         const globalColumnAnchors = [];
         for (let cIdx = 0; cIdx < cols; cIdx++) {
@@ -391,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const q = rowIdx * cols + colIdx + 1;
                 if (q > mockTotalQuestions) break;
 
-                // Load calibrated un-shakable column layout coordinates
+                // Load calibrated column layout coordinates
                 const anchorData = globalColumnAnchors[colIdx];
                 const choiceEvaluations = [];
 
