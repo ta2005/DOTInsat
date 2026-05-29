@@ -34,7 +34,7 @@ class AdminController
         $config    = require BASE_PATH . '/config/administrateur.php';
         $demandes  = $this->demandeRepo->getAll();
 
-        include BASE_PATH . '/views/layouts/header.php';
+        
         include BASE_PATH . '/views/pages/admin/demandes.php';
     }
 
@@ -45,7 +45,7 @@ class AdminController
         $config       = require BASE_PATH . '/config/administrateur.php';
         $reclamations = $this->reclamationRepo->getAll();
 
-        include BASE_PATH . '/views/layouts/header.php';
+        
         include BASE_PATH . '/views/pages/admin/reclamations.php';
     }
 

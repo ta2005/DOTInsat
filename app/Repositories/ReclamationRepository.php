@@ -5,9 +5,7 @@ require_once BASE_PATH . '/app/Repositories/Repository.php';
 
 class ReclamationRepository extends Repository
 {
-    // -------------------------------------------------------------------------
-    // Toutes les réclamations (admin : toutes ; prof : filtrées par prof)
-    // -------------------------------------------------------------------------
+
     public function getAll(): array
     {
         if (!$this->isConnected()) return [];
@@ -49,9 +47,7 @@ class ReclamationRepository extends Repository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // -------------------------------------------------------------------------
-    // Réclamations filtrées pour un professeur donné
-    // -------------------------------------------------------------------------
+
     public function getAllForProf(int $profId): array
     {
         if (!$this->isConnected()) return [];
@@ -89,9 +85,7 @@ class ReclamationRepository extends Repository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // -------------------------------------------------------------------------
-    // Réclamation par ID
-    // -------------------------------------------------------------------------
+
     public function getById(int $id): ?array
     {
         if (!$this->isConnected()) return null;
@@ -129,9 +123,7 @@ class ReclamationRepository extends Repository
         return $row ?: null;
     }
 
-    // -------------------------------------------------------------------------
-    // Matières de l'étudiant connecté (pour la page réclamation étudiant)
-    // -------------------------------------------------------------------------
+    //matiere etudiants connectée
     public function getMatieres(): array
     {
         if (!$this->isConnected()) return [];
@@ -168,10 +160,7 @@ class ReclamationRepository extends Repository
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
-    // -------------------------------------------------------------------------
-    // Matières avec notes par type — utilisé par config/reclamation.php (vue étudiant)
-    // Remplace la requête SQL directe de l'ancien config/reclamation.php
-    // -------------------------------------------------------------------------
+    // matire etudiant connecté avec les notes (ds, examen, tp)
     public function getMatieresAvecNotes(int $etudiantId): array
     {
         if (!$this->isConnected()) return [];
@@ -206,10 +195,7 @@ class ReclamationRepository extends Repository
         ], $rows);
     }
 
-
-    // -------------------------------------------------------------------------
-    // Réclamations d'un étudiant donné (pour la liste "mes réclamations")
-    // -------------------------------------------------------------------------
+    //pour lister les reclamations d'un etudiant connecté
     public function getMesReclamations(int $etudiantId): array
     {
         if (!$this->isConnected()) return [];
@@ -235,9 +221,9 @@ class ReclamationRepository extends Repository
         $stmt->execute([':etudiant_id' => $etudiantId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
-    // -------------------------------------------------------------------------
-    // Types de contrôle par matière pour un étudiant
-    // -------------------------------------------------------------------------
+
+
+    // types de controles disponibles pour une matiere donnée (pour un etudiant donné)
     public function getTypesByMatiere(int $matiereId, int $etudiantId): array
     {
         if (!$this->isConnected()) return [];
@@ -262,9 +248,8 @@ class ReclamationRepository extends Repository
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
-    // -------------------------------------------------------------------------
-    // CRUD
-    // -------------------------------------------------------------------------
+
+    // pour créer une nouvelle réclamation (étudiant connecté)
     public function create(array $data): bool
     {
         if (!$this->isConnected()) return false;
@@ -281,6 +266,7 @@ class ReclamationRepository extends Repository
         ]);
     }
 
+    // pour supprimer une réclamation (admin ou prof connecté)
     public function delete(int $id): bool
     {
         if (!$this->isConnected()) return false;
@@ -288,6 +274,8 @@ class ReclamationRepository extends Repository
         return $this->db->prepare("DELETE FROM reclamation WHERE id = ?")
                         ->execute([$id]);
     }
+
+    // pour mettre à jour le statut d'une réclamation (admin ou prof connecté)
 
     public function updateStatut(int $id, string $statut): bool
     {
@@ -298,6 +286,8 @@ class ReclamationRepository extends Repository
         )->execute([$statut, $id]);
     }
 
+
+    // pour approuver une réclamation par le prof connecté (met à jour aussi la note dans controle)
     public function approuverParProf(int $id, float $nouvelleNote): bool
     {
         if (!$this->isConnected()) return false;
@@ -320,6 +310,8 @@ class ReclamationRepository extends Repository
         ")->execute([':note' => $nouvelleNote, ':reclamation_id' => $id]);
     }
 
+
+    // pour refuser une réclamation par le prof connecté (enregistre aussi la raison du refus)
     public function refuserParProf(int $id, string $raison): bool
     {
         if (!$this->isConnected()) return false;
@@ -333,6 +325,8 @@ class ReclamationRepository extends Repository
     }
 
 
+
+    // bech na3tiw les labels w les classes css mtaa les statuts 
     public function getStatutLabels(): array
 {
     if (!$this->isConnected()) return [];
@@ -345,7 +339,7 @@ class ReclamationRepository extends Repository
 
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Indexé par statut pour un accès direct : $labels['EN_ATTENTE']
+    // indexer par statut pour un accès plus facile dans les vues
     return array_column($rows, null, 'statut');
 }
 }

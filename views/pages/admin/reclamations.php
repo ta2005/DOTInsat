@@ -1,13 +1,13 @@
-<?php
-// Récupérer les réclamations depuis le contrôleur
-?><div class="page-content"><?php
+<?php require_once __DIR__ . '/../../layouts/header.php'; ?>
+<div class="page-content"><?php
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
+
 $en_attente = array_values(array_filter($reclamations, fn($r) => strtoupper($r['statut']) === 'EN_ATTENTE'));
 $traitees   = array_values(array_filter($reclamations, fn($r) => strtoupper($r['statut']) !== 'EN_ATTENTE'));
-//h
+
 $statut_labels = [
     'EN_ATTENTE'                  => ['label' => 'En attente',           'class' => 'badge--yellow'],
     'ACCEPTEE_PAR_LE_PROFESSEUR'  => ['label' => 'Acceptée par le prof', 'class' => 'badge--green'],
@@ -67,7 +67,7 @@ $statut_labels = [
 
     <div class="recl-actions">
         <button type="button" class="form-btn-primary" onclick="ouvrirApprouver(<?= $r['id'] ?>)">
-            <i class="ti ti-check"></i> Approuver &amp; Transmettre
+            <i class="ti ti-check"></i> Approuver et Transmettre
         </button>
         <button type="button" class="form-btn-secondary form-btn-secondary--red" onclick="ouvrirRefuser(<?= $r['id'] ?>)">
             <i class="ti ti-x"></i> Refuser

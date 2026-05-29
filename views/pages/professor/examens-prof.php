@@ -1,17 +1,6 @@
-<?php
-// illi fih les 3 bouttons : dashboard, create qcm, scan qcm
 
-$config = [
-    'nav' => [
-        ['href' => '/?page=home',              'label' => 'Accueil'],
-        ['href' => '/?page=forum',             'label' => 'Blog'],
-        ['href' => '/?page=examens-prof',      'label' => 'Examens'],
-        ['href' => '/?page=prof-reclamations', 'label' => 'Réclamations'],
-    ]
-];
-?>
 
-<?php require BASE_PATH . '/views/layouts/header.php'; ?>
+
 
 <link rel="stylesheet" href="<?= BASE_URL ?>/css/prof-base.css">
 

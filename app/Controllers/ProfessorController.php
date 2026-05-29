@@ -18,11 +18,7 @@ class ProfessorController
         $this->profRepo = new ProfesseurRepository($this->pdo);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=home (professeur)
-    |--------------------------------------------------------------------------
-    */
+ 
     public function home(): void
     {
         $profRepo = $this->profRepo;
@@ -31,32 +27,16 @@ class ProfessorController
         require BASE_PATH . '/views/pages/home.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=prof-reclamations
-    |--------------------------------------------------------------------------
-    */
+
     public function reclamations(): void
-    {
+    {   $profRepo = $this->profRepo;
+        $ensRepo  = $this->ensRepo;
         $reclamations = $this->repo->getAll();
-
-        $config = [
-            'nav' => [
-                ['label' => 'Home',         'href' => '/?page=home'],
-                ['label' => 'Blog',         'href' => '/?page=forum'],
-                ['label' => 'Examens',      'href' => '/?page=examens-prof'],
-                ['label' => 'Réclamations', 'href' => '/?page=prof-reclamations', 'active' => true],
-            ],
-        ];
-
+        $config       = require BASE_PATH . '/config/enseignant.php';
+        
         require BASE_PATH . '/views/pages/professor/prof_reclamations.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | POST ?page=prof-reclamation-action  (approuver ou refuser)
-    |--------------------------------------------------------------------------
-    */
     public function reclamationAction(): void
     {
         $action = $_POST['action'] ?? '';
@@ -106,13 +86,11 @@ class ProfessorController
         exit;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=examens-prof
-    |--------------------------------------------------------------------------
-    */
     public function examens(): void
-    {
+    {   $profRepo = $this->profRepo;
+        $ensRepo  = $this->ensRepo;
+        $config   = require BASE_PATH . '/config/enseignant.php';
+        require BASE_PATH . '/views/layouts/header.php'; 
         require BASE_PATH . '/views/pages/professor/examens-prof.php';
     }
 }

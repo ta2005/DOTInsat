@@ -1,4 +1,5 @@
 
+<?php require_once __DIR__ . '/../../layouts/header.php'; ?>
 <link rel="stylesheet" href="/css/etudiants.css">
 <link rel="stylesheet" href="/css/enseignants.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -58,7 +59,7 @@
         </button>
     </div>
 
-    <!-- ══ TABLE ══════════════════════════════════════════════════════════ -->
+    <!-- table -->
     <?php if (empty($profs)): ?>
     <div class="etu-empty">
         <i class="ti ti-user-off"></i>

@@ -1,5 +1,5 @@
 <?php
-// views/pages/admin/demandes.php
+require_once __DIR__ . '/../../layouts/header.php'; 
 ?><div class="page-content"><?php
 
 $flash = $_SESSION['flash'] ?? null;
@@ -31,7 +31,7 @@ $type_labels = [
 ];
 ?>
 
-<!-- FLASH -->
+<!-- flash -->
 <?php if ($flash): ?>
 <div class="flash flash--<?= $flash['type'] ?>">
     <i class="ti <?= $flash['type'] === 'success' ? 'ti-circle-check' : 'ti-circle-x' ?>"></i>
@@ -39,7 +39,7 @@ $type_labels = [
 </div>
 <?php endif; ?>
 
-<!-- EN-TÊTE -->
+<!-- header -->
 <div class="form-page-header">
     <div class="form-page-icon">
         <i class="ti ti-clipboard-list" aria-hidden="true"></i>
@@ -50,7 +50,7 @@ $type_labels = [
     </div>
 </div>
 
-<!-- ── DEMANDES EN ATTENTE ─────────────────────────────────────── -->
+<!-- en atente -->
 <?php foreach ($en_attente as $d): ?>
 <?php $icon  = $type_icons[$d['type']]   ?? 'ti-file-description'; ?>
 <?php $label = $type_labels[$d['type']]  ?? $d['type']; ?>
@@ -87,7 +87,7 @@ $type_labels = [
         </button>
     </div>
 
-    <!-- PANEL APPROUVER -->
+    <!-- panel approuver -->
     <div id="panel-approuver-<?= $d['id'] ?>" class="recl-panel recl-panel--green" style="display:none;">
         <form method="POST" action="/?page=update-demande-status">
             <input type="hidden" name="id"     value="<?= $d['id'] ?>">
@@ -105,7 +105,7 @@ $type_labels = [
         </form>
     </div>
 
-    <!-- PANEL REFUSER -->
+    <!-- panel refuser -->
     <div id="panel-refuser-<?= $d['id'] ?>" class="recl-panel recl-panel--red" style="display:none;">
         <form method="POST" action="/?page=update-demande-status">
             <input type="hidden" name="id"     value="<?= $d['id'] ?>">
@@ -132,7 +132,7 @@ $type_labels = [
 </div>
 <?php endif; ?>
 
-<!-- ── HISTORIQUE ──────────────────────────────────────────────── -->
+<!-- historique -->
 <?php if (!empty($traitees)): ?>
 <div class="recl-section-title recl-section-title--muted" style="margin-top:32px;">
     <i class="ti ti-archive"></i> Demandes traitées

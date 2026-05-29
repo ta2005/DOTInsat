@@ -1,7 +1,6 @@
 <?php
-// views/pages/professor/prof_reclamations.php
+require_once __DIR__ . '/../../layouts/header.php';
 
-$notifications = []; // injecté par le controller via NotificationRepository si nécessaire
 $flash         = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
@@ -25,7 +24,7 @@ $statut_labels = [
 ];
 ?>
 
-<?php require_once __DIR__ . '/../../layouts/header.php'; ?>
+
 
 <div class="wrap">
 
