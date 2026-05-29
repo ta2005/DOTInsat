@@ -8,39 +8,22 @@ class NotesController
 
 
     public function calculMoyenne(): void
-    {   
+    {   $etudiantRepo = new EtudiantRepository($this->pdo);
         $config = require BASE_PATH . '/config/etudiant.php';
         $filiereRaw = strtoupper(trim($_SESSION['filiere'] ?? ''));
-
-        preg_match('/^([A-Z]+)/', $filiereRaw, $mF);
-        $filiere = $mF[1] ?? '';
-
-        preg_match('/^[A-Z]+(\d)/', $filiereRaw, $mN);
-        $niveau = isset($mN[1]) ? (int)$mN[1] : 0;
-
-        $filieresAutorisees = ['GL', 'RT', 'IIA', 'IMI'];
-
-        if (!in_array($filiere, $filieresAutorisees)) {
-            die('Filière non supportée : ' . htmlspecialchars($filiereRaw));
-        }
-
-        if ($niveau < 1 || $niveau > 5) {
-            die('Niveau non supporté : ' . htmlspecialchars((string)$niveau));
-        }
-
+        $filiereRaw = preg_replace('/-.*$/', '', $filiereRaw);
+        $filiere = rtrim($filiereRaw, '0123456789');
+        $niveau  = (int)substr($filiereRaw, strlen($filiere));
+        $anneeAffichage = $_SESSION['annee'] ?? '';
         $pdo = $this->pdo;
 
         require BASE_PATH . '/views/pages/student/examens/calculator.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=mes-notes
-    |--------------------------------------------------------------------------
-    */
+  
     public function mesNotes(): void
     {
-
+        $etudiantRepo = new EtudiantRepository($this->pdo);
         $config = require BASE_PATH . '/config/etudiant.php';
         $pdo = $this->pdo;
 

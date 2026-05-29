@@ -105,7 +105,7 @@ $labelStatut = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes Notes — INSAT</title>
 
-    <!-- CSS GLOBAL -->
+
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/forms.css">
     <link rel="stylesheet" href="/css/notifications.css">

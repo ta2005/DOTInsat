@@ -81,9 +81,7 @@ unset($_SESSION['flash']);
 
 </form>
 
-<!-- ═══════════════════════════════════════════════════════
-     MES DEMANDES — historique de l'étudiant
-═══════════════════════════════════════════════════════ -->
+<!-- historique -->
 <?php
 $statutConfig = [
     'EN_ATTENTE' => ['label' => 'En attente', 'class' => 'badge--yellow'],

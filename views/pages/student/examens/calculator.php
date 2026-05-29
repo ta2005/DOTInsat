@@ -1,20 +1,8 @@
 <?php
 
-
 require_once BASE_PATH . '/app/Repositories/MatiereRepository.php';
 
-// $filiere et $niveau sont injectés par HomeController::calculMoyenne()
-// Ne pas les recalculer ici pour éviter d'utiliser $_SESSION['annee'] (= année scolaire ex: 2024)
-if (!isset($filiere) || !isset($niveau)) {
-    $filiereRaw = strtoupper(trim($_SESSION['filiere'] ?? ''));
-    preg_match('/^([A-Z]+)/', $filiereRaw, $mF);
-    $filiere = $mF[1] ?? 'GL';
-    preg_match('/^[A-Z]+(\d)/', $filiereRaw, $mN);
-    $niveau = isset($mN[1]) ? (int)$mN[1] : 2;
-}
 
-// Année scolaire pour affichage uniquement
-$anneeAffichage = $_SESSION['annee'] ?? '';
 
 $matiereRepo = new MatiereRepository($pdo);
 $matieresS1  = $matiereRepo->getMatieres($filiere, $niveau, 1);
@@ -32,7 +20,7 @@ if (!empty($_COOKIE['insat_notes'])) {
         $notesEnregistrees = $decoded;
     }
 }
-=
+
 
 function getNoteFromCookie(string $name, array $notes): ?float
 {

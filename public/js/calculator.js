@@ -1,15 +1,11 @@
-// public/js/calculator.js
-// Sauvegarde cookie + recalcul dynamique côté client
-// Le calcul principal est fait en PHP au chargement.
-// Le JS recalcule en temps réel pendant la saisie
-// et sauvegarde dans le cookie insat_notes.
-
+// bch nhot cookies bach nsaviw bihom les notes
 const setCookie = (name, value, days = 30) => {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
     document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/`;
 };
 
+// nsaviw les notes
 const sauvegarderNotes = () => {
     const notes = {};
     document.querySelectorAll('.matiere').forEach(input => {
@@ -20,15 +16,16 @@ const sauvegarderNotes = () => {
     setCookie('insat_notes', JSON.stringify(notes), 30);
 };
 
+// nrecuperiw les notes mll cookies
 const recupererNote = (input) => {
     if (!input) return null;
     const v = input.value.trim();
     if (v === '') return null;
     const n = parseFloat(v);
     if (isNaN(n)) return null;
-    return Math.min(20, Math.max(0, n));
+    return n;
 };
-
+//formule coefficients des matieres
 const calculerMatiere = (ds, tp, ex) => {
     if (ds !== null && tp !== null && ex !== null) return ds * 0.2 + tp * 0.2 + ex * 0.6;
     if (ds === null && tp !== null && ex !== null) return tp * 0.3 + ex * 0.7;

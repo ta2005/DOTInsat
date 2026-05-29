@@ -1,3 +1,4 @@
+// show/hide form de demande 
 function show(id) {
     const el = document.getElementById(id);
     el.style.display = 'block';
@@ -8,6 +9,8 @@ function hide(id) {
     el.classList.remove('form-slide-in');
     setTimeout(() => el.style.display = 'none', 200);
 }
+
+// show/hide input autre
 function toggleAutre(sel) {
     const input = document.getElementById('dem-autre');
     if (sel.value === 'AUTRES') {
