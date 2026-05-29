@@ -18,23 +18,16 @@ class AdminController
         $this->adminRepo       = new AdminRepository($this->pdo);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=home (admin)
-    |--------------------------------------------------------------------------
-    */
+    // aayetelha fll dispatcherController
     public function home(): void
     {
         $adminRepo = $this->adminRepo;
+        // fll config mtaa ll admin fama des infos illi yest3mlhom fll home page
         $config    = require BASE_PATH . '/config/administrateur.php';
         require BASE_PATH . '/views/pages/home.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=demandes
-    |--------------------------------------------------------------------------
-    */
+ 
     public function demandes(): void
     {
         $adminRepo = $this->adminRepo;
@@ -45,11 +38,7 @@ class AdminController
         include BASE_PATH . '/views/pages/admin/demandes.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=reclamations
-    |--------------------------------------------------------------------------
-    */
+
     public function reclamations(): void
     {
         $adminRepo    = $this->adminRepo;
@@ -60,11 +49,7 @@ class AdminController
         include BASE_PATH . '/views/pages/admin/reclamations.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | POST ?page=update-demande-status
-    |--------------------------------------------------------------------------
-    */
+
     public function updateDemandeStatus(): void
     {
         $id     = (int)($_POST['id']     ?? 0);
@@ -82,11 +67,7 @@ class AdminController
         exit;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | POST ?page=update-reclamation-status
-    |--------------------------------------------------------------------------
-    */
+    
     public function updateReclamationStatus(): void
     {
         $id     = (int)($_POST['id']     ?? 0);

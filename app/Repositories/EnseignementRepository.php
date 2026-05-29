@@ -9,9 +9,7 @@ class EnseignementRepository
         $this->db = $db;
     }
 
-    /**
-     * Retourne les enseignements d'un professeur avec les infos du niveau scolaire.
-     */
+    // retourne les enseignements d'un prof 
     public function getByProfesseur(int $profId): array
     {
         $stmt = $this->db->prepare("
@@ -31,10 +29,7 @@ class EnseignementRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Retourne les noms distincts des enseignements d'un professeur
-     * (pour le dropdown de sélection de classe).
-     */
+    // retourne juste les noms des enseignements d'un prof (pour le select de la page de gestion)
     public function getNomsByProfesseur(int $profId): array
     {
         $stmt = $this->db->prepare("
@@ -47,10 +42,7 @@ class EnseignementRepository
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    /**
-     * Retourne les stats (nb contrôles, meilleure note, moyenne)
-     * pour un professeur, filtré par enseignement si précisé.
-     */
+// retourne les stats d'un prof (nombre de controles, meilleure note, moyenne)
     public function getStatsByProfesseur(int $profId, ?int $enseignementId = null): array
     {
         $sql = "

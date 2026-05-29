@@ -1,6 +1,4 @@
-<?php
-// views/pages/admin/etudiants.php
-?>
+
 <link rel="stylesheet" href="/css/etudiants.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
@@ -197,7 +195,7 @@
     <!-- fassakh w badel -->
     <?php foreach ($etudiants as $e): ?>
 
-    <!-- ─── MODAL MODIFIER ─────────────────────────────────────────── -->
+    <!-- badel -->
     <div
         id="modal-edit-<?= $e['id'] ?>"
         class="etu-modal-backdrop"
@@ -218,7 +216,7 @@
                     <i class="ti ti-x"></i>
                 </button>
             </div>
-            // form modifier
+            <!-- form modifier -->
             <form
                 method="POST"
                 action="/?page=etu_manage_update"
@@ -578,7 +576,7 @@
 
     <?php else: ?>
 
-    
+    <!-- Classe non sélectionnée -->
     <div class="etu-welcome">
         <div class="etu-welcome-icon">
             <i class="ti ti-filter"></i>

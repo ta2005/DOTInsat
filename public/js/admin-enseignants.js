@@ -15,7 +15,7 @@
             const q = this.value.toLowerCase().trim();
             let n = 0;
             rows.forEach(row => {
-                const match = !q || (row.dataset.search || '').includes(q);// ken ma fiha hata 7aja (q vide) aw ken data-search fih q n'affichiha sinon n'khabiha
+                const match = !q || (row.dataset.search || '').includes(q);// ken ma fiha hata 7aja (q vide) aw ken data-search fih q n'affichiha sinon nkhabi 
                 row.style.display = match ? '' : 'none';
                 if (match) n++;
             });
