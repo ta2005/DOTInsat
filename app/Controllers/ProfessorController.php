@@ -65,15 +65,8 @@ class ProfessorController
 
         } elseif ($action === 'prof_refuser') {
 
-            $raison = trim($_POST['raison'] ?? '');
-
-            if ($raison === '') {
-                $_SESSION['flash'] = ['type' => 'error', 'msg' => 'La raison du refus est obligatoire.'];
-                header('Location: /?page=prof-reclamations');
-                exit;
-            }
-
-            $ok = $this->repo->refuserParProf($id, $raison);
+            
+            $ok = $this->repo->refuserParProf($id);
             $_SESSION['flash'] = $ok
                 ? ['type' => 'success', 'msg' => 'Réclamation refusée.']
                 : ['type' => 'error',   'msg' => 'Erreur lors du refus.'];

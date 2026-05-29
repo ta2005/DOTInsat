@@ -78,7 +78,7 @@ $statut_labels = [
     </div>
     <?php endif; ?>
 
-    <!-- HEADER PAGE -->
+    <!-- header-->
     <div class="form-page-header">
 
         <div class="form-page-icon">
@@ -98,7 +98,7 @@ $statut_labels = [
 
     </div>
 
-    <!-- RECLAMATIONS A TRAITER -->
+    <!-- reclamations traitées -->
     <?php foreach ($a_traiter as $r): ?>
 
     <div class="card recl-card" id="recl-<?= $r['id'] ?>">
@@ -165,16 +165,16 @@ $statut_labels = [
 
         </div>
 
-        <!-- ACTIONS -->
+        <!-- action -->
         <div class="recl-actions">
 
             <button
                 type="button"
                 class="form-btn-primary"
-                onclick="ouvrirAccepter(<?= $r['id'] ?>)"
+                onclick="ouvrirApprouver(<?= $r['id'] ?>)"
             >
                 <i class="ti ti-check"></i>
-                Accepter &amp; Modifier la note
+                Accepter et Modifier la note
             </button>
 
             <button
@@ -188,9 +188,9 @@ $statut_labels = [
 
         </div>
 
-        <!-- PANEL ACCEPTER -->
+        <!-- accepter -->
         <div
-            id="panel-accepter-<?= $r['id'] ?>"
+            id="panel-approuver-<?= $r['id'] ?>"
             class="recl-panel recl-panel--green"
             style="display:none;"
         >
@@ -261,7 +261,7 @@ $statut_labels = [
 
         </div>
 
-        <!-- PANEL REFUSER -->
+        <!-- refuser -->
         <div
             id="panel-refuser-<?= $r['id'] ?>"
             class="recl-panel recl-panel--red"
@@ -286,23 +286,6 @@ $statut_labels = [
                 >
 
                 <div class="panel-inner">
-
-                    <div class="form-group">
-
-                        <label class="form-label">
-                            <i class="ti ti-message-x"></i>
-                            Raison du refus (obligatoire)
-                        </label>
-
-                        <textarea
-                            class="form-textarea"
-                            name="raison"
-                            rows="3"
-                            placeholder="Expliquez pourquoi la réclamation est refusée..."
-                            required
-                        ></textarea>
-
-                    </div>
 
                     <div class="panel-btns">
 
@@ -334,7 +317,7 @@ $statut_labels = [
 
     <?php endforeach; ?>
 
-    <!-- EMPTY -->
+    <!-- feregh -->
     <?php if (empty($a_traiter)): ?>
     <div class="empty-state">
 
@@ -347,7 +330,7 @@ $statut_labels = [
     </div>
     <?php endif; ?>
 
-    <!-- HISTORIQUE -->
+    <!-- historique -->
     <?php if (!empty($traitees)): ?>
 
     <div
@@ -407,9 +390,7 @@ $statut_labels = [
                 </span>
 
                 <span class="recl-val">
-                    <?= $r['note_actuelle'] ?>/20
-                    →
-                    <strong style="color:#4ade80">
+                    <strong >
                         <?= $r['note_nouvelle'] ?>/20
                     </strong>
                 </span>
@@ -418,21 +399,7 @@ $statut_labels = [
 
             <?php endif; ?>
 
-            <?php if (!empty($r['raison_refus'])): ?>
-
-            <div class="recl-info-row">
-
-                <span class="recl-label">
-                    Raison
-                </span>
-
-                <span class="recl-val">
-                    <?= htmlspecialchars($r['raison_refus']) ?>
-                </span>
-
-            </div>
-
-            <?php endif; ?>
+    
 
             <span class="recl-date">
                 <?= $r['date_soumission'] ?>
@@ -450,4 +417,4 @@ $statut_labels = [
 
 
 
-<script src="/js/prof-reclamations.js"></script>
+<script src="/js/admin-panels.js"></script>

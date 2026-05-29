@@ -312,16 +312,15 @@ class ReclamationRepository extends Repository
 
 
     // pour refuser une réclamation par le prof connecté (enregistre aussi la raison du refus)
-    public function refuserParProf(int $id, string $raison): bool
+    public function refuserParProf(int $id): bool
     {
         if (!$this->isConnected()) return false;
 
         return $this->db->prepare("
             UPDATE reclamation
-            SET statut       = 'REFUSEE_PAR_LE_PROFESSEUR'::statut_reclamation,
-                raison_refus = :raison
+            SET statut       = 'REFUSEE_PAR_LE_PROFESSEUR'::statut_reclamation
             WHERE id = :id
-        ")->execute([':raison' => $raison, ':id' => $id]);
+        ")->execute([ ':id' => $id]);
     }
 
 
