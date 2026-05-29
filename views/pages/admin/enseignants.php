@@ -1,14 +1,11 @@
-<?php
-// views/pages/admin/enseignants.php
-// Variables : $profs (array), $search (string), $flash (array|null), $config (array)
-?>
+
 <link rel="stylesheet" href="/css/etudiants.css">
 <link rel="stylesheet" href="/css/enseignants.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
 <div class="etu-page">
 
-    <!-- ══ FLASH ══════════════════════════════════════════════════════════ -->
+    <!-- message flash -->
     <?php if ($flash): ?>
     <div class="flash flash--<?= $flash['type'] ?>">
         <i class="ti <?= $flash['type'] === 'success' ? 'ti-circle-check' : 'ti-circle-x' ?>"></i>
@@ -16,7 +13,7 @@
     </div>
     <?php endif; ?>
 
-    <!-- ══ EN-TÊTE ════════════════════════════════════════════════════════ -->
+    <!-- header-->
     <div class="etu-header">
         <div class="etu-header-icon">
             <i class="ti ti-school"></i>
@@ -27,7 +24,7 @@
         </div>
     </div>
 
-    <!-- ══ BARRE DE RECHERCHE ═════════════════════════════════════════════ -->
+    <!-- barre de recherche -->
     <div class="ens-search-wrap">
         <i class="ti ti-search ens-search-icon"></i>
         <input
@@ -38,20 +35,22 @@
             value="<?= htmlspecialchars($search) ?>"
             autocomplete="off"
         >
-        <?php if (!empty($search)): ?>
+
+        <?php 
+        if (!empty($search)): ?>
         <a href="/?page=ens_manage" class="ens-search-clear" title="Effacer">
             <i class="ti ti-x"></i>
         </a>
         <?php endif; ?>
     </div>
 
-    <!-- ══ BARRE RÉSULTATS ════════════════════════════════════════════════ -->
+    <!-- result -->
     <div class="etu-list-header">
         <div class="etu-list-meta">
             <span id="ens-count" class="etu-count">
                 <?php $n = count($profs); ?>
                 <?= $n ?> enseignant<?= $n !== 1 ? 's' : '' ?>
-                <?= !empty($search) ? ' · « ' . htmlspecialchars($search) . ' »' : '' ?>
+               
             </span>
         </div>
         <button type="button" class="etu-btn-add ens-btn-add-top" onclick="ouvrirModal('modal-ajouter')">
@@ -75,7 +74,7 @@
                     <th>CIN</th>
                     <th>Nom complet</th>
                     <th>Email</th>
-                    <th>Classes &amp; Matières</th>
+                    <th>Classes et Matières</th>
                     <th class="etu-th-actions">Actions</th>
                 </tr>
             </thead>
@@ -84,6 +83,7 @@
                     $initiales   = mb_strtoupper(mb_substr($prof['prenom'], 0, 1) . mb_substr($prof['nom'], 0, 1));
                     $enseignements = $prof['enseignements'] ?? [];
                     $parClasse   = [];
+
                     foreach ($enseignements as $e) {
                         $parClasse[$e['classe'] ?? '—'][] = $e['matiere'] ?? '—';
                     }
@@ -149,10 +149,10 @@
         </table>
     </div>
 
-    <!-- ══ MODALS EDIT + DELETE ══════════════════════════════════════════ -->
+    <!--edit w delete elli tpopi -->
     <?php foreach ($profs as $prof): ?>
 
-    <!-- ─── MODAL MODIFIER ──────────────────────────────────────────── -->
+    <!-- ll edit -->
     <div id="modal-edit-<?= $prof['id'] ?>"
          class="etu-modal-backdrop"
          onclick="fermerModalBackdrop(event,'modal-edit-<?= $prof['id'] ?>')">
@@ -204,7 +204,7 @@
         </div>
     </div>
 
-    <!-- ─── MODAL SUPPRIMER ─────────────────────────────────────────── -->
+    <!-- supprimer tpopi-->
     <div id="modal-delete-<?= $prof['id'] ?>"
          class="etu-modal-backdrop"
          onclick="fermerModalBackdrop(event,'modal-delete-<?= $prof['id'] ?>')">
@@ -247,7 +247,7 @@
 
     <?php endif; ?>
 
-    <!-- ══ MODAL AJOUTER ══════════════════════════════════════════════════ -->
+    <!-- add-->
     <div id="modal-ajouter"
          class="etu-modal-backdrop"
          onclick="fermerModalBackdrop(event,'modal-ajouter')">
@@ -297,7 +297,7 @@
         </div>
     </div>
 
-</div><!-- /.etu-page -->
+
 
 <script src="/js/admin-modals.js"></script>
 <script src="/js/admin-enseignants.js"></script>

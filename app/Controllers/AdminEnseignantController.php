@@ -1,5 +1,5 @@
 <?php
-// app/Controllers/AdminEnseignantController.php
+// page hedhi mtaa gestion prof
 
 require_once BASE_PATH . '/app/Repositories/ProfesseurRepository.php';
 require_once BASE_PATH . '/app/Repositories/AdminRepository.php';
@@ -15,11 +15,7 @@ class AdminEnseignantController
         $this->adminRepo = new AdminRepository($this->pdo);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=ens_manage
-    |--------------------------------------------------------------------------
-    */
+
     public function index(): void
     {
         $search = trim($_GET['q'] ?? '');
@@ -30,15 +26,12 @@ class AdminEnseignantController
         $adminRepo = $this->adminRepo;
         $config    = require BASE_PATH . '/config/administrateur.php';
 
+        //header w loun ll page 
         include BASE_PATH . '/views/layouts/header.php';
         include BASE_PATH . '/views/pages/admin/enseignants.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | POST ?page=ens_manage_save
-    |--------------------------------------------------------------------------
-    */
+  // ki bch najouti enseignant jdid
     public function store(): void
     {
         $data = [
@@ -60,7 +53,7 @@ class AdminEnseignantController
         $_SESSION['flash'] = $ok
             ? ['type' => 'success', 'msg' => 'Enseignant ajouté avec succès.']
             : ['type' => 'error',   'msg' => 'Erreur lors de l\'ajout (email déjà utilisé ?).'];
-
+        // bch yrefreshi l page w ybadel flash message
         header('Location: /?page=ens_manage');
         exit;
     }
