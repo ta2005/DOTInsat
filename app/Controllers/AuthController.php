@@ -15,9 +15,7 @@ class AuthController
         $this->authRepo = new AuthRepository($pdo);
     }
 
-    // ─────────────────────────────────────────────
-    // LOGIN PAGE
-    // ─────────────────────────────────────────────
+    // interface de login
     public function showLogin(): void
     {
         if (!empty($_SESSION['user_id'])) {
@@ -31,9 +29,7 @@ class AuthController
         require BASE_PATH . '/views/auth/login.php';
     }
 
-    // ─────────────────────────────────────────────
-    // LOGIN ACTION
-    // ─────────────────────────────────────────────
+    // ajout info login
     public function login(): void
     {
         $email = trim($_POST['email'] ?? '');
@@ -63,12 +59,8 @@ class AuthController
 
         $this->startUserSession($user);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Remember me
-        |--------------------------------------------------------------------------
-        */
-
+ 
+        //creation de token w cookie pour remember me
         if ($remember) {
 
             $token = $this->authRepo
@@ -100,9 +92,7 @@ class AuthController
         $this->redirectToHome();
     }
 
-    // ─────────────────────────────────────────────
-    // LOGOUT
-    // ─────────────────────────────────────────────
+
     public function logout(): void
     {
         if (!empty($_SESSION['user_id'])) {
@@ -116,6 +106,7 @@ class AuthController
 
         session_destroy();
 
+        // Supprimer les cookies 
         foreach (
             [COOKIE_REMEMBER_TOKEN, COOKIE_REMEMBER_USER]
             as $cookie
@@ -134,9 +125,7 @@ class AuthController
         exit;
     }
 
-    // ─────────────────────────────────────────────
-    // SESSION
-    // ─────────────────────────────────────────────
+ 
     private function startUserSession(array $user): void
     {
         session_regenerate_id(true);
@@ -151,26 +140,12 @@ class AuthController
 
         $_SESSION['user_role'] = $user['role'] ?? '';
 
-        /*
-        |--------------------------------------------------------------------------
-        | IMPORTANT
-        |--------------------------------------------------------------------------
-        | Ici il faut :
-        | GL
-        | RT
-        | IIA
-        | IMI
-        |--------------------------------------------------------------------------
-        */
-
         $_SESSION['filiere'] = $user['filiere'] ?? '';
 
         $_SESSION['annee'] = (int)($user['annee'] ?? 0);
     }
 
-    // ─────────────────────────────────────────────
-    // REDIRECT LOGIN
-    // ─────────────────────────────────────────────
+    // Redirection vers la page de login avec message d'erreur
     private function redirectToLogin(string $error): never
     {
         header(
@@ -181,9 +156,7 @@ class AuthController
         exit;
     }
 
-    // ─────────────────────────────────────────────
-    // REDIRECT HOME
-    // ─────────────────────────────────────────────
+    // Redirection vers la page d'accueil après connexion
     private function redirectToHome(): never
     {
         header('Location: /?page=home');

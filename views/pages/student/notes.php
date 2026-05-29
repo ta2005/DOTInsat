@@ -1,6 +1,5 @@
 <?php
 
-
 require_once BASE_PATH . '/app/Repositories/NotesRepository.php';
 
 
@@ -19,7 +18,9 @@ preg_match('/^[A-Z]+(\d)/', $filiereRaw, $mN);
 $niveau = isset($mN[1]) ? (int)$mN[1] : 2;
 
 
-// taala hne bch yjib les notes mta3 l'etudiant 7asb ll id mta3ou w filiere w niveau, w bch yjibha mratbin 7asb les semestres (semestre 1 w semestre 2)
+// recuperer mes notes
+
+
 $notesRepo = new NotesRepository($pdo);
 
 $semestres = [
@@ -27,7 +28,7 @@ $semestres = [
     2 => $notesRepo->getNotesBySemestre($etudiantId, $filiere, $niveau, 2),
 ];
 
-// ll hessba
+// calcul moyenne matiere
 
 function calculerMoyenneMatiere(array $notes): ?float
 {
@@ -54,7 +55,9 @@ function calculerMoyenneMatiere(array $notes): ?float
     return null;
 }
 
-// moyenne
+
+// calcule semestre
+
 
 function calculerMoyenneSemestre(array $matieres): ?float
 {
@@ -105,12 +108,6 @@ $labelStatut = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes Notes — INSAT</title>
 
-
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/forms.css">
-    <link rel="stylesheet" href="/css/notifications.css">
-
-    <!-- CSS PAGE -->
     <link rel="stylesheet" href="/css/calculator.css">
     <link rel="stylesheet" href="/css/notes.css">
 
@@ -118,9 +115,13 @@ $labelStatut = [
 
 <body>
 
-// header global
+
+
 
 <?php require BASE_PATH . '/views/layouts/header.php'; ?>
+
+
+<!-- page -->
 
 
 <div class="calculator-page">
@@ -129,7 +130,9 @@ $labelStatut = [
 
         <div class="calculator-wrapper">
 
-         
+          
+            <!-- header -->
+            
 
             <div class="calculator-header">
 
@@ -155,10 +158,14 @@ $labelStatut = [
 
             </div>
 
-                < --semestres grid, fih les 2 semestres w fiha les matieres w les notes mta3hom -- >
+
             <div class="semesters-grid">
 
-              
+                
+                <!-- semestre 1 -->
+                
+
+                <div class="semester-card">
 
                     <h2>Semestre 1</h2>
 
@@ -237,8 +244,9 @@ $labelStatut = [
 
                 </div>
 
+                
                 <!-- semestre 2 -->
-            
+                
 
                 <div class="semester-card">
 
@@ -321,10 +329,9 @@ $labelStatut = [
 
             </div>
 
-         
-            <!-- Resultt -->
-          *
-
+        
+            <!-- resultat -->
+            
             <div class="results-card">
 
                 <h2>Résultats</h2>

@@ -1,5 +1,5 @@
 <?php
-// app/Controllers/ProfessorController.php
+
 
 require_once BASE_PATH . '/app/Repositories/ReclamationRepository.php';
 require_once BASE_PATH . '/app/Repositories/EnseignementRepository.php';

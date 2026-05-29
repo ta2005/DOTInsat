@@ -11,28 +11,7 @@ class NotesRepository
         $this->pdo = $pdo;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Récupérer les notes d'un étudiant pour un semestre
-    |--------------------------------------------------------------------------
-    |
-    | Retourne un tableau indexé par matiere_id :
-    |
-    |   [
-    |     42 => [
-    |       'nom_matiere'    => 'Bases de données',
-    |       'coefficient'    => 4.0,
-    |       'types_controle' => ['DS', 'TP', 'EXAM'],
-    |       'notes' => [
-    |         'DS'   => ['note' => 12.0, 'statut' => 'CORRIGE'],
-    |         'TP'   => ['note' => 17.0, 'statut' => 'VERIFIE'],
-    |         'EXAM' => ['note' => 14.0, 'statut' => 'CORRIGE'],
-    |       ],
-    |     ],
-    |     ...
-    |   ]
-    |
-    */
+    
     public function getNotesBySemestre(
         int    $etudiantId,
         string $filiere,
@@ -73,11 +52,7 @@ class NotesRepository
 
         $rows = $req->fetchAll(PDO::FETCH_ASSOC);
 
-        /*
-        |----------------------------------------------------------------------
-        | Organiser les lignes en tableau par matière
-        |----------------------------------------------------------------------
-        */
+    
         $matieres = [];
 
         foreach ($rows as $row) {
@@ -106,11 +81,7 @@ class NotesRepository
         return $matieres;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Convertir tableau PostgreSQL → tableau PHP  (réutilise la logique du MatiereRepository)
-    |--------------------------------------------------------------------------
-    */
+    
     private function parseTypesControle(?string $raw): array
     {
         if (empty($raw)) {

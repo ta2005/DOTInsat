@@ -1,5 +1,5 @@
 <?php
-// app/Repositories/EtudiantRepository.php
+
 
 class EtudiantRepository
 {
@@ -10,12 +10,6 @@ class EtudiantRepository
         $this->db = $db;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Profil étudiant (nom, prénom, classe)
-    | Utilisé par le dashboard étudiant
-    |--------------------------------------------------------------------------
-    */
     public function getProfil(int $etuId): ?array
     {
         $stmt = $this->db->prepare("
@@ -34,12 +28,7 @@ class EtudiantRepository
         return $row ?: null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Nombre de notes acquises par l'étudiant
-    | Utilisé par le dashboard étudiant
-    |--------------------------------------------------------------------------
-    */
+
     public function getNbNotes(int $etuId): int
     {
         $stmt = $this->db->prepare("
@@ -53,13 +42,7 @@ class EtudiantRepository
         return (int)($stmt->fetchColumn() ?: 0);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Dernière note de l'étudiant
-    | Retourne ['nom_matiere' => ..., 'note' => ...] ou null
-    | Utilisé par le dashboard étudiant
-    |--------------------------------------------------------------------------
-    */
+
     public function getDerniereNote(int $etuId): ?array
     {
         $stmt = $this->db->prepare("
@@ -78,13 +61,7 @@ class EtudiantRepository
         return $row ?: null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Dernière réclamation de l'étudiant
-    | Retourne ['statut' => ...] ou null
-    | Utilisé par le dashboard étudiant
-    |--------------------------------------------------------------------------
-    */
+
     public function getDerniereReclamation(int $etuId): ?array
     {
         $stmt = $this->db->prepare("
@@ -100,13 +77,7 @@ class EtudiantRepository
         return $row ?: null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Toutes les filières + niveaux + classes distincts
-    | Utilisé par le filtre admin (select filière → classe)
-    |--------------------------------------------------------------------------
-    */
-    public function getGroupes(): array
+ function getGroupes(): array
     {
         $stmt = $this->db->query("
             SELECT DISTINCT
@@ -121,12 +92,7 @@ class EtudiantRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Étudiants filtrés par filière et classe
-    | Utilisé par la liste admin
-    |--------------------------------------------------------------------------
-    */
+
     public function getByFiliereEtClasse(string $filiere, string $classe): array
     {
         $stmt = $this->db->prepare("
@@ -155,11 +121,7 @@ class EtudiantRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Récupère un étudiant complet par son ID
-    |--------------------------------------------------------------------------
-    */
+
     public function getById(int $id): ?array
     {
         $stmt = $this->db->prepare("
@@ -183,11 +145,7 @@ class EtudiantRepository
         return $row ?: null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Crée un nouvel étudiant (transaction : users + etudiant)
-    |--------------------------------------------------------------------------
-    */
+
     public function create(array $data): bool
     {
         try {
@@ -243,11 +201,7 @@ class EtudiantRepository
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Modifie un étudiant (transaction : users + etudiant)
-    |--------------------------------------------------------------------------
-    */
+ 
     public function update(int $id, array $data): bool
     {
         try {
@@ -296,11 +250,7 @@ class EtudiantRepository
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Supprime un étudiant — CASCADE sur users supprime etudiant aussi
-    |--------------------------------------------------------------------------
-    */
+
     public function delete(int $id): bool
     {
         try {
@@ -313,11 +263,7 @@ class EtudiantRepository
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Compte les étudiants par filière (stats admin)
-    |--------------------------------------------------------------------------
-    */
+   
     public function countByFiliere(): array
     {
         $stmt = $this->db->query("

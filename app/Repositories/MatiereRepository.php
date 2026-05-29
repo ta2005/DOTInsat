@@ -11,11 +11,7 @@ class MatiereRepository
         $this->pdo = $pdo;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Récupérer les matières
-    |--------------------------------------------------------------------------
-    */
+   
     public function getMatieres($filiere, $niveau, $semestre)
     {
         $req = $this->pdo->prepare("
@@ -39,11 +35,7 @@ class MatiereRepository
 
         $matieres = $req->fetchAll(PDO::FETCH_ASSOC);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Convertir tableau PostgreSQL → tableau PHP
-        |--------------------------------------------------------------------------
-        */
+        
         foreach ($matieres as &$matiere) {
 
             if (!empty($matiere['types_controle'])) {
@@ -62,31 +54,17 @@ class MatiereRepository
         return $matieres;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Vérifier DS
-    |--------------------------------------------------------------------------
-    */
     public function hasDS(array $matiere): bool
     {
         return in_array('DS', $matiere['types_controle']);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Vérifier EXAM
-    |--------------------------------------------------------------------------
-    */
+    
     public function hasExam(array $matiere): bool
     {
         return in_array('EXAM', $matiere['types_controle']);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Vérifier TP
-    |--------------------------------------------------------------------------
-    */
+   
     public function hasTP(array $matiere): bool
     {
         return in_array('TP', $matiere['types_controle']);

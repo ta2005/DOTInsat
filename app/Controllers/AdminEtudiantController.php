@@ -15,11 +15,7 @@ class AdminEtudiantController
         $this->adminRepo = new AdminRepository($this->pdo);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=etu_manage
-    |--------------------------------------------------------------------------
-    */
+   
     public function index(): void
     {
         $flash = $_SESSION['flash'] ?? null;
@@ -45,15 +41,11 @@ class AdminEtudiantController
         $adminRepo = $this->adminRepo;
         $config    = require BASE_PATH . '/config/administrateur.php';
 
-        include BASE_PATH . '/views/layouts/header.php';
+        
         include BASE_PATH . '/views/pages/admin/etudiants.php';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | POST ?page=etu_manage_save
-    |--------------------------------------------------------------------------
-    */
+
     public function store(): void
     {
         $data = [
@@ -89,11 +81,7 @@ class AdminEtudiantController
         exit;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | POST ?page=etu_manage_update
-    |--------------------------------------------------------------------------
-    */
+
     public function update(): void
     {
         $id   = (int)($_POST['id'] ?? 0);
@@ -122,11 +110,7 @@ class AdminEtudiantController
         exit;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | POST ?page=etu_manage_delete
-    |--------------------------------------------------------------------------
-    */
+
     public function destroy(): void
     {
         $id = (int)($_POST['id'] ?? 0);

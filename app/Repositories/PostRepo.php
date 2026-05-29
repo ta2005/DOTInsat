@@ -46,9 +46,7 @@ class PostRepo {
         }
     }
 
-    /**
-     * Helper to convert database row to Post object
-     */
+  
     private function mapToEntity(array $row): Post {
         return new Post(
             $row['contenu'],

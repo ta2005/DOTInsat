@@ -5,9 +5,7 @@ require_once BASE_PATH . '/app/Repositories/Repository.php';
 
 class DemandeRepository extends Repository
 {
-    // -------------------------------------------------------------------------
-    // Toutes les demandes avec infos étudiant
-    // -------------------------------------------------------------------------
+
     public function getAll(): array
     {
         if (!$this->isConnected()) return [];
@@ -30,9 +28,7 @@ class DemandeRepository extends Repository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // -------------------------------------------------------------------------
-    // Demandes d'un étudiant donné
-    // -------------------------------------------------------------------------
+    
     public function getAllForEtudiant(int $etudiantId): array
     {
         if (!$this->isConnected()) return [];
@@ -57,9 +53,6 @@ class DemandeRepository extends Repository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // -------------------------------------------------------------------------
-    // Demande par ID
-    // -------------------------------------------------------------------------
     public function getById(int $id): ?array
     {
         if (!$this->isConnected()) return null;
@@ -111,9 +104,7 @@ class DemandeRepository extends Repository
         ], $rows);
     }
 
-    // -------------------------------------------------------------------------
-    // Créer une demande
-    // -------------------------------------------------------------------------
+ 
     public function create(array $data): bool
     {
         if (!$this->isConnected()) return false;
@@ -130,9 +121,7 @@ class DemandeRepository extends Repository
         ]);
     }
 
-    // -------------------------------------------------------------------------
-    // Supprimer
-    // -------------------------------------------------------------------------
+
     public function delete(int $id): bool
     {
         if (!$this->isConnected()) return false;
@@ -141,9 +130,7 @@ class DemandeRepository extends Repository
                         ->execute([$id]);
     }
 
-    // -------------------------------------------------------------------------
-    // Changer le statut
-    // -------------------------------------------------------------------------
+
     public function updateStatut(int $id, string $statut): bool
     {
         if (!$this->isConnected()) return false;

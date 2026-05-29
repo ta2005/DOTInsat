@@ -58,11 +58,7 @@ class AdminEnseignantController
         exit;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | POST ?page=ens_manage_update
-    |--------------------------------------------------------------------------
-    */
+ 
     public function update(): void
     {
         $id   = (int)($_POST['id'] ?? 0);
@@ -89,11 +85,7 @@ class AdminEnseignantController
         exit;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | POST ?page=ens_manage_delete
-    |--------------------------------------------------------------------------
-    */
+   
     public function destroy(): void
     {
         $id = (int)($_POST['id'] ?? 0);

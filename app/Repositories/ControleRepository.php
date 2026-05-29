@@ -1,5 +1,4 @@
 <?php
-// app/Repositories/ControleRepository.php
 
 declare(strict_types=1);
 
@@ -8,11 +7,6 @@ require_once BASE_PATH . '/app/Repositories/Repository.php';
 
 class ControleRepository extends Repository implements IControleRepo
 {
-    /*
-    |--------------------------------------------------------------------------
-    | IRepo — méthodes génériques
-    |--------------------------------------------------------------------------
-    */
 
     public function fetchById(string $id): ?object
     {
@@ -35,7 +29,7 @@ class ControleRepository extends Repository implements IControleRepo
     {
         $examId = (int) $id;
 
-        // 1. Fetch the master exam details to get teaching course ID and type
+        
         $exam = $this->findExamById($examId);
         if (!$exam) {
             return false;
@@ -44,7 +38,7 @@ class ControleRepository extends Repository implements IControleRepo
         $ensId = (int) $exam['enseignement_id'];
         $type = $exam['type'];
 
-        // 2. Fetch all controle rows (both master and student grades) for this exam
+        
         $stmt = $this->db->prepare("
             SELECT id FROM controle 
             WHERE enseignement_id = :ens_id AND type = :type
@@ -60,16 +54,16 @@ class ControleRepository extends Repository implements IControleRepo
             return false;
         }
 
-        // 3. Delete any reclamations referencing these controle IDs
+     
         $inQuery = implode(',', array_fill(0, count($ids), '?'));
         $stmt = $this->db->prepare("DELETE FROM reclamation WHERE controle_id IN ($inQuery)");
         $stmt->execute($ids);
 
-        // 4. Delete the controle rows themselves
+       
         $stmt = $this->db->prepare("DELETE FROM controle WHERE id IN ($inQuery)");
         $stmt->execute($ids);
 
-        // 5. Unlink the Flat-File master-key JSON template if it exists
+        
         $storagePath = __DIR__ . '/../../storage/qcm_keys';
         $filePath = sprintf('%s/exam_%d.json', $storagePath, $examId);
         if (file_exists($filePath)) {
@@ -79,12 +73,7 @@ class ControleRepository extends Repository implements IControleRepo
         return true;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | IControleRepo — méthodes métier
-    |--------------------------------------------------------------------------
-    */
-
+ 
     public function findExamById(int $examId): ?array
     {
         $stmt = $this->db->prepare("
@@ -107,7 +96,7 @@ class ControleRepository extends Repository implements IControleRepo
 
     public function saveStudentGrade(int $studentId, int $examId, float $grade): bool
     {
-        // 1. Fetch the master exam details to get type and enseignement_id
+        
         $exam = $this->findExamById($examId);
         if (!$exam) {
             return false;
@@ -116,7 +105,7 @@ class ControleRepository extends Repository implements IControleRepo
         $ensId = (int) $exam['enseignement_id'];
         $type = $exam['type'];
 
-        // 2. Check if a student grade row already exists for this (etudiant_id, enseignement_id, type)
+        
         $stmt = $this->db->prepare("
             SELECT id FROM controle 
             WHERE etudiant_id = :etudiant_id 
@@ -132,7 +121,7 @@ class ControleRepository extends Repository implements IControleRepo
         $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($existing) {
-            // Update the existing row
+            
             $stmt = $this->db->prepare("
                 UPDATE controle
                 SET
@@ -149,7 +138,7 @@ class ControleRepository extends Repository implements IControleRepo
             ]);
             return true;
         } else {
-            // Insert a new row for this student
+            
             $stmt = $this->db->prepare("
                 INSERT INTO controle (
                     note,
@@ -280,7 +269,6 @@ class ControleRepository extends Repository implements IControleRepo
         $ensId = (int) $exam['enseignement_id'];
         $type = $exam['type'];
 
-        // Check if grade entry already exists for this student, course, and exam type
         $stmt = $this->db->prepare("
             SELECT id FROM controle 
             WHERE etudiant_id = :etudiant_id 
