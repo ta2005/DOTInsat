@@ -9,11 +9,7 @@ class UserRepository
         $this->db = $db;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Trouver utilisateur par email
-    |--------------------------------------------------------------------------
-    */
+
     public function findByEmail(string $email): ?array
     {
         $sql = "
@@ -67,11 +63,6 @@ class UserRepository
         return $row ?: null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Trouver utilisateur par ID
-    |--------------------------------------------------------------------------
-    */
     public function findById(int $id): ?array
     {
         $sql = "
@@ -124,11 +115,6 @@ class UserRepository
         return $row ?: null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Sauvegarder remember token
-    |--------------------------------------------------------------------------
-    */
     public function saveRememberToken(
         int $userId,
         string $hashedToken
@@ -153,11 +139,6 @@ class UserRepository
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Trouver utilisateur via remember token
-    |--------------------------------------------------------------------------
-    */
     public function findByRememberToken(
         string $hashedToken
     ): ?array {
@@ -193,11 +174,7 @@ class UserRepository
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Supprimer remember token
-    |--------------------------------------------------------------------------
-    */
+
     public function clearRememberToken(
         int $userId
     ): void {

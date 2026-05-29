@@ -1,5 +1,5 @@
 <?php
-// app/Repositories/ReclamationRepository.php
+
 
 require_once BASE_PATH . '/app/Repositories/Repository.php';
 
@@ -123,7 +123,7 @@ class ReclamationRepository extends Repository
         return $row ?: null;
     }
 
-    //matiere etudiants connectée
+   
     public function getMatieres(): array
     {
         if (!$this->isConnected()) return [];
@@ -160,7 +160,7 @@ class ReclamationRepository extends Repository
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
-    // matire etudiant connecté avec les notes (ds, examen, tp)
+   
     public function getMatieresAvecNotes(int $etudiantId): array
     {
         if (!$this->isConnected()) return [];
@@ -195,7 +195,7 @@ class ReclamationRepository extends Repository
         ], $rows);
     }
 
-    //pour lister les reclamations d'un etudiant connecté
+
     public function getMesReclamations(int $etudiantId): array
     {
         if (!$this->isConnected()) return [];
@@ -223,7 +223,6 @@ class ReclamationRepository extends Repository
     }
 
 
-    // types de controles disponibles pour une matiere donnée (pour un etudiant donné)
     public function getTypesByMatiere(int $matiereId, int $etudiantId): array
     {
         if (!$this->isConnected()) return [];
@@ -249,7 +248,7 @@ class ReclamationRepository extends Repository
     }
 
 
-    // pour créer une nouvelle réclamation (étudiant connecté)
+    
     public function create(array $data): bool
     {
         if (!$this->isConnected()) return false;
@@ -266,7 +265,7 @@ class ReclamationRepository extends Repository
         ]);
     }
 
-    // pour supprimer une réclamation (admin ou prof connecté)
+   
     public function delete(int $id): bool
     {
         if (!$this->isConnected()) return false;
@@ -274,8 +273,6 @@ class ReclamationRepository extends Repository
         return $this->db->prepare("DELETE FROM reclamation WHERE id = ?")
                         ->execute([$id]);
     }
-
-    // pour mettre à jour le statut d'une réclamation (admin ou prof connecté)
 
     public function updateStatut(int $id, string $statut): bool
     {
@@ -287,7 +284,6 @@ class ReclamationRepository extends Repository
     }
 
 
-    // pour approuver une réclamation par le prof connecté (met à jour aussi la note dans controle)
     public function approuverParProf(int $id, float $nouvelleNote): bool
     {
         if (!$this->isConnected()) return false;
@@ -311,7 +307,7 @@ class ReclamationRepository extends Repository
     }
 
 
-    // pour refuser une réclamation par le prof connecté (enregistre aussi la raison du refus)
+    
     public function refuserParProf(int $id): bool
     {
         if (!$this->isConnected()) return false;

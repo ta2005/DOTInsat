@@ -1,6 +1,5 @@
 
-// Dépend de : admin-modals.js (chargé avant)
-// CLASSES_BY_FILIERE est injecté par la vue PHP via une balise <script> inline
+// Dépend mn admin-modals.js (chargé avant)
 
 function updateClasses(filiere) {
     const sel     = document.getElementById('sel-classe');

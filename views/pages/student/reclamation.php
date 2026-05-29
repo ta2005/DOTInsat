@@ -6,7 +6,7 @@
 
 <?php
 $etudiant_id   = 'etudiant_' . ($_SESSION['user_id'] ?? 1);
-$notifications = []; // injecté par le controller via NotificationRepository si nécessaire
+$notifications = []; 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
@@ -73,7 +73,7 @@ foreach ($matieres as $m) {
             <i class="ti ti-user"></i> Informations personnelles
         </div>
         <!-- nom w prenom ma yekhdmouch fll store(), etudiant_id yiji mll session -->
-        <!-- num_inscription ma yekhdmech, les matieres yijou mll session directement -->
+        <!--les matieres yijou mll session directement -->
     </div>
 
     <!-- mtaa matiere w type d'evaluation -->
@@ -144,10 +144,13 @@ foreach ($matieres as $m) {
 
 </form>
 
-//*
-    section mtaa "mes reclamations" illi taala t7ot fiha les reclamations illi 3mlhom l'etudiant deja, bch ychouf wach 3ml acceptation wla refus wla mazal fi en attente
-*//
-<?php if (!empty($mesReclamations)): ?>
+
+    
+<?php
+//section mtaa reclamations illi taala t7ot fiha les reclamations illi 3mlhom l'etudiant deja
+// bch ychouf chnowa 3ml acceptation wla refus wla mazal fi en attent
+
+if (!empty($mesReclamations)): ?>
 <div class="form-page-header" style="margin-top:32px;">
     <div class="form-page-icon form-page-icon--red">
         <i class="ti ti-history"></i>
@@ -225,7 +228,6 @@ $statutConfig = [
 
 
 
-
 <?php
 // nhot les données PHP fi variables JS bch reclamation.js ykhdmhom
 $matieresDataJS = [];
@@ -244,7 +246,7 @@ foreach ($matieres as $m) {
     // data mta3 les matieres indexée par matiere_id
     const matieresData = <?= json_encode($matieresDataJS, JSON_UNESCAPED_UNICODE) ?>;
 
-    // nappelou directement sans DOMContentLoaded parce que script fi bas de page (DOM déjà chargé)
+            // bch ychouf ken fama matiere mselectitha deja w y3ti les info mta3ha fll form
     (function () {
         const sel = document.getElementById("matiere-select");
         if (sel && sel.value) {

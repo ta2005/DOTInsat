@@ -1,5 +1,5 @@
 <?php
-// app/Repositories/ProfesseurRepository.php
+
 
 class ProfesseurRepository
 {
@@ -10,9 +10,7 @@ class ProfesseurRepository
         $this->db = $db;
     }
 
-    /**
-     * Retourne le profil (nom, prenom) d'un professeur par son id.
-     */
+  
     public function getProfil(int $profId): ?array
     {
         $stmt = $this->db->prepare("
@@ -25,10 +23,7 @@ class ProfesseurRepository
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    /**
-     * Retourne les enseignements du prof + la classe sélectionnée + l'id de l'enseignement sélectionné.
-     * Utilisé par config/enseignant.php pour alimenter le dropdown et les stats.
-     */
+    
     public function getEnseignementsAvecSelection(int $profId, ?string $selectedNom = null): array
     {
         $stmt = $this->db->prepare("
@@ -59,10 +54,7 @@ class ProfesseurRepository
         ];
     }
 
-    /**
-     * Retourne tous les professeurs avec leurs enseignements,
-     * filtrables par recherche textuelle.
-     */
+   
     public function getAllWithEnseignements(?string $search = null): array
     {
         $sql = "
@@ -120,9 +112,7 @@ class ProfesseurRepository
         return $rows;
     }
 
-    /**
-     * Retourne un professeur par son id (avec ses enseignements).
-     */
+
     public function getById(int $id): ?array
     {
         $results = $this->getAllWithEnseignements();
@@ -134,9 +124,7 @@ class ProfesseurRepository
         return null;
     }
 
-    /**
-     * Crée un professeur (insère dans users + professeur).
-     */
+  
     public function create(array $data): bool
     {
         try {
@@ -169,9 +157,7 @@ class ProfesseurRepository
         }
     }
 
-    /**
-     * Met à jour les infos d'un professeur.
-     */
+  
     public function update(int $id, array $data): bool
     {
         $stmt = $this->db->prepare("
@@ -193,9 +179,7 @@ class ProfesseurRepository
         ]);
     }
 
-    /**
-     * Supprime un professeur (cascade via FK).
-     */
+    
     public function delete(int $id): bool
     {
         $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");

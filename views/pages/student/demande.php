@@ -107,7 +107,9 @@ $typesLabels = [
     </div>
 </div>
 
-<?php foreach ($mesDemandes as $d): ?>
+<?php 
+// ll koll demande taala t7ot fiha une card w fiha le type mtaa demande w le message illi 3mlou l'etudiant w le statut mtaa demande (en attente, acceptée, refusée) w le date mtaa soumission, w ken el demande mazal en attente y3ti option pour supprimer la demande
+foreach ($mesDemandes as $d): ?>
 <?php $s = $statutConfig[$d['statut']] ?? ['label' => $d['statut'], 'class' => 'badge--yellow']; ?>
 <div class="card recl-card">
 
