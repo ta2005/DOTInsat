@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion — INSAT</title>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/forms.css">
-    <link rel="stylesheet" href="/css/notifications.css">
     <link rel="stylesheet" href="/css/login.css">
 </head>
 <body>

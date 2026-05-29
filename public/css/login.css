@@ -1,18 +1,240 @@
 /* ============================================================
-   login.css — Page de connexion INSAT (Centered & Premium)
+   login.css — Page de connexion INSAT (fichier autonome fusionné)
+   Contient : variables, reset, card, flash, forms, login
    ============================================================ */
 
-/* Center body content strictly on login page */
+
+/* ── VARIABLES GLOBALES (depuis styles.css) ─────────────────── */
+
+:root {
+    --bg-page:      #111111;
+    --bg-card:      #1c1c1e;
+    --border-card:  #2e2e30;
+    --border-subtle:#2a2a2a;
+    --text-primary: #ffffff;
+    --text-secondary:#888888;
+    --text-muted:   #555555;
+    --radius-card:  18px;
+    --radius-sm:    10px;
+    --gap:          14px;
+}
+
+
+/* ── RESET MINIMAL (depuis styles.css) ──────────────────────── */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ── BODY (depuis styles.css + login.css) ───────────────────── */
+
 body {
+    background: var(--bg-page);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text-primary);
+    min-height: 100vh;
+
+    /* login.css : centrage strict sur la page connexion */
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    margin: 0;
-    background: var(--bg-page);
 }
 
-/* Main centering wrapper */
+
+/* ── BRAND / LOGO (depuis styles.css) ───────────────────────── */
+
+.brand {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.brand-logo {
+    height: 52px;
+    width: auto;
+    display: block;
+}
+
+
+/* ── CARD BASE (depuis styles.css) ──────────────────────────── */
+
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-card);
+}
+
+
+/* ── FLASH MESSAGE (depuis notifications.css) ───────────────── */
+
+.flash {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.flash--error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+
+/* ── EN-TÊTE DE PAGE (depuis forms.css) ─────────────────────── */
+
+.form-page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: var(--gap);
+}
+
+.form-page-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #3b82f6;
+    flex-shrink: 0;
+}
+
+.form-page-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+.form-page-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+}
+
+
+/* ── CARTE FORMULAIRE (depuis forms.css) ────────────────────── */
+
+.form-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-bottom: var(--gap);
+}
+
+
+/* ── SECTION (depuis forms.css) ─────────────────────────────── */
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--border-card);
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+}
+
+.form-section-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+
+/* ── GROUPE + LABEL (depuis forms.css) ──────────────────────── */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+
+/* ── INPUT (depuis forms.css) ───────────────────────────────── */
+
+.form-input {
+    background: #161618;
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: inherit;
+    padding: 10px 14px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+.form-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+
+/* ── BOUTONS (depuis forms.css) ─────────────────────────────── */
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-card);
+}
+
+.form-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.form-btn-primary:hover  { background: #2563eb; }
+.form-btn-primary:active { transform: scale(0.97); }
+
+
+/* ── WRAPPER LOGIN (depuis login.css) ───────────────────────── */
+
 .login-wrapper {
     width: 100%;
     max-width: 480px;
@@ -24,7 +246,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Center logo topbar */
 .login-header {
     width: 100%;
     display: flex;
@@ -44,7 +265,9 @@ body {
     align-items: center;
 }
 
-/* Centered Form Page Header */
+
+/* ── OVERRIDES LOGIN sur form-page-header (depuis login.css) ── */
+
 .login-main .form-page-header {
     display: flex;
     flex-direction: column;
@@ -59,13 +282,7 @@ body {
     width: 56px;
     height: 56px;
     border-radius: 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-card);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 24px;
-    color: #3b82f6;
     box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
 }
 
@@ -78,11 +295,12 @@ body {
 
 .login-main .form-page-sub {
     font-size: 14px;
-    color: var(--text-secondary);
     margin-top: 6px;
 }
 
-/* Centered Form card */
+
+/* ── FORMULAIRE LOGIN (depuis login.css) ────────────────────── */
+
 .login-form {
     width: 100%;
     max-width: 100%;
@@ -90,17 +308,17 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Wrapper du champ mot de passe */
+
+/* ── MOT DE PASSE (depuis login.css) ────────────────────────── */
+
 .password-wrapper {
     position: relative;
 }
 
-/* Input avec espace pour le bouton œil */
 .password-input {
     padding-right: 44px;
 }
 
-/* Bouton afficher/masquer mot de passe */
 .password-toggle {
     position: absolute;
     right: 12px;
@@ -121,8 +339,19 @@ body {
     color: var(--text-secondary);
 }
 
-/* Bouton submit pleine largeur */
+
+/* ── BOUTON SUBMIT (depuis login.css) ───────────────────────── */
+
 .login-submit {
     width: 100%;
     justify-content: center;
+}
+
+
+/* ── RESPONSIVE (depuis forms.css) ──────────────────────────── */
+
+@media (max-width: 600px) {
+    .form-section  { padding: 16px; }
+    .form-actions  { padding: 14px 16px; flex-direction: column; align-items: stretch; }
+    .form-btn-primary { justify-content: center; }
 }
