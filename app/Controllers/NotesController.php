@@ -1,22 +1,15 @@
 <?php
-// app/Controllers/NotesController.php
 
-require_once BASE_PATH . '/app/Controllers/EtudiantController.php';
+require_once BASE_PATH . '/app/Repositories/EtudiantRepository.php';
 
 class NotesController
 {
     public function __construct(private PDO $pdo) {}
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET ?page=calcul-moyenne
-    |--------------------------------------------------------------------------
-    */
-    public function calculMoyenne(): void
-    {
-        $etudiant = new EtudiantController($this->pdo);
-        $config   = $etudiant->buildEtudiantConfig();
 
+    public function calculMoyenne(): void
+    {   
+        $config = require BASE_PATH . '/config/etudiant.php';
         $filiereRaw = strtoupper(trim($_SESSION['filiere'] ?? ''));
 
         preg_match('/^([A-Z]+)/', $filiereRaw, $mF);
@@ -47,9 +40,8 @@ class NotesController
     */
     public function mesNotes(): void
     {
-        $etudiant = new EtudiantController($this->pdo);
-        $config   = $etudiant->buildEtudiantConfig();
 
+        $config = require BASE_PATH . '/config/etudiant.php';
         $pdo = $this->pdo;
 
         require BASE_PATH . '/views/pages/student/notes.php';

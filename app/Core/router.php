@@ -44,24 +44,24 @@ $routes = [
 
     [
         'page'       => 'demande',
-        'controller' => 'DemandeController',
-        'method'     => 'index',
+        'controller' => 'EtudiantController',
+        'method'     => 'demandeIndex',
         'http'       => 'GET',
         'roles'      => [ROLE_ETUDIANT]
     ],
 
     [
         'page'       => 'save-demande',
-        'controller' => 'DemandeController',
-        'method'     => 'store',
+        'controller' => 'EtudiantController',
+        'method'     => 'demandeStore',
         'http'       => 'POST',
         'roles'      => [ROLE_ETUDIANT]
     ],
 
     [
         'page'       => 'delete-demande',
-        'controller' => 'DemandeController',
-        'method'     => 'delete',
+        'controller' => 'EtudiantController',
+        'method'     => 'demandeDelete',
         'http'       => 'POST',
         'roles'      => [ROLE_ETUDIANT]
     ],
@@ -69,24 +69,24 @@ $routes = [
   
     [
         'page'       => 'reclamation',
-        'controller' => 'ReclamationController',
-        'method'     => 'index',
+        'controller' => 'EtudiantController',
+        'method'     => 'reclamationIndex',
         'http'       => 'GET',
         'roles'      => [ROLE_ETUDIANT]
     ],
 
     [
         'page'       => 'save-reclamation',
-        'controller' => 'ReclamationController',
-        'method'     => 'store',
+        'controller' => 'EtudiantController',
+        'method'     => 'reclamationStore',
         'http'       => 'POST',
         'roles'      => [ROLE_ETUDIANT]
     ],
 
     [
         'page'       => 'delete-reclamation',
-        'controller' => 'ReclamationController',
-        'method'     => 'delete',
+        'controller' => 'EtudiantController',
+        'method'     => 'reclamationDelete',
         'http'       => 'POST',
         'roles'      => [ROLE_ETUDIANT]
     ],
@@ -94,8 +94,8 @@ $routes = [
 
     [
         'page'       => 'api-get-matieres',
-        'controller' => 'ReclamationController',
-        'method'     => 'getMatieres',
+        'controller' => 'EtudiantController',
+        'method'     => 'reclamationGetMatieres',
         'http'       => 'GET',
         'roles'      => [ROLE_ETUDIANT]
     ],

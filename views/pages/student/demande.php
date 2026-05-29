@@ -69,7 +69,7 @@ unset($_SESSION['flash']);
         </div>
     </div>
 
-    <!-- Aaction -->
+    <!-- ACTIONS -->
     <div class="form-actions">
         <a href="/?page=home" class="form-btn-secondary">
             <i class="ti ti-arrow-left"></i> Annuler
@@ -81,9 +81,11 @@ unset($_SESSION['flash']);
 
 </form>
 
-<!-- Historique des demandes ->
+<!-- ═══════════════════════════════════════════════════════
+     MES DEMANDES — historique de l'étudiant
+═══════════════════════════════════════════════════════ -->
 <?php
-$statutConfig = [s
+$statutConfig = [
     'EN_ATTENTE' => ['label' => 'En attente', 'class' => 'badge--yellow'],
     'ACCEPTEE'   => ['label' => 'Acceptée',   'class' => 'badge--green'],
     'REFUSEE'    => ['label' => 'Refusée',    'class' => 'badge--red'],

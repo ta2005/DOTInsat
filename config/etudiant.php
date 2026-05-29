@@ -1,5 +1,22 @@
 <?php
-
+$etuId      = (int)($_SESSION['user_id'] ?? 0);
+$profil     = $etuId ? $etudiantRepo->getProfil($etuId) : null;
+$classe     = $profil['classe'] ?? 'GL3-2';
+$nomComplet = $profil
+    ? trim($profil['prenom'] . ' ' . $profil['nom'])
+    : 'Étudiant';
+ 
+$nbNotes = $etuId ? $etudiantRepo->getNbNotes($etuId) : 0;
+ 
+$derniereNoteRow = $etuId ? $etudiantRepo->getDerniereNote($etuId) : null;
+$derniereNote    = $derniereNoteRow
+    ? $derniereNoteRow['nom_matiere'] . ' — ' . number_format((float)$derniereNoteRow['note'], 2)
+    : '—';
+ 
+$reclamRow      = $etuId ? $etudiantRepo->getDerniereReclamation($etuId) : null;
+$derniereReclam = $reclamRow
+    ? ucfirst(strtolower(str_replace('_', ' ', $reclamRow['statut'])))
+    : '—';
 
 return [
 
